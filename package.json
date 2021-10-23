@@ -1,0 +1,86 @@
+{
+  "name": "rehype-citation",
+  "version": "0.0.1",
+  "description": "rehype plugin to add citation and bibliography from bibtex files",
+  "source": "index.js",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/rehype-citation.es.js",
+  "module": "./dist/rehype-citation.es.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/rehype-citation.es.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b && vite build --config vite.config.cjs",
+    "tsc": "tsc --watch --noEmit",
+    "lint": "eslint .",
+    "prettier": "prettier --write '*.js'",
+    "test": "uvu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timlrx/rehype-citation.git"
+  },
+  "keywords": [
+    "rehype",
+    "rehype-plugin",
+    "syntax-highlighting",
+    "citation",
+    "mdx",
+    "jsx"
+  ],
+  "author": "Timothy Lin <timothy0336@hotmail.com> (https://timlrx.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/timlrx/rehype-citation/issues"
+  },
+  "homepage": "https://github.com/timlrx/rehype-citation#readme",
+  "dependencies": {
+    "citation-js": "^0.5.1",
+    "hast-util-from-parse5": "^7.1.0",
+    "parse5": "^6.0.1",
+    "unified": "^10.1.0",
+    "unist-util-visit": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.1",
+    "dedent": "^0.7.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-node": "^11.1.0",
+    "husky": "^4.0.0",
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.3.2",
+    "rehype": "^12.0.0",
+    "typescript": "^4.3.5",
+    "uvu": "^0.5.1",
+    "vite": "^2.5.0"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "useTabs": false,
+    "singleQuote": true,
+    "bracketSpacing": true,
+    "semi": false,
+    "trailingComma": "es5"
+  },
+  "lint-staged": {
+    "*.+(js|jsx|ts|tsx)": [
+      "eslint --fix"
+    ],
+    "*.+(js|jsx|ts|tsx|json|css|md|mdx)": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+}
