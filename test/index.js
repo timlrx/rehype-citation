@@ -1,38 +1,36 @@
-import { test } from 'uvu'
+import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 import { rehype } from 'rehype'
 import dedent from 'dedent'
-import rehypeCitation from './index.js'
+import rehypeCitation from '../index.js'
 
-const bibliography = 'references-test.bib'
+const bibliography = './test/references-data.bib'
+const cslJSON = './test/csl-json-data.json'
 const path = process.cwd()
 
-const processHtml = (html, options) => {
+const processHtml = (html, options, input = bibliography) => {
   return rehype()
     .data('settings', { fragment: true })
-    .use(rehypeCitation, { bibliography, path, ...options })
+    .use(rehypeCitation, { bibliography: input, path, ...options })
     .processSync(html)
     .toString()
 }
 
-test('parse citation correctly', () => {
-  const result = processHtml(
-    dedent`
-    <div>[@Nash1950]</div>
-  `,
-    { suppressBibliography: true }
-  )
+const rehypeCitationTest = suite('rehype-citation')
+
+rehypeCitationTest('parse citation correctly', () => {
+  const result = processHtml(dedent`<div>[@Nash1950]</div>`, { suppressBibliography: true })
   const expected = dedent`<div>(Nash, 1950)</div>`
   assert.is(result, expected)
 })
 
-test('parse in-text citation correctly', () => {
+rehypeCitationTest('parse in-text citation correctly', () => {
   const result = processHtml('<div>@Nash1950</div>', { suppressBibliography: true })
   const expected = dedent`<div>Nash (1950)</div>`
   assert.is(result, expected)
 })
 
-test('properly account for previous citation', () => {
+rehypeCitationTest('properly account for previous citation', () => {
   const result = processHtml('<div>[@Nash1951] text [@Nash1950]</div>', {
     suppressBibliography: true,
     csl: 'vancouver',
@@ -41,7 +39,7 @@ test('properly account for previous citation', () => {
   assert.is(result, expected)
 })
 
-test('parse multiple citations correctly', () => {
+rehypeCitationTest('parse multiple citations correctly', () => {
   const result = processHtml(
     '<div>First citation @Nash1950 and second citation [@Nash1951]</div>',
     { suppressBibliography: true }
@@ -50,7 +48,7 @@ test('parse multiple citations correctly', () => {
   assert.is(result, expected)
 })
 
-test('inserts biliography at the end of the file', () => {
+rehypeCitationTest('inserts biliography at the end of the file', () => {
   const result = processHtml('<div>[@Nash1950]</div>')
   const expected = dedent`<div>(Nash, 1950)</div><div id="refs" class="references csl-bib-body">
           <div class="csl-entry">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
@@ -58,7 +56,7 @@ test('inserts biliography at the end of the file', () => {
   assert.is(result, expected)
 })
 
-test('inserts biliography at [^Ref] div tag', () => {
+rehypeCitationTest('inserts biliography at [^Ref] div tag', () => {
   const result = processHtml('<div>[^Ref]</div><div>[@Nash1950]</div>')
   const expected = dedent`<div id="refs" class="references csl-bib-body">
           <div class="csl-entry">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
@@ -66,13 +64,13 @@ test('inserts biliography at [^Ref] div tag', () => {
   assert.is(result, expected)
 })
 
-test('supports other specified csl', () => {
+rehypeCitationTest('supports other specified csl', () => {
   const result = processHtml('<div>@Nash1950</div>', { suppressBibliography: true, csl: 'chicago' })
   const expected = dedent`<div>Nash (1950)</div>`
   assert.is(result, expected)
 })
 
-test('supports csl from path', () => {
+rehypeCitationTest('supports csl from path', () => {
   const result = processHtml('<div>@Nash1950</div>', {
     suppressBibliography: true,
     csl: './csl/chicago.csl',
@@ -81,7 +79,7 @@ test('supports csl from path', () => {
   assert.is(result, expected)
 })
 
-test('no-cite', () => {
+rehypeCitationTest('no-cite', () => {
   const result = processHtml('<div>text</div>', {
     noCite: ['@Nash1950'],
   })
@@ -91,4 +89,38 @@ test('no-cite', () => {
   assert.is(result, expected)
 })
 
-test.run()
+rehypeCitationTest('handle prefix, suffix and locator', () => {
+  const result = processHtml(dedent`<div>[see @Nash1950, 5-6 suffix]</div>`, {
+    suppressBibliography: true,
+  })
+  const expected = dedent`<div>(see Nash, 1950, pp. 5–6 suffix)</div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('suppress author', () => {
+  const result = processHtml(dedent`<div>[-@Nash1950]</div>`, { suppressBibliography: true })
+  const expected = dedent`<div>(1950)</div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('throw an error if invalid file path', () => {
+  const result = processHtml(
+    dedent`<div>[-@Nash1950]</div>`,
+    { suppressBibliography: true },
+    './test/invalid-file-path.bib'
+  )
+  const expected = dedent`<div>(1950)</div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('works with csl-json', () => {
+  const result = processHtml(
+    dedent`<div>[@Q23571040]</div>`,
+    { suppressBibliography: true },
+    cslJSON
+  )
+  const expected = dedent`<div>(Hall, 1957)</div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest.run()

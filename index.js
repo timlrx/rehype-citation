@@ -3,18 +3,20 @@
  * @typedef {import('hast').Parent} Parent
  * @typedef {import('hast').Root} Root
  * @typedef {import('unist-util-visit').Visitor<Node>} Visitor
- * @typedef Options options
+ * @typedef {import('./parse-citation').CiteItem} CiteItem
+ * @typedef Options
  *   Configuration.
  * @property {string} [bibliography]
- *   Name of bibtex file
- * @property {'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string} [csl]
- *   One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of local csl file
+ *   Name of bibtex or CSL-JSON file
  * @property {string} [path]
- *   Path to file
+ *   Required, path to file. Will be joined with `options.bibliography` and `options.csl`, if provided.
+ * @property {'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string} [csl]
+ *   One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the local csl file
  * @property {string} [lang]
  *   Locale to use in formatting citations. Defaults to en.
  * @property {boolean} [suppressBibliography]
- *   Suppress bibliography?
+ *   By default, biliography is inserted after the entire markdown file.
+ *   If the file contains `[^Ref]`, the biliography will be inserted there instead.
  * @property {string[]} [noCite]
  *   Citation IDs (@item1) to include in the bibliography even if they are not cited in the document
  */
@@ -26,32 +28,17 @@ import { plugins } from '@citation-js/core'
 import Cite from 'citation-js'
 import parse5 from 'parse5'
 import { fromParse5 } from 'hast-util-from-parse5'
+import { parseCitation } from './parse-citation.js'
+import { citeExtractorRe } from './regex.js'
 import mla from './csl/mla.js'
 import chicago from './csl/chicago.js'
+
+const defaultPath = process.cwd()
 
 // Citation.js comes with apa, harvard1 and vancouver
 const config = plugins.config.get('@csl')
 config.templates.add('mla', mla)
 config.templates.add('chicago', chicago)
-
-/**
- * Captures normal citation in square bracket and in-text citation
- * Citation key start should start with a letter, digit, or _,
- * and contains only alphanumerics and single internal punctuation characters (:.#$%&-+?<>~/),
- *
- * e.g. [-@wadler1990], [@hughes1989, sec 3.4], [see @wadler1990; and @hughes1989, pp. 4]
- * and @wadler1990
- *
- * Group #1 - citation term without [] bracket e.g. -@wadler1990
- * Group #2 - in-text citation term e.g. @wadler1990
- *
- * \[([^[\]]*@[^[\]]+)\] for group #1
- * (?!\b)@([a-zA-Z0-9_][a-zA-Z0-9_:.#$%&\-+?<>~]*) for group #2
- * Use (?!\b) to avoid email like address e.g. xyx@google.com
- * */
-const citeExtractorRe = /\[([^[\]]*@[^[\]]+)\]|(?!\b)(@[a-zA-Z0-9_][a-zA-Z0-9_:.#$%&\-+?<>~]*)/
-const citeKeyRe = /@([a-zA-Z0-9_][a-zA-Z0-9_:.#$%&\-+?<>~]*)/g
-const citeBracketRe = /\[.*\]/
 
 const defaultCsl = ['apa', 'vancouver', 'harvard1', 'chicago', 'mla']
 let citeFormat = 'apa'
@@ -71,7 +58,7 @@ const customCslConfig = (path, csl) => {
  * This accounts for prev citations and additional properties
  *
  * @param {*} citeproc
- * @param {*} entries
+ * @param {CiteItem[]} entries
  * @param {string} citationId
  * @param {any[]} citationPre
  * @param {*} [properties={ noteIndex: 0 }]
@@ -81,7 +68,7 @@ const genCitation = (citeproc, entries, citationId, citationPre, properties = { 
   const c = citeproc.processCitationCluster(
     {
       citationID: citationId,
-      citationItems: entries.map((id) => ({ id })),
+      citationItems: entries,
       properties: properties,
     },
     citationPre.length > 0 ? citationPre : [],
@@ -107,9 +94,8 @@ const genBiblioNode = (citeproc) => {
 }
 
 /**
- * Rehype plugin that highlights code blocks with refractor (prismjs)
+ * Rehype plugin that formats citations in markdown documents and insert bibliography in html format
  *
- *    [@wadler1990:comprehending-monads]          --> (Wadler 1990)
  *    [-@wadler1990]                              --> (1990)
  *    [@hughes1989, sec 3.4]                      --> (Hughes 1989, sec 3.4)
  *    [see @wadler1990; and @hughes1989, pp. 4]   --> (see Wadler 1990 and Hughes 1989, pp. 4)
@@ -119,11 +105,14 @@ const rehypeCitation = (options = {}) => {
   return (tree) => {
     if (!options.bibliography) return
 
-    const bibtexFile = fs.readFileSync(path.join(options.path, options.bibliography), 'utf8')
+    const bibtexFile = fs.readFileSync(
+      path.join(options.path || defaultPath, options.bibliography),
+      'utf8'
+    )
     citeFormat = 'apa'
 
     if (options.csl) {
-      customCslConfig(path.join(options.path, options.csl), options.csl)
+      customCslConfig(path.join(options.path || defaultPath, options.csl), options.csl)
     }
 
     const citations = new Cite(bibtexFile)
@@ -147,25 +136,7 @@ const rehypeCitation = (options = {}) => {
         })
       }
 
-      let citeMatch = [...match[0].matchAll(citeKeyRe)]
-      for (let citeRef of citeMatch) {
-        // Cite key in 1st capture group
-        const citeKey = citeRef[1]
-        // label depends if new or not
-        if (!uniqueCiteRefs.includes(citeKey)) {
-          uniqueCiteRefs.push(citeKey)
-        }
-      }
-
-      const entries = citeMatch.map((x) => x[1])
-
-      let properties
-      // @ts-ignore
-      if (citeBracketRe.test(match)) {
-        properties = { noteIndex: 0 }
-      } else {
-        properties = { noteIndex: 0, mode: 'composite' }
-      }
+      const [properties, entries] = parseCitation(match[0])
 
       const citedText = genCitation(
         citeproc,
@@ -221,11 +192,7 @@ const rehypeCitation = (options = {}) => {
           (node.tagName === 'p' || node.tagName === 'div') &&
           node.children[0].value === '[^Ref]'
         ) {
-          parent.children = [
-            ...parent.children.slice(0, idx),
-            biblioNode,
-            ...parent.children.slice(idx + 1),
-          ]
+          parent.children[idx] = biblioNode
           bilioInserted = true
         }
       })
