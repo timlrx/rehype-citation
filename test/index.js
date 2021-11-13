@@ -104,13 +104,13 @@ rehypeCitationTest('suppress author', () => {
 })
 
 rehypeCitationTest('throw an error if invalid file path', () => {
-  const result = processHtml(
-    dedent`<div>[-@Nash1950]</div>`,
-    { suppressBibliography: true },
-    './test/invalid-file-path.bib'
+  assert.throws(() =>
+    processHtml(
+      `<div>[-@Nash1950]</div>`,
+      { suppressBibliography: true },
+      './test/invalid-file-path.bib'
+    )
   )
-  const expected = dedent`<div>(1950)</div>`
-  assert.is(result, expected)
 })
 
 rehypeCitationTest('works with csl-json', () => {
