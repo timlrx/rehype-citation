@@ -12,7 +12,8 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/rehype-citation.es.js"
+      "import": "./dist/rehype-citation.es.js",
+      "require": "./dist/rehype-citation.es.js"
     }
   },
   "scripts": {
