@@ -97,9 +97,9 @@ export const parseCitation = (citeString) => {
       let suffix = ''
       const citeChunk = citeItem.split('@')
       if (citeChunk.length === 1) {
-        throw 'Cite key should be in the form of @key'
+        throw new Error('Cite key should be in the form of @key')
       } else if (citeChunk.length > 2) {
-        throw 'More than one cite key @ detected, please separate keys with ;'
+        throw new Error('More than one cite key @ detected, please separate keys with ;')
       }
       prefix += citeChunk[0]
       prefix = prefix.trim()
