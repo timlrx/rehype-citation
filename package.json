@@ -1,6 +1,6 @@
 {
   "name": "rehype-citation",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "rehype plugin to add citation and bibliography from bibtex files",
   "source": "index.js",
   "files": [
@@ -29,10 +29,11 @@
   "keywords": [
     "rehype",
     "rehype-plugin",
-    "syntax-highlighting",
     "citation",
+    "bibliography",
+    "bibtex",
     "mdx",
-    "jsx"
+    "markdown"
   ],
   "author": "Timothy Lin <timothy0336@hotmail.com> (https://timlrx.com)",
   "license": "MIT",
