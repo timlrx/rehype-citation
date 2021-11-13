@@ -42,6 +42,7 @@ config.templates.add('chicago', chicago)
 
 const defaultCsl = ['apa', 'vancouver', 'harvard1', 'chicago', 'mla']
 let citeFormat = 'apa'
+const permittedTags = ['div', 'p', 'span']
 
 const customCslConfig = (path, csl) => {
   if (defaultCsl.includes(csl)) {
@@ -116,14 +117,15 @@ const rehypeCitation = (options = {}) => {
     }
 
     const citations = new Cite(bibtexFile)
-    const uniqueCiteRefs = []
+    const citationIds = citations.data.map((x) => x.id)
     const citationPre = []
     let citationId = 1
     const citeproc = config.engine(citations.data, citeFormat, options.lang || 'en', 'html')
 
     visit(tree, 'text', (node, idx, parent) => {
       const match = node.value.match(citeExtractorRe)
-      if (!match) return
+      //@ts-ignore
+      if (!match || !permittedTags.includes(parent.tagName)) return
       const citeStartIdx = match.index
       const citeEndIdx = match.index + match[0].length
       const newChildren = []
@@ -137,6 +139,11 @@ const rehypeCitation = (options = {}) => {
       }
 
       const [properties, entries] = parseCitation(match[0])
+
+      // If id is not in citation file (e.g. route alias or js package), abort process
+      for (const citeItem of entries) {
+        if (!citationIds.includes(citeItem.id)) return
+      }
 
       const citedText = genCitation(
         citeproc,
@@ -173,16 +180,10 @@ const rehypeCitation = (options = {}) => {
     })
 
     if (options.noCite) {
-      for (const item of options.noCite) {
-        const citeKey = item.replace('@', '')
-        if (!uniqueCiteRefs.includes(citeKey)) {
-          uniqueCiteRefs.push(citeKey)
-        }
-      }
-      citeproc.updateItems(uniqueCiteRefs)
+      citeproc.updateItems(options.noCite.map((x) => x.replace('@', '')))
     }
 
-    if (!options.suppressBibliography) {
+    if (!options.suppressBibliography && citeproc.registry.mylist.length >= 1) {
       const biblioNode = genBiblioNode(citeproc)
       let bilioInserted = false
 

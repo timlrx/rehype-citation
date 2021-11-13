@@ -30,6 +30,12 @@ rehypeCitationTest('parse in-text citation correctly', () => {
   assert.is(result, expected)
 })
 
+rehypeCitationTest('do not parse unknown citation-like text', () => {
+  const result = processHtml('<div>@apply</div>')
+  const expected = dedent`<div>@apply</div>`
+  assert.is(result, expected)
+})
+
 rehypeCitationTest('properly account for previous citation', () => {
   const result = processHtml('<div>[@Nash1951] text [@Nash1950]</div>', {
     suppressBibliography: true,
