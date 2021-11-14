@@ -93,7 +93,7 @@ Locale to use in formatting citations. Defaults to en.
 Type: `boolean`.
 Default: `false`.
 
-Suppress bibliography? By default, biliography is inserted after the entire markdown file. If the file contains `[^Ref]`, the biliography will be inserted there instead.
+Suppress bibliography? By default, biliography is inserted after the entire markdown file. If the file contains `[^ref]`, the biliography will be inserted there instead.
 
 #### options.noCite
 

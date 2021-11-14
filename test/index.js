@@ -62,8 +62,8 @@ rehypeCitationTest('inserts biliography at the end of the file', () => {
   assert.is(result, expected)
 })
 
-rehypeCitationTest('inserts biliography at [^Ref] div tag', () => {
-  const result = processHtml('<div>[^Ref]</div><div>[@Nash1950]</div>')
+rehypeCitationTest('inserts biliography at [^ref] div tag', () => {
+  const result = processHtml('<div>[^ref]</div><div>[@Nash1950]</div>')
   const expected = dedent`<div id="refs" class="references csl-bib-body">
           <div class="csl-entry">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
         </div><div>(Nash, 1950)</div>`

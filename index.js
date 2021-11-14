@@ -186,11 +186,11 @@ const rehypeCitation = (options = {}) => {
       const biblioNode = genBiblioNode(citeproc)
       let bilioInserted = false
 
-      // Insert it at ^Ref, if not found insert it as the last element of the tree
+      // Insert it at ^ref, if not found insert it as the last element of the tree
       visit(tree, 'element', (node, idx, parent) => {
         if (
           (node.tagName === 'p' || node.tagName === 'div') &&
-          node.children[0].value === '[^Ref]'
+          node.children[0].value === '[^ref]'
         ) {
           parent.children[idx] = biblioNode
           bilioInserted = true
