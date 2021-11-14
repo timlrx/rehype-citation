@@ -24,7 +24,6 @@
 import { visit } from 'unist-util-visit'
 import fs from 'fs'
 import path from 'path'
-import { plugins } from '@citation-js/core'
 import Cite from 'citation-js'
 import parse5 from 'parse5'
 import { fromParse5 } from 'hast-util-from-parse5'
@@ -36,7 +35,7 @@ import chicago from './csl/chicago.js'
 const defaultPath = process.cwd()
 
 // Citation.js comes with apa, harvard1 and vancouver
-const config = plugins.config.get('@csl')
+const config = Cite.plugins.config.get('@csl')
 config.templates.add('mla', mla)
 config.templates.add('chicago', chicago)
 
@@ -48,7 +47,7 @@ const customCslConfig = (path, csl) => {
   if (defaultCsl.includes(csl)) {
     citeFormat = csl
   } else if (fs.existsSync(path)) {
-    config.templates.add('mla', fs.readFileSync(path, 'utf8'))
+    config.templates.add(csl, fs.readFileSync(path, 'utf8'))
   } else {
     throw new Error('Invalid csl name or path')
   }

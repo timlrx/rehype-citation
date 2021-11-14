@@ -6,7 +6,7 @@ It supports both normal citations (such as [@foo]) and in-text citation (such as
 
 API and options follows very closely to [Rmarkdown](https://bookdown.org/yihui/rmarkdown-cookbook/bibliography.html) and [Pandoc](https://pandoc.org/MANUAL.html#citations)
 
-**Best suited for usage in Node.**
+**Intended for usage in Node.**
 If you would like to manage citations _in the browser_, you should look into using citeproc-js directly.
 
 ## Installation

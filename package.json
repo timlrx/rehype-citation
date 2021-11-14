@@ -1,24 +1,23 @@
 {
   "name": "rehype-citation",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "rehype plugin to add citation and bibliography from bibtex files",
   "source": "index.js",
   "files": [
     "dist"
   ],
-  "main": "./dist/rehype-citation.es.js",
-  "module": "./dist/rehype-citation.es.js",
-  "types": "./dist/index.d.ts",
+  "main": "dist/rehype-citation.es.js",
+  "module": "dist/rehype-citation.es.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/rehype-citation.es.js",
-      "require": "./dist/rehype-citation.es.js"
+      "import": "./dist/rehype-citation.es.js"
     }
   },
   "scripts": {
-    "build": "tsc -b && vite build --config vite.config.cjs",
-    "tsc": "tsc --watch --noEmit",
+    "build": "tsc -b && microbundle --format esm --target node",
+    "tsc": "tsc --watch",
     "lint": "eslint .",
     "prettier": "prettier --write '*.js'",
     "test": "uvu"
@@ -57,11 +56,11 @@
     "eslint-plugin-node": "^11.1.0",
     "husky": "^4.0.0",
     "lint-staged": "^11.1.2",
+    "microbundle": "^0.14.1",
     "prettier": "^2.3.2",
     "rehype": "^12.0.0",
     "typescript": "^4.3.5",
-    "uvu": "^0.5.1",
-    "vite": "^2.5.0"
+    "uvu": "^0.5.1"
   },
   "prettier": {
     "printWidth": 100,
