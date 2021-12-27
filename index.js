@@ -76,7 +76,11 @@ const genCitation = (citeproc, entries, citationId, citationPre, properties = { 
   )
   // c = [ { bibchange: true, citation_errors: [] }, [ [ 0, '(1)', 'CITATION-1' ] ]]
   const result = c[1].filter((x) => x[2] === citationId)
-  return result[0][1]
+  // Coerce to html to parse HTML code e.g. &#38; and return text node
+  const p5ast = parse5.parseFragment(`<div>${result[0][1]}</div>`)
+  const citeNode = fromParse5(p5ast).children[0]
+  const textNode = citeNode.children[0]
+  return textNode
 }
 
 /**
@@ -144,7 +148,7 @@ const rehypeCitation = (options = {}) => {
         if (!citationIds.includes(citeItem.id)) return
       }
 
-      const citedText = genCitation(
+      const citedTextNode = genCitation(
         citeproc,
         entries,
         `CITATION-${citationId}`,
@@ -157,10 +161,7 @@ const rehypeCitation = (options = {}) => {
       citationId = citationId + 1
 
       // TODO: return html with link
-      newChildren.push({
-        type: 'text',
-        value: citedText,
-      })
+      newChildren.push(citedTextNode)
 
       // if trailing string
       if (citeEndIdx < node.value.length) {

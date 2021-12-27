@@ -76,6 +76,15 @@ rehypeCitationTest('supports other specified csl', () => {
   assert.is(result, expected)
 })
 
+rehypeCitationTest('process HTML code', () => {
+  const result = processHtml('<div>@verma-rubin</div>', {
+    suppressBibliography: true,
+    csl: './csl/chicago.csl',
+  })
+  const expected = dedent`<div>Verma & Rubin (2018)</div>`
+  assert.is(result, expected)
+})
+
 rehypeCitationTest('supports csl from path', () => {
   const result = processHtml('<div>@Nash1950</div>', {
     suppressBibliography: true,
