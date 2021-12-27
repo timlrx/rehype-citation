@@ -41,7 +41,7 @@ config.templates.add('chicago', chicago)
 
 const defaultCsl = ['apa', 'vancouver', 'harvard1', 'chicago', 'mla']
 let citeFormat = 'apa'
-const permittedTags = ['div', 'p', 'span']
+const permittedTags = ['div', 'p', 'span', 'li']
 
 const customCslConfig = (path, csl) => {
   if (defaultCsl.includes(csl)) {
