@@ -42,7 +42,7 @@
   },
   "homepage": "https://github.com/timlrx/rehype-citation#readme",
   "dependencies": {
-    "citation-js": "^0.5.1",
+    "citation-js": "^0.5.4",
     "hast-util-from-parse5": "^7.1.0",
     "parse5": "^6.0.1",
     "unified": "^10.1.0",
