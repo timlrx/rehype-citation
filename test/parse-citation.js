@@ -1,6 +1,6 @@
 import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
-import { parseCitation } from '../parse-citation.js'
+import { parseCitation } from '../src/parse-citation.js'
 
 // Adapted from https://github.com/Zettlr/Citr/blob/master/test/parse-single.js
 let singleCitations = [
