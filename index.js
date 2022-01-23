@@ -22,17 +22,15 @@
  */
 
 import { visit } from 'unist-util-visit'
-import fs from 'fs'
-import path from 'path'
 import Cite from 'citation-js'
 import parse5 from 'parse5'
+import fetch from 'node-fetch'
 import { fromParse5 } from 'hast-util-from-parse5'
 import { parseCitation } from './parse-citation.js'
 import { citeExtractorRe } from './regex.js'
+import { isNode, isValidHttpUrl, readFile, existsFile, getBibliography } from './utils.js'
 import mla from './csl/mla.js'
 import chicago from './csl/chicago.js'
-
-const defaultPath = process.cwd()
 
 // Citation.js comes with apa, harvard1 and vancouver
 const config = Cite.plugins.config.get('@csl')
@@ -40,18 +38,18 @@ config.templates.add('mla', mla)
 config.templates.add('chicago', chicago)
 
 const defaultCsl = ['apa', 'vancouver', 'harvard1', 'chicago', 'mla']
-let citeFormat = 'apa'
+const defaultCiteFormat = 'apa'
 const permittedTags = ['div', 'p', 'span', 'li']
 
-const customCslConfig = (path, csl) => {
-  if (defaultCsl.includes(csl)) {
-    citeFormat = csl
-  } else if (fs.existsSync(path)) {
-    config.templates.add(csl, fs.readFileSync(path, 'utf8'))
-  } else {
-    throw new Error('Invalid csl name or path')
-  }
-}
+// const customCslConfig = async (path, csl) => {
+//   if (defaultCsl.includes(csl)) {
+//     citeFormat = csl
+//   } else if (existsFile(path)) {
+//     config.templates.add(csl, readFile(path))
+//   } else {
+//     throw new Error('Invalid csl name or path')
+//   }
+// }
 
 /**
  * Generate citation using citeproc
@@ -106,17 +104,26 @@ const genBiblioNode = (citeproc) => {
  * @type {import('unified').Plugin<[Options?], Root>}
  */
 const rehypeCitation = (options = {}) => {
-  return (tree) => {
-    if (!options.bibliography) return
+  return async (tree, file) => {
+    let bibliography = await getBibliography(options, file)
+    if (!bibliography) {
+      return
+    }
 
-    const bibtexFile = fs.readFileSync(
-      path.join(options.path || defaultPath, options.bibliography),
-      'utf8'
-    )
-    citeFormat = 'apa'
+    /** @type {string} */
+    let bibtexFile
+    /** @type {string} */ // @ts-ignore
+    const citeFormat = options.csl || file?.data?.frontmatter?.csl || defaultCiteFormat
 
-    if (options.csl) {
-      customCslConfig(path.join(options.path || defaultPath, options.csl), options.csl)
+    if (isValidHttpUrl(bibliography)) {
+      const response = await fetch(bibliography)
+      bibtexFile = await response.text()
+    } else {
+      if (isNode) {
+        bibtexFile = await readFile(bibliography)
+      } else {
+        throw new Error(`Cannot read non valid bibliography URL in node env.`)
+      }
     }
 
     const citations = new Cite(bibtexFile)
