@@ -1,5 +1,6 @@
 import rehypeCitationGenerator from './generator.js'
-import Cite from 'citation-js'
+// @ts-ignore
+import Cite from './cite.cjs'
 import mla from '../csl/mla.js'
 import chicago from '../csl/chicago.js'
 
@@ -8,6 +9,6 @@ const config = Cite.plugins.config.get('@csl')
 config.templates.add('mla', mla)
 config.templates.add('chicago', chicago)
 
-const rehypeCitation = rehypeCitationGenerator(Cite, config)
+const rehypeCitation = rehypeCitationGenerator(Cite)
 
 export default rehypeCitation

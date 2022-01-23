@@ -97,7 +97,7 @@ const genBiblioNode = (citeproc) => {
  * @param {*} Cite cite object from citation-js configured with the required CSLs
  * @return {import('unified').Plugin<[Options?], Root>}
  */
-const rehypeCitationGenerator = (Cite, config) => {
+const rehypeCitationGenerator = (Cite) => {
   return (options = {}) => {
     return async (tree, file) => {
       let bibliography = await getBibliography(options, file)
@@ -124,6 +124,7 @@ const rehypeCitationGenerator = (Cite, config) => {
       const citationIds = citations.data.map((x) => x.id)
       const citationPre = []
       let citationId = 1
+      const config = Cite.plugins.config.get('@csl')
       const citeproc = config.engine(citations.data, citeFormat, options.lang || 'en', 'html')
 
       visit(tree, 'text', (node, idx, parent) => {

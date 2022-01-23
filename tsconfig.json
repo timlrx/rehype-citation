@@ -11,6 +11,7 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   }
 }

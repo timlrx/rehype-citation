@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -b && microbundle --format esm --target node",
+    "build": "tsc -b && microbundle --format esm",
     "tsc": "tsc --watch",
     "lint": "eslint .",
     "prettier": "prettier --write '*.js'",
@@ -42,8 +42,15 @@
   },
   "homepage": "https://github.com/timlrx/rehype-citation#readme",
   "dependencies": {
-    "citation-js": "^0.5.4",
+    "@citation-js/core": "^0.5.4",
+    "@citation-js/date": "^0.5.1",
+    "@citation-js/name": "^0.4.2",
+    "@citation-js/plugin-bibjson": "^0.5.4",
+    "@citation-js/plugin-bibtex": "^0.5.5",
+    "@citation-js/plugin-csl": "^0.5.5",
+    "citeproc": "^2.4.62",
     "hast-util-from-parse5": "^7.1.0",
+    "node-fetch": "^3.2.0",
     "parse5": "^6.0.1",
     "unified": "^10.1.0",
     "unist-util-visit": "^4.0.0"
