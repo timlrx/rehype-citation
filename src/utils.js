@@ -50,7 +50,7 @@ export const isValidHttpUrl = (str) => {
 /**
  * Get bibliography by merging options and vfile data
  *
- * @param {import('./index.js').Options} options
+ * @param {import('./generator.js').Options} options
  * @param {import('vfile').VFile} file
  */
 export const getBibliography = async (options, file) => {
