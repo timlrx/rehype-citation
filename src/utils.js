@@ -2,18 +2,6 @@ import fetch from 'node-fetch'
 
 export const isNode = typeof window === 'undefined'
 
-export const existsFile = async (path) => {
-  if (isValidHttpUrl(path)) {
-    return fetch(path, { method: 'HEAD' }).then((res) => res.ok)
-  } else {
-    if (isNode) {
-      return import('fs').then((fs) => fs.existsSync(path))
-    } else {
-      throw new Error(`Cannot read non valid URL in node env.`)
-    }
-  }
-}
-
 export const readFile = async (path) => {
   if (isValidHttpUrl(path)) {
     return fetch(path)

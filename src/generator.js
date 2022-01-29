@@ -9,7 +9,7 @@
  * @property {string} [bibliography]
  *   Name of bibtex or CSL-JSON file
  * @property {string} [path]
- *   Required, path to file. Will be joined with `options.bibliography` and `options.csl`, if provided.
+ *   Optional path to file (node). Will be joined with `options.bibliography` and used in place of cwd of file if provided.
  * @property {'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string} [csl]
  *   One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the local csl file
  * @property {string} [lang]
@@ -27,21 +27,10 @@ import fetch from 'node-fetch'
 import { fromParse5 } from 'hast-util-from-parse5'
 import { parseCitation } from './parse-citation.js'
 import { citeExtractorRe } from './regex.js'
-import { isNode, isValidHttpUrl, readFile, existsFile, getBibliography } from './utils.js'
+import { isNode, isValidHttpUrl, readFile, getBibliography } from './utils.js'
 
-const defaultCsl = ['apa', 'vancouver', 'harvard1', 'chicago', 'mla']
 const defaultCiteFormat = 'apa'
 const permittedTags = ['div', 'p', 'span', 'li']
-
-// const customCslConfig = async (path, csl) => {
-//   if (defaultCsl.includes(csl)) {
-//     citeFormat = csl
-//   } else if (existsFile(path)) {
-//     config.templates.add(csl, readFile(path))
-//   } else {
-//     throw new Error('Invalid csl name or path')
-//   }
-// }
 
 /**
  * Generate citation using citeproc
@@ -101,6 +90,7 @@ const rehypeCitationGenerator = (Cite) => {
   return (options = {}) => {
     return async (tree, file) => {
       let bibliography = await getBibliography(options, file)
+      console.log(bibliography)
       if (!bibliography) {
         return
       }
