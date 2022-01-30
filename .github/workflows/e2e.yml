@@ -15,12 +15,5 @@ jobs:
           node-version: '14.x'
       - name: Install dependencies
         run: npm ci
-      - name: Install Playwright
-        run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npx playwright test
-      - uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: playwright-test-results
-          path: test-results/
+        run: npm run e2e
