@@ -23,7 +23,8 @@
     "vite": "vite",
     "vite:build": "vite build",
     "vite:preview": "vite preview",
-    "test": "uvu"
+    "test": "uvu",
+    "e2e": "cd e2e && playwright test"
   },
   "repository": {
     "type": "git",

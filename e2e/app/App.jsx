@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { rehype } from 'rehype'
 import rehypeCitation from '../../index.js'
-// import rehypeCitation from '../../dist/rehype-citation.es'
 
 function App() {
   useEffect(() => {
