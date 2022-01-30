@@ -6,13 +6,13 @@
   "files": [
     "dist"
   ],
-  "main": "dist/rehype-citation.es.js",
-  "module": "dist/rehype-citation.es.js",
+  "main": "dist/rehype-citation.mjs",
+  "module": "dist/rehype-citation.mjs",
   "types": "dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/rehype-citation.es.js"
+      "import": "./dist/rehype-citation.mjs"
     }
   },
   "scripts": {
@@ -20,6 +20,9 @@
     "tsc": "tsc --watch",
     "lint": "eslint .",
     "prettier": "prettier --write '*.js'",
+    "vite": "vite",
+    "vite:build": "vite build",
+    "vite:preview": "vite preview",
     "test": "uvu"
   },
   "repository": {
@@ -48,7 +51,9 @@
     "@citation-js/plugin-bibjson": "^0.5.4",
     "@citation-js/plugin-bibtex": "^0.5.5",
     "@citation-js/plugin-csl": "^0.5.5",
+    "citation-js": "^0.5.5",
     "citeproc": "^2.4.62",
+    "cross-fetch": "^3.1.5",
     "hast-util-from-parse5": "^7.1.0",
     "node-fetch": "^3.2.0",
     "parse5": "^6.0.1",
@@ -56,7 +61,12 @@
     "unist-util-visit": "^4.0.0"
   },
   "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
+    "@originjs/vite-plugin-commonjs": "^1.0.2",
+    "@playwright/test": "^1.18.1",
     "@types/node": "^16.11.1",
+    "@vitejs/plugin-react": "^1.1.4",
     "dedent": "^0.7.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
@@ -65,9 +75,14 @@
     "lint-staged": "^11.1.2",
     "microbundle": "^0.14.1",
     "prettier": "^2.3.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "rehype": "^12.0.0",
+    "rollup-plugin-polyfill-node": "^0.8.0",
+    "rollup-plugin-visualizer": "^5.5.4",
     "typescript": "^4.3.5",
-    "uvu": "^0.5.1"
+    "uvu": "^0.5.1",
+    "vite": "^2.7.13"
   },
   "prettier": {
     "printWidth": 100,
