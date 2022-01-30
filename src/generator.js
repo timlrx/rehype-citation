@@ -23,7 +23,7 @@
 
 import { visit } from 'unist-util-visit'
 import parse5 from 'parse5'
-import fetch from 'node-fetch'
+import fetch from 'cross-fetch'
 import { fromParse5 } from 'hast-util-from-parse5'
 import { parseCitation } from './parse-citation.js'
 import { citeExtractorRe } from './regex.js'
@@ -90,7 +90,6 @@ const rehypeCitationGenerator = (Cite) => {
   return (options = {}) => {
     return async (tree, file) => {
       let bibliography = await getBibliography(options, file)
-      console.log(bibliography)
       if (!bibliography) {
         return
       }
@@ -100,6 +99,7 @@ const rehypeCitationGenerator = (Cite) => {
       /** @type {string} */ // @ts-ignore
       const citeFormat = options.csl || file?.data?.frontmatter?.csl || defaultCiteFormat
       if (isValidHttpUrl(bibliography)) {
+        isNode
         const response = await fetch(bibliography)
         bibtexFile = await response.text()
       } else {
