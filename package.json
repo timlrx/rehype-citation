@@ -1,6 +1,6 @@
 {
   "name": "rehype-citation",
-  "version": "0.1.2",
+  "version": "0.2.0-rc.0",
   "description": "rehype plugin to add citation and bibliography from bibtex files",
   "source": "index.js",
   "files": [
