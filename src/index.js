@@ -1,6 +1,6 @@
 import rehypeCitationGenerator from './generator.js'
 // @ts-ignore
-import Cite from './cite.cjs'
+import Cite from './cite.js'
 import mla from '../csl/mla.js'
 import chicago from '../csl/chicago.js'
 
