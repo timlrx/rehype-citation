@@ -8,9 +8,6 @@ It supports both normal citations (such as [@foo]) and in-text citation (such as
 
 API and options follows very closely to [Rmarkdown](https://bookdown.org/yihui/rmarkdown-cookbook/bibliography.html) and [Pandoc](https://pandoc.org/MANUAL.html#citations)
 
-**Intended for usage in Node.**
-If you would like to manage citations _in the browser_, you should look into using citeproc-js directly.
-
 ## Installation
 
 This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
@@ -65,23 +62,23 @@ If no `bibliography` file is passed, the plugin will be skipped.
 
 Type: `string`.
 
-By default, if no `bibliography` file is passed, the plugin will be skipped.
+If `options.bibliography` is provided, it will be used for all markdown files.
+If omitted, the plugin will look for `file.data.frontmatter.bibliography` in the vFile.
 
-Name of bibtex or CSL-JSON file.
+Path to bibtex or CSL-JSON file. Either a URL path or absolute file path (node).
 
 #### options.path
 
 Type: `string`.
-Default: `process.cwd()`.
 
-Required, path to file. Will be joined with `options.bibliography` and `options.csl`, if provided.
+Optional path to file (node). Will be joined with `file.data.frontmatter.bibliography` and used in place of `file.cwd` if provided.
 
 #### options.csl
 
 Type: `'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string`.
 Default: `apa`.
 
-One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the local csl file.
+One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the loaded csl file.
 
 #### options.lang
 

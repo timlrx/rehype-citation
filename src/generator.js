@@ -7,11 +7,11 @@
  * @typedef Options
  *   Configuration.
  * @property {string} [bibliography]
- *   Name of bibtex or CSL-JSON file
+ *   Path to bibtex or CSL-JSON file. Either a URL path or absolute file path (node).
  * @property {string} [path]
- *   Optional path to file (node). Will be joined with `options.bibliography` and used in place of cwd of file if provided.
+ *   Optional path to file (node). Will be joined with `file.data.frontmatter.bibliography` and used in place of `file.cwd` if provided.
  * @property {'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string} [csl]
- *   One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the local csl file
+ *   One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the loaded csl file.
  * @property {string} [lang]
  *   Locale to use in formatting citations. Defaults to en.
  * @property {boolean} [suppressBibliography]
