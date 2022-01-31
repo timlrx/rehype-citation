@@ -138,7 +138,7 @@ export const parseCitation = (citeString) => {
 
       entries.push({
         // Get the first capture group which returns the citekey without @
-        id: [...citeItem.matchAll(citeKeyRe)][0][1],
+        id: citeItem.match(citeKeyRe)[1],
         locator,
         label,
         prefix,
@@ -151,7 +151,7 @@ export const parseCitation = (citeString) => {
     // See https://citeproc-js.readthedocs.io/en/latest/running.html#special-citation-forms
     properties = { noteIndex: 0, mode: 'composite' }
     entries = [citeString].map((str) => ({
-      id: [...str.matchAll(citeKeyRe)][0][1],
+      id: str.match(citeKeyRe)[1],
     }))
   }
   return [properties, entries]
