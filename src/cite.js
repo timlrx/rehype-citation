@@ -1,13 +1,13 @@
 // Copied as is from https://github.com/larsgw/citation.js/blob/main/index.js
 // commented out doi, ris, wikidata as they are not used in the rehype plugin
 
-import * as core from '@citation-js/core/lib/index.js'
+import * as core from '@citation-js/core'
 import { parsers as coreParsers } from '@citation-js/core/lib/plugin-common/input/index.js'
 import coreOutput from '@citation-js/core/lib/plugin-common/output/index.js'
 
-import '@citation-js/plugin-bibjson/lib/index.js'
-import '@citation-js/plugin-bibtex/lib/index.js'
-import '@citation-js/plugin-csl/lib/index.js'
+import '@citation-js/plugin-bibjson'
+import '@citation-js/plugin-bibtex'
+import '@citation-js/plugin-csl'
 import { fetchEngine } from '@citation-js/plugin-csl/lib/engines.js'
 import { parsers as bibjsonParsers } from '@citation-js/plugin-bibjson/lib/index.js'
 import { formats } from '@citation-js/plugin-bibtex/lib/input/index.js'
