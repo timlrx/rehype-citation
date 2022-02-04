@@ -13,17 +13,38 @@
   "exports": {
     ".": {
       "import": "./dist/rehype-citation.mjs"
+    },
+    "./cite": {
+      "import": "./dist/cite.mjs"
+    },
+    "./generator": {
+      "import": "./dist/generator.mjs"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/index"
+      ],
+      "cite": [
+        "./dist/src/cite"
+      ],
+      "generator": [
+        "./dist/src/generator"
+      ]
     }
   },
   "scripts": {
-    "build": "tsc -b && microbundle --format esm",
+    "----note----": "Run bootstrap after install to update and inline the citation-js dependencies",
+    "bootstrap": "node bootstrap.js",
+    "build": "tsc -b && microbundle index.js src/cite.js src/generator.js --format esm",
     "tsc": "tsc --watch",
     "lint": "eslint .",
     "prettier": "prettier --write '*.js'",
     "vite": "vite",
     "vite:build": "vite build",
     "vite:preview": "vite preview",
-    "test": "uvu test",
+    "test": "NODE_OPTIONS='--experimental-json-modules  --experimental-specifier-resolution=node' uvu test",
     "e2e": "cd e2e && playwright test"
   },
   "repository": {
@@ -62,7 +83,6 @@
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
-    "@originjs/vite-plugin-commonjs": "^1.0.2",
     "@playwright/test": "^1.18.1",
     "@types/node": "^16.11.1",
     "@vitejs/plugin-react": "^1.1.4",
@@ -70,6 +90,7 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-node": "^11.1.0",
+    "glob": "^7.2.0",
     "husky": "^4.0.0",
     "lint-staged": "^11.1.2",
     "microbundle": "^0.14.1",
