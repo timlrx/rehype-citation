@@ -64,7 +64,6 @@
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
-    "@originjs/vite-plugin-commonjs": "^1.0.2",
     "@playwright/test": "^1.18.1",
     "@types/node": "^16.11.1",
     "@vitejs/plugin-react": "^1.1.4",
