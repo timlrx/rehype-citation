@@ -1,22 +1,22 @@
 // Copied as is from https://github.com/larsgw/citation.js/blob/main/index.js
 // commented out doi, ris, wikidata as they are not used in the rehype plugin
+// and use esm
 
-import * as core from '@citation-js/core'
-import { parsers as coreParsers } from '@citation-js/core/lib/plugin-common/input/index.js'
-import coreOutput from '@citation-js/core/lib/plugin-common/output/index.js'
-
-import '@citation-js/plugin-bibjson'
-import '@citation-js/plugin-bibtex'
-import '@citation-js/plugin-csl'
-import { fetchEngine } from '@citation-js/plugin-csl/lib/engines.js'
-import { parsers as bibjsonParsers } from '@citation-js/plugin-bibjson/lib/index.js'
-import { formats } from '@citation-js/plugin-bibtex/lib/input/index.js'
-import * as entries from '@citation-js/plugin-bibtex/lib/input/entries.js'
-import * as bibtxt from '@citation-js/plugin-bibtex/lib/input/bibtxt.js'
-import bibtexOutput from '@citation-js/plugin-bibtex/lib/output/index.js'
-import * as bibtexOutputEntries from '@citation-js/plugin-bibtex/lib/output/entries.js'
-import { Converters } from '@citation-js/plugin-bibtex/lib/mapping/shared.js'
-import { format as bibtxtFormat } from '@citation-js/plugin-bibtex/lib/output/bibtxt.js'
+import * as core from './citation-js/core/index.js'
+import { parsers as coreParsers } from './citation-js/core/plugin-common/input/index.js'
+import coreOutput from './citation-js/core/plugin-common/output/index.js'
+import './citation-js/plugin-bibjson/index.js'
+import './citation-js/plugin-bibtex/index.js'
+import './citation-js/plugin-csl/index.js'
+import { fetchEngine } from './citation-js/plugin-csl/engines.js'
+import { parsers as bibjsonParsers } from './citation-js/plugin-bibjson/index.js'
+import { formats } from './citation-js/plugin-bibtex/input/index.js'
+import * as entries from './citation-js/plugin-bibtex/input/entries.js'
+import * as bibtxt from './citation-js/plugin-bibtex/input/bibtxt.js'
+import bibtexOutput from './citation-js/plugin-bibtex/output/index.js'
+import * as bibtexOutputEntries from './citation-js/plugin-bibtex/output/entries.js'
+import { Converters } from './citation-js/plugin-bibtex/mapping/shared.js'
+import { format as bibtxtFormat } from './citation-js/plugin-bibtex/output/bibtxt.js'
 
 // require('@citation-js/plugin-doi')
 // require('@citation-js/plugin-ris')
@@ -26,36 +26,7 @@ import citeproc from 'citeproc'
 import * as name from '@citation-js/name'
 import * as date from '@citation-js/date'
 
-// import bibtexTypes from '@citation-js/plugin-bibtex/lib/mapping/bibtexTypes.json'
-const bibtexTypes = {
-  source: {
-    article: 'article-journal',
-    book: 'book',
-    booklet: 'book',
-    conference: 'paper-conference',
-    inbook: 'chapter',
-    incollection: 'chapter',
-    inproceedings: 'paper-conference',
-    mastersthesis: 'thesis',
-    phdthesis: 'thesis',
-    proceedings: 'book',
-    techreport: 'report',
-    unpublished: 'manuscript',
-  },
-  target: {
-    article: 'article',
-    'article-journal': 'article',
-    'article-magazine': 'article',
-    'article-newspaper': 'article',
-    book: 'book',
-    chapter: 'inbook',
-    manuscript: 'unpublished',
-    'paper-conference': 'inproceedings',
-    report: 'techreport',
-    review: 'article',
-    'review-book': 'article',
-  },
-}
+import bibtexTypes from './citation-js/plugin-bibtex/mapping/bibtexTypes.json'
 
 function clone(obj) {
   const copy = {}
