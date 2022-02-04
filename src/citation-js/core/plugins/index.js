@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as input from './input/index.js'
 import * as output from './output.js'
 import * as dict from './dict.js'

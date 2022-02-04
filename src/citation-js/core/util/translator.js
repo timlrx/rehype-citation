@@ -1,3 +1,4 @@
+//@ts-nocheck
 function createConditionEval(condition) {
   return function conditionEval(input) {
     if (typeof condition === 'boolean') {

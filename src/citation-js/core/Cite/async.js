@@ -1,3 +1,4 @@
+//@ts-nocheck
 import Cite from './index.js'
 
 const async = function (data, options, callback) {

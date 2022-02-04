@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as empty from './empty.js'
 import * as url from './url.js'
 import * as json from './json.js'

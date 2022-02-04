@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { util } from '../../core/index.js'
 import config from '../config.js'
 const stopWords = new Set(['the', 'a', 'an'])

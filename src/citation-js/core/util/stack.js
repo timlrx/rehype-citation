@@ -1,3 +1,4 @@
+//@ts-nocheck
 class TokenStack {
   constructor(array) {
     this.stack = array

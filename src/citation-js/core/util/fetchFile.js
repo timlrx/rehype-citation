@@ -1,3 +1,4 @@
+//@ts-nocheck
 import syncFetch from 'sync-fetch'
 import 'isomorphic-fetch'
 import logger from '../logger.js'

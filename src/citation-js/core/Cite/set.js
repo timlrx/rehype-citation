@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { chain as parseInput, chainAsync as parseInputAsync } from '../plugins/input/index.js'
 import fetchId from '../util/fetchId.js'
 
@@ -29,6 +30,7 @@ const addAsync = async function (data, options = {}, log = false) {
   return this
 }
 
+/** @type {{set: Function}} */
 const set = function (data, options = {}, log = false) {
   if (options === true || log === true) {
     this.save()
@@ -38,6 +40,7 @@ const set = function (data, options = {}, log = false) {
   return typeof options !== 'boolean' ? this.add(data, options) : this.add(data)
 }
 
+/** @type {{setAsync: Function}} */
 const setAsync = async function (data, options = {}, log = false) {
   if (options === true || log === true) {
     this.save()
@@ -47,6 +50,7 @@ const setAsync = async function (data, options = {}, log = false) {
   return typeof options !== 'boolean' ? this.addAsync(data, options) : this.addAsync(data)
 }
 
+/** @type {{reset: Function}} */
 const reset = function (log) {
   if (log) {
     this.save()

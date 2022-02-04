@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as plugins from '../../plugins/index.js'
 import * as util from '../../util/index.js'
 import logger from '../../logger.js'

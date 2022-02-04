@@ -1,3 +1,4 @@
+//@ts-nocheck
 // Copied as is from https://github.com/larsgw/citation.js/blob/main/index.js
 // commented out doi, ris, wikidata as they are not used in the rehype plugin
 // and use esm

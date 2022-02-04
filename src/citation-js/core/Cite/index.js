@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as log from './log.js'
 import * as options from './options.js'
 import * as set from './set.js'

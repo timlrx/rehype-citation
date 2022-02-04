@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { diacritics, commands, ligatures, fieldTypes } from '../input/constants.js'
 const unicode = {}
 

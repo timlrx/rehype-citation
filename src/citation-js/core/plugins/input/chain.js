@@ -1,3 +1,4 @@
+//@ts-nocheck
 import deepCopy from '../../util/deepCopy.js'
 import logger from '../../logger.js'
 import { get as getTypeInfo } from './register.js'
