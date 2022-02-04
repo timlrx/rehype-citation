@@ -3,7 +3,7 @@ import 'isomorphic-fetch'
 import logger from '../logger.js'
 // import pkg from '../../package.json';
 const corsEnabled = typeof location !== 'undefined' && typeof document !== 'undefined'
-let userAgent = `Citation.js/0.5 Node.js/${process.version}`
+let userAgent = `Citation.js/0.5`
 
 function normaliseHeaders(headers) {
   const result = {}
