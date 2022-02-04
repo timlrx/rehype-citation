@@ -13,12 +13,31 @@
   "exports": {
     ".": {
       "import": "./dist/rehype-citation.mjs"
+    },
+    "./cite": {
+      "import": "./dist/cite.mjs"
+    },
+    "./generator": {
+      "import": "./dist/generator.mjs"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/index"
+      ],
+      "cite": [
+        "./dist/src/cite"
+      ],
+      "generator": [
+        "./dist/src/generator"
+      ]
     }
   },
   "scripts": {
     "----note----": "Run bootstrap after install to update and inline the citation-js dependencies",
     "bootstrap": "node bootstrap.js",
-    "build": "tsc -b && microbundle --format esm",
+    "build": "tsc -b && microbundle index.js src/cite.js src/generator.js --format esm",
     "tsc": "tsc --watch",
     "lint": "eslint .",
     "prettier": "prettier --write '*.js'",
