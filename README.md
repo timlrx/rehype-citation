@@ -22,6 +22,12 @@ npm install rehype-citation
 
 ## Usage
 
+The following import paths are supported:
+
+`rehype-citation/generator`, generator function. Can be used to generate a rehype citation plugin. Takes in a citation-js `Cite` class.
+`rehype-citation/cite`, a citation-js `Cite` instance. Add your own CSL / locales before passing in to the plugin generator .
+`rehype-citation`, re-exports the above 2 packages with a pre-configured `rehype-citation` plugin ready to use.
+
 Use this package [as a rehype plugin](https://github.com/rehypejs/rehype/blob/master/doc/plugins.md#using-plugins).
 
 Some examples of how you might do that:
