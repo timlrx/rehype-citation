@@ -18,14 +18,14 @@ const processHtml = (rehypeCitation, html, options, input = bibliography) => {
 }
 const generatorTest = suite('generator')
 
-generatorTest('custom cite plugin', async () => {
-  const rehypeCitation = rehypeCitationGenerator(Cite)
-  const result = await processHtml(rehypeCitation, `<div>[@Nash1950]</div>`)
-  const expected = dedent`<div>(Nash, 1950)</div><div id="refs" class="references csl-bib-body">
-          <div class="csl-entry">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
-        </div>`
-  assert.is(result, expected)
-})
+// generatorTest('custom cite plugin', async () => {
+//   const rehypeCitation = rehypeCitationGenerator(Cite)
+//   const result = await processHtml(rehypeCitation, `<div>[@Nash1950]</div>`)
+//   const expected = dedent`<div>(Nash, 1950)</div><div id="refs" class="references csl-bib-body">
+//           <div class="csl-entry">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
+//         </div>`
+//   assert.is(result, expected)
+// })
 
 generatorTest('custom locale', async () => {
   const config = Cite.plugins.config.get('@csl')
@@ -33,7 +33,7 @@ generatorTest('custom locale', async () => {
   const rehypeCitation = rehypeCitationGenerator(Cite)
   const result = await processHtml(rehypeCitation, dedent`<div>[@Nash1950, chapter 1]</div>`, {
     suppressBibliography: true,
-    locale: 'zh-CN',
+    lang: 'zh-CN',
   })
   const expected = dedent`<div>(Nash, 1950, 章 1)</div>`
   assert.is(result, expected)
