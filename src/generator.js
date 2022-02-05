@@ -13,7 +13,7 @@
  * @property {'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string} [csl]
  *   One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the local csl file
  * @property {string} [lang]
- *   Locale to use in formatting citations. Defaults to en.
+ *   Locale to use in formatting citations. Defaults to en-US.
  * @property {boolean} [suppressBibliography]
  *   By default, biliography is inserted after the entire markdown file.
  *   If the file contains `[^Ref]`, the biliography will be inserted there instead.
@@ -115,8 +115,7 @@ const rehypeCitationGenerator = (Cite) => {
       const citationPre = []
       let citationId = 1
       const config = Cite.plugins.config.get('@csl')
-      const citeproc = config.engine(citations.data, citeFormat, options.lang || 'en', 'html')
-
+      const citeproc = config.engine(citations.data, citeFormat, options.lang || 'en-US', 'html')
       visit(tree, 'text', (node, idx, parent) => {
         const match = node.value.match(citeExtractorRe)
         //@ts-ignore

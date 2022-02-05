@@ -59,6 +59,25 @@ HTML Output:
 </div>
 ```
 
+## Generating your own remark citation plugins
+
+The default plugin comes configured with the `en-US` locale and the following CSL styles: apa, vancouver, harvard1, chicago and mla.
+
+Use the generator function to customize your own remark-citation plugin and add your own [CSL styles](https://github.com/citation-style-language/styles) or [locales](https://github.com/citation-style-language/locales).
+
+```js
+import Cite from 'rehype-citation/cite'
+import rehypeCitationGenerator from 'rehype-citation/generator'
+import myStyle from '../style'
+import myLocale from '../locale'
+
+const config = Cite.plugins.config.get('@csl')
+config.templates.add('mystyle', myStyle)
+config.locales.add('myLocale', myLocale)
+
+const rehypeCitation = rehypeCitationGenerator(Cite)
+```
+
 ## API
 
 `rehype().use(rehypeCitation, [options])`
@@ -92,9 +111,9 @@ One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the local csl
 #### options.lang
 
 Type: `string`.
-Default: `en`.
+Default: `en-US`.
 
-Locale to use in formatting citations. Defaults to en.
+Locale to use in formatting citations. Defaults to `en-US`.
 
 #### options.suppressBibliography
 
