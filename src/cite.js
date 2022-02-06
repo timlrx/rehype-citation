@@ -27,7 +27,7 @@ import citeproc from 'citeproc'
 import * as name from '@citation-js/name'
 import * as date from '@citation-js/date'
 
-import bibtexTypes from './citation-js/plugin-bibtex/mapping/bibtexTypes'
+import bibtexTypes from './citation-js/plugin-bibtex/mapping/bibtexTypes.js'
 
 function clone(obj) {
   const copy = {}

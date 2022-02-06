@@ -1,6 +1,6 @@
-import _required from './required'
-import _fieldTypes from './fieldTypes'
-import unicode from './unicode'
+import _required from './required.js'
+import _fieldTypes from './fieldTypes.js'
+import unicode from './unicode.js'
 export const required = _required
 export const fieldTypes = _fieldTypes
 export const diacritics = unicode.diacritics

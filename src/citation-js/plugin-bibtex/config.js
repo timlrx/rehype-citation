@@ -1,5 +1,5 @@
-import biblatex from './mapping/biblatexTypes'
-import bibtex from './mapping/bibtexTypes'
+import biblatex from './mapping/biblatexTypes.js'
+import bibtex from './mapping/bibtexTypes.js'
 import * as constants from './input/constants.js'
 export default {
   constants,
