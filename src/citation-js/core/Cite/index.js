@@ -21,9 +21,11 @@ function Cite(data, options = {}) {
 
 Object.assign(Cite.prototype, log, options, set, sort, get)
 
-Cite.prototype[Symbol.iterator] = function* () {
-  yield* this.data
-}
+// No need for generator as we are not using it
+// This also avoids regeneratorRuntime error is downstream applications
+// Cite.prototype[Symbol.iterator] = function* () {
+//   yield* this.data
+// }
 
 Object.assign(Cite, staticMethods)
 export default Cite
