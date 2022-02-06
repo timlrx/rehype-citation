@@ -6,38 +6,43 @@
   "files": [
     "dist"
   ],
-  "main": "dist/rehype-citation.mjs",
-  "module": "dist/rehype-citation.mjs",
-  "types": "dist/index.d.ts",
+  "main": "dist/node/index.js",
+  "module": "dist/node/index.js",
+  "types": "dist/node/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/rehype-citation.mjs"
+      "node": "./dist/node/index.js",
+      "default": "./dist/browser/rehype-citation.mjs"
     },
     "./cite": {
-      "import": "./dist/cite.mjs"
+      "node": "./dist/node/src/cite.js",
+      "browser": "./dist/browser/cite.mjs"
     },
     "./generator": {
-      "import": "./dist/generator.mjs"
+      "node": "./dist/node/src/generator.js",
+      "browser": "./dist/browser/generator.mjs"
     }
   },
   "typesVersions": {
     "*": {
       ".": [
-        "./dist/index"
+        "./dist/node/index"
       ],
       "cite": [
-        "./dist/src/cite"
+        "./dist/node/src/cite"
       ],
       "generator": [
-        "./dist/src/generator"
+        "./dist/node/src/generator"
       ]
     }
   },
   "scripts": {
     "----note----": "Run bootstrap after install to update and inline the citation-js dependencies",
     "bootstrap": "node bootstrap.js",
-    "build": "tsc -b && microbundle index.js src/cite.js src/generator.js --format esm",
+    "build": "npm run build:node && npm run build:browser",
+    "build:browser": "microbundle index.js src/cite.js src/generator.js --output dist/browser --format modern",
+    "build:node": "tsc -b",
     "tsc": "tsc --watch",
     "lint": "eslint .",
     "prettier": "prettier --write '*.js'",
