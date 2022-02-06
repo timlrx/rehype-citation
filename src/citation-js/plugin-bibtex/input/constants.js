@@ -1,6 +1,6 @@
-import _required from './required.json'
-import _fieldTypes from './fieldTypes.json'
-import unicode from './unicode.json'
+import _required from './required'
+import _fieldTypes from './fieldTypes'
+import unicode from './unicode'
 export const required = _required
 export const fieldTypes = _fieldTypes
 export const diacritics = unicode.diacritics
