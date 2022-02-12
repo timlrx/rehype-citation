@@ -6,7 +6,6 @@
   "files": [
     "dist"
   ],
-  "main": "dist/node/index.js",
   "module": "dist/node/index.js",
   "types": "dist/node/index.d.ts",
   "type": "module",
@@ -15,13 +14,11 @@
       "node": "./dist/node/index.js",
       "default": "./dist/browser/rehype-citation.mjs"
     },
-    "./cite": {
-      "node": "./dist/node/src/cite.js",
-      "browser": "./dist/browser/cite.mjs"
+    "./browser/": {
+      "default": "./dist/browser/"
     },
-    "./generator": {
-      "node": "./dist/node/src/generator.js",
-      "browser": "./dist/browser/generator.mjs"
+    "./node/": {
+      "node": "./dist/node/"
     }
   },
   "typesVersions": {
@@ -29,11 +26,11 @@
       ".": [
         "./dist/node/index"
       ],
-      "cite": [
-        "./dist/node/src/cite"
+      "browser/*": [
+        "./dist/browser/*"
       ],
-      "generator": [
-        "./dist/node/src/generator"
+      "node/*": [
+        "./dist/node/*"
       ]
     }
   },
@@ -83,6 +80,7 @@
     "hast-util-from-dom": "^4.1.0",
     "hast-util-from-parse5": "^7.1.0",
     "parse5": "^6.0.1",
+    "rehype-citation": "^0.2.5-rc.0",
     "unified": "^10.1.0",
     "unist-util-visit": "^4.0.0"
   },
