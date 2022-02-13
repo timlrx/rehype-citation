@@ -1,24 +1,24 @@
 {
   "name": "rehype-citation",
-  "version": "0.2.6-rc.0",
+  "version": "0.2.5-rc.2",
   "description": "rehype plugin to add citation and bibliography from bibtex files",
   "source": "index.js",
   "files": [
     "dist"
   ],
-  "module": "dist/node/index.js",
+  "module": "dist/node/rehype-citation.mjs",
   "types": "dist/node/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "node": "./dist/node/index.js",
+      "node": "./dist/node/rehype-citation.mjs",
       "default": "./dist/browser/rehype-citation.mjs"
     },
     "./browser/": {
       "default": "./dist/browser/"
     },
     "./node/": {
-      "node": "./dist/node/"
+      "default": "./dist/node/"
     }
   },
   "typesVersions": {
@@ -39,7 +39,7 @@
     "bootstrap": "node bootstrap.js",
     "build": "npm run build:node && npm run build:browser",
     "build:browser": "microbundle index.js src/cite.js src/generator.js --output dist/browser --format modern --alias ./html-transform-node.js=./html-transform-browser.js",
-    "build:node": "tsc -b",
+    "build:node": "tsc -b && microbundle index.js src/cite.js src/generator.js --target node --output dist/node --format modern --define isNode=true",
     "tsc": "tsc --watch",
     "lint": "eslint .",
     "prettier": "prettier --write '*.js'",
