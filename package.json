@@ -1,12 +1,14 @@
 {
   "name": "rehype-citation",
-  "version": "0.2.5-rc.2",
+  "version": "0.2.5-rc.4",
   "description": "rehype plugin to add citation and bibliography from bibtex files",
   "source": "index.js",
   "files": [
     "dist"
   ],
+  "main": "dist/node/rehype-citation.mjs",
   "module": "dist/node/rehype-citation.mjs",
+  "browser": "dist/browser/rehype-citation.mjs",
   "types": "dist/node/index.d.ts",
   "type": "module",
   "exports": {
@@ -38,7 +40,7 @@
     "----note----": "Run bootstrap after install to update and inline the citation-js dependencies",
     "bootstrap": "node bootstrap.js",
     "build": "npm run build:node && npm run build:browser",
-    "build:browser": "microbundle index.js src/cite.js src/generator.js --output dist/browser --format modern --alias ./html-transform-node.js=./html-transform-browser.js",
+    "build:browser": "microbundle index.js src/cite.js src/generator.js --output dist/browser --format modern --define isNode=false --alias ./html-transform-node.js=./html-transform-browser.js",
     "build:node": "tsc -b && microbundle index.js src/cite.js src/generator.js --target node --output dist/node --format modern --define isNode=true",
     "tsc": "tsc --watch",
     "lint": "eslint .",
