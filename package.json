@@ -1,27 +1,26 @@
 {
   "name": "rehype-citation",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "rehype plugin to add citation and bibliography from bibtex files",
   "source": "index.js",
   "files": [
     "dist"
   ],
-  "main": "dist/node/index.js",
-  "module": "dist/node/index.js",
+  "main": "dist/node/rehype-citation.mjs",
+  "module": "dist/node/rehype-citation.mjs",
+  "browser": "dist/browser/rehype-citation.mjs",
   "types": "dist/node/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "node": "./dist/node/index.js",
+      "node": "./dist/node/rehype-citation.mjs",
       "default": "./dist/browser/rehype-citation.mjs"
     },
-    "./cite": {
-      "node": "./dist/node/src/cite.js",
-      "browser": "./dist/browser/cite.mjs"
+    "./browser/": {
+      "default": "./dist/browser/"
     },
-    "./generator": {
-      "node": "./dist/node/src/generator.js",
-      "browser": "./dist/browser/generator.mjs"
+    "./node/": {
+      "default": "./dist/node/"
     }
   },
   "typesVersions": {
@@ -29,11 +28,11 @@
       ".": [
         "./dist/node/index"
       ],
-      "cite": [
-        "./dist/node/src/cite"
+      "browser/*": [
+        "./dist/browser/*"
       ],
-      "generator": [
-        "./dist/node/src/generator"
+      "node/*": [
+        "./dist/node/*"
       ]
     }
   },
@@ -41,8 +40,8 @@
     "----note----": "Run bootstrap after install to update and inline the citation-js dependencies",
     "bootstrap": "node bootstrap.js",
     "build": "npm run build:node && npm run build:browser",
-    "build:browser": "microbundle index.js src/cite.js src/generator.js --output dist/browser --format modern",
-    "build:node": "tsc -b",
+    "build:browser": "microbundle index.js src/cite.js src/generator.js --output dist/browser --format modern --define isNode=false --alias ./html-transform-node.js=./html-transform-browser.js",
+    "build:node": "tsc -b && microbundle index.js src/cite.js src/generator.js --target node --output dist/node --format modern --define isNode=true",
     "tsc": "tsc --watch",
     "lint": "eslint .",
     "prettier": "prettier --write '*.js'",
@@ -80,8 +79,10 @@
     "@citation-js/plugin-csl": "^0.5.5",
     "citeproc": "^2.4.62",
     "cross-fetch": "^3.1.5",
+    "hast-util-from-dom": "^4.1.0",
     "hast-util-from-parse5": "^7.1.0",
     "parse5": "^6.0.1",
+    "rehype-citation": "^0.2.5-rc.0",
     "unified": "^10.1.0",
     "unist-util-visit": "^4.0.0"
   },

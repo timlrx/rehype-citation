@@ -22,12 +22,11 @@
  */
 
 import { visit } from 'unist-util-visit'
-import parse5 from 'parse5'
 import fetch from 'cross-fetch'
-import { fromParse5 } from 'hast-util-from-parse5'
 import { parseCitation } from './parse-citation.js'
 import { citeExtractorRe } from './regex.js'
 import { isNode, isValidHttpUrl, readFile, getBibliography } from './utils.js'
+import { htmlToHast } from './html-transform-node.js'
 
 const defaultCiteFormat = 'apa'
 const permittedTags = ['div', 'p', 'span', 'li']
@@ -56,8 +55,7 @@ const genCitation = (citeproc, entries, citationId, citationPre, properties = { 
   // c = [ { bibchange: true, citation_errors: [] }, [ [ 0, '(1)', 'CITATION-1' ] ]]
   const result = c[1].filter((x) => x[2] === citationId)
   // Coerce to html to parse HTML code e.g. &#38; and return text node
-  const p5ast = parse5.parseFragment(`<div>${result[0][1]}</div>`)
-  const citeNode = fromParse5(p5ast).children[0]
+  const citeNode = htmlToHast(`<div>${result[0][1]}</div>`)
   const textNode = citeNode.children[0]
   return textNode
 }
@@ -71,8 +69,7 @@ const genBiblioNode = (citeproc) => {
   const [, bibBody] = citeproc.makeBibliography()
   const bibliography =
     '<div id="refs" class="references csl-bib-body">\n' + bibBody.join('') + '</div>'
-  const p5ast = parse5.parseFragment(bibliography)
-  const biblioNode = fromParse5(p5ast).children[0]
+  const biblioNode = htmlToHast(bibliography)
   return biblioNode
 }
 
