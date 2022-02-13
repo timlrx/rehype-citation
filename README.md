@@ -8,9 +8,6 @@ It supports both normal citations (such as [@foo]) and in-text citation (such as
 
 API and options follows very closely to [Rmarkdown](https://bookdown.org/yihui/rmarkdown-cookbook/bibliography.html) and [Pandoc](https://pandoc.org/MANUAL.html#citations)
 
-**Intended for usage in Node.**
-If you would like to manage citations _in the browser_, you should look into using citeproc-js directly.
-
 ## Installation
 
 This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
@@ -22,11 +19,13 @@ npm install rehype-citation
 
 ## Usage
 
-The following import paths are supported:
+If you are using the plugin in a node environment, import from `rehype-citation/node`. For browser environments, import from `rehype-citation/browser`.
 
-`rehype-citation/generator`, generator function. Can be used to generate a rehype citation plugin. Takes in a citation-js `Cite` class.
-`rehype-citation/cite`, a citation-js `Cite` instance. Add your own CSL / locales before passing in to the plugin generator .
-`rehype-citation`, re-exports the above 2 packages with a pre-configured `rehype-citation` plugin ready to use.
+The following files are exported:
+
+`generator`, generator function. Can be used to generate a rehype citation plugin. Takes in a citation-js `Cite` class.
+`cite`, a citation-js `Cite` instance. Add your own CSL / locales before passing in to the plugin generator .
+`rehype-citation`, re-exports the above 2 packages with a pre-configured `rehype-citation` plugin ready to use. Importing from `rehype-citation` directs to this file.
 
 Use this package [as a rehype plugin](https://github.com/rehypejs/rehype/blob/master/doc/plugins.md#using-plugins).
 
@@ -106,7 +105,7 @@ Required, path to file. Will be joined with `options.bibliography` and `options.
 Type: `'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string`.
 Default: `apa`.
 
-One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the local csl file.
+For the main `rehypeCitation` plugin, one of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the local csl file.
 
 #### options.lang
 
