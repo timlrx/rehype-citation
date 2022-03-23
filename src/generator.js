@@ -63,12 +63,13 @@ const genCitation = (
     []
   )
   // c = [ { bibchange: true, citation_errors: [] }, [ [ 0, '(1)', 'CITATION-1' ] ]]
-  const result = c[1].filter((x) => x[2] === citationId)
+  const idx = c[1].findIndex((x) => x[2] === citationId)
+  // const result = c[1].filter((x) => x[2] === citationId
   // Coerce to html to parse HTML code e.g. &#38; and return text node
   return htmlToHast(
-    `<span class="${(options.inlineClass ?? []).join(' ')}" id=${citationId.toLowerCase()}>${
-      result[0][1]
-    }</span>`
+    `<span class="${(options.inlineClass ?? []).join(' ')}" id=${
+      'citation-' + entries[idx].id.toLowerCase() + '-' + citationId.split('-')[1]
+    }>${c[1][idx][1]}</span>`
   )
 }
 
@@ -147,7 +148,6 @@ const rehypeCitationGenerator = (Cite) => {
         for (const citeItem of entries) {
           if (!citationIds.includes(citeItem.id)) return
         }
-
         const citedTextNode = genCitation(
           citeproc,
           entries,
