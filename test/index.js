@@ -56,7 +56,7 @@ rehypeCitationTest('parse multiple citations correctly', async () => {
 rehypeCitationTest('inserts biliography at the end of the file', async () => {
   const result = await processHtml('<div>[@Nash1950]</div>')
   const expected = dedent`<div><span class="" id="citation-nash1950-1">(Nash, 1950)</span></div><div id="refs" class="references csl-bib-body">
-          <div class="csl-entry">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
+          <div class="csl-entry" id="bib-nash1950">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
         </div>`
   assert.is(result, expected)
 })
@@ -64,7 +64,7 @@ rehypeCitationTest('inserts biliography at the end of the file', async () => {
 rehypeCitationTest('inserts biliography at [^ref] div tag', async () => {
   const result = await processHtml('<div>[^ref]</div><div>[@Nash1950]</div>')
   const expected = dedent`<div id="refs" class="references csl-bib-body">
-          <div class="csl-entry">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
+          <div class="csl-entry" id="bib-nash1950">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
         </div><div><span class="" id="citation-nash1950-1">(Nash, 1950)</span></div>`
   assert.is(result, expected)
 })
@@ -106,7 +106,7 @@ rehypeCitationTest('no-cite', async () => {
     noCite: ['@Nash1950'],
   })
   const expected = dedent`<div>text</div><div id="refs" class="references csl-bib-body">
-          <div class="csl-entry">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
+          <div class="csl-entry" id="bib-nash1950">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
         </div>`
   assert.is(result, expected)
 })

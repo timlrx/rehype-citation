@@ -22,7 +22,7 @@ generatorTest('custom cite plugin', async () => {
   const rehypeCitation = rehypeCitationGenerator(Cite)
   const result = await processHtml(rehypeCitation, `<div>[@Nash1950]</div>`)
   const expected = dedent`<div><span class="" id="citation-nash1950-1">(Nash, 1950)</span></div><div id="refs" class="references csl-bib-body">
-          <div class="csl-entry">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
+          <div class="csl-entry" id="bib-nash1950">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
         </div>`
   assert.is(result, expected)
 })

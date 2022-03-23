@@ -79,10 +79,15 @@ const genCitation = (
  * @param {*} citeproc
  */
 const genBiblioNode = (citeproc) => {
-  const [, bibBody] = citeproc.makeBibliography()
+  const [params, bibBody] = citeproc.makeBibliography()
   const bibliography =
     '<div id="refs" class="references csl-bib-body">\n' + bibBody.join('') + '</div>'
   const biblioNode = htmlToHast(bibliography)
+
+  // Add citekey id to each bibliography entry.
+  for (let i = 1; i < biblioNode.children.length - 1; i++) {
+    biblioNode.children[i].properties.id = 'bib-' + params.entry_ids[i - 1][0].toLowerCase()
+  }
   return biblioNode
 }
 
