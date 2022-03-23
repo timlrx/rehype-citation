@@ -19,6 +19,8 @@
  *   If the file contains `[^Ref]`, the biliography will be inserted there instead.
  * @property {string[]} [noCite]
  *   Citation IDs (@item1) to include in the bibliography even if they are not cited in the document
+ * @property {string[]} [inlineClass]
+ *   Class(es) to add to the inline citation.
  */
 
 import { visit } from 'unist-util-visit'
@@ -39,10 +41,18 @@ const permittedTags = ['div', 'p', 'span', 'li']
  * @param {CiteItem[]} entries
  * @param {string} citationId
  * @param {any[]} citationPre
+ * @param {Options} options
  * @param {*} [properties={ noteIndex: 0 }]
  * @return {*}
  */
-const genCitation = (citeproc, entries, citationId, citationPre, properties = { noteIndex: 0 }) => {
+const genCitation = (
+  citeproc,
+  entries,
+  citationId,
+  citationPre,
+  options,
+  properties = { noteIndex: 0 }
+) => {
   const c = citeproc.processCitationCluster(
     {
       citationID: citationId,
@@ -55,9 +65,11 @@ const genCitation = (citeproc, entries, citationId, citationPre, properties = { 
   // c = [ { bibchange: true, citation_errors: [] }, [ [ 0, '(1)', 'CITATION-1' ] ]]
   const result = c[1].filter((x) => x[2] === citationId)
   // Coerce to html to parse HTML code e.g. &#38; and return text node
-  const citeNode = htmlToHast(`<div>${result[0][1]}</div>`)
-  const textNode = citeNode.children[0]
-  return textNode
+  return htmlToHast(
+    `<span class="${(options.inlineClass ?? []).join(' ')}" id=${citationId.toLowerCase()}>${
+      result[0][1]
+    }</span>`
+  )
 }
 
 /**
@@ -141,6 +153,7 @@ const rehypeCitationGenerator = (Cite) => {
           entries,
           `CITATION-${citationId}`,
           citationPre,
+          options,
           properties
         )
 
