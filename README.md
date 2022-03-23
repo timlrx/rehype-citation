@@ -127,6 +127,12 @@ Type: `string[]`.
 
 Citation IDs (@item1) to include in the bibliography even if they are not cited in the document.
 
+#### options.inlineClass
+
+Type: `string[]`.
+
+Array of classes for inline citations.
+
 ### Limitations
 
 1. `link-citations` is not implemented.
