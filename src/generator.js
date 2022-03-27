@@ -85,10 +85,19 @@ const genBiblioNode = (citeproc) => {
   const biblioNode = htmlToHast(bibliography)
 
   // Add citekey id to each bibliography entry.
-  for (let i = 1; i < biblioNode.children.length - 1; i++) {
-    biblioNode.children[i].properties.id = 'bib-' + params.entry_ids[i - 1][0].toLowerCase()
-  }
-  return biblioNode
+  const biblioEntries = {}
+  biblioNode.children
+    .filter((node) => node.properties?.className?.includes('csl-entry'))
+    .forEach((node, i) => {
+      const citekey = params.entry_ids[i][0].toLowerCase()
+
+      node.properties = node.properties || {}
+      node.properties.id = 'bib-' + citekey
+
+      biblioEntries[citekey] = { ...node }
+      biblioEntries[citekey].properties = { id: 'inlinebib-' + citekey }
+    })
+  return { biblioNode, biblioEntries }
 }
 
 /**
