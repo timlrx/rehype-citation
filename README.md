@@ -133,6 +133,12 @@ Type: `string[]`.
 
 Array of classes for inline citations.
 
+#### options.inlineBibClass
+
+Type: `string[]`.
+
+Array of classes for inline bibliography. Leave empty to disable inline bibliography.
+
 ### Limitations
 
 1. `link-citations` is not implemented.
