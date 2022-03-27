@@ -21,6 +21,8 @@
  *   Citation IDs (@item1) to include in the bibliography even if they are not cited in the document
  * @property {string[]} [inlineClass]
  *   Class(es) to add to the inline citation.
+ * @property {string[]} [inlineBibClass]
+ *   Class(es) to add to the inline bibliography. Leave empty for no inline bibliography.
  */
 
 import { visit } from 'unist-util-visit'
@@ -198,13 +200,25 @@ const rehypeCitationGenerator = (Cite) => {
         citeproc.updateItems(options.noCite.map((x) => x.replace('@', '')))
       }
 
-      if (!options.suppressBibliography && citeproc.registry.mylist.length >= 1) {
-        const biblioNode = genBiblioNode(citeproc)
+      if (citeproc.registry.mylist.length >= 1) {
+        const { biblioNode, biblioEntries } = genBiblioNode(citeproc)
         let bilioInserted = false
 
         // Insert it at ^ref, if not found insert it as the last element of the tree
         visit(tree, 'element', (node, idx, parent) => {
+          // Add inline bibliography
           if (
+            options.inlineBibClass?.length > 0 &&
+            node.properties?.id?.toString().startsWith('citation-')
+          ) {
+            const citekey = node.properties.id.toString().split('-').slice(1, -1).join('-')
+            biblioEntries[citekey].properties.className = options.inlineBibClass
+            parent.children.push(biblioEntries[citekey])
+          }
+
+          // Add bibliography
+          if (
+            !options.suppressBibliography &&
             (node.tagName === 'p' || node.tagName === 'div') &&
             node.children[0].value === '[^ref]'
           ) {
@@ -213,7 +227,7 @@ const rehypeCitationGenerator = (Cite) => {
           }
         })
 
-        if (!bilioInserted) {
+        if (!options.suppressBibliography && !bilioInserted) {
           tree.children.push(biblioNode)
         }
       }

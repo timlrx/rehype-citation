@@ -189,4 +189,13 @@ rehypeCitationTest('works with multiple inline classes', async () => {
   assert.is(result, expected)
 })
 
+rehypeCitationTest('generates inline bib', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950]</div>`, {
+    suppressBibliography: true,
+    inlineBibClass: ['testBibClass', 'testBibClass2'],
+  })
+  const expected = dedent`<div><span class="" id="citation-nash1950-1">(Nash, 1950)</span><div id="inlinebib-nash1950" class="testBibClass testBibClass2">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div></div>`
+  assert.is(result, expected)
+})
+
 rehypeCitationTest.run()
