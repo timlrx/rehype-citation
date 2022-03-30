@@ -87,19 +87,14 @@ const genBiblioNode = (citeproc) => {
   const biblioNode = htmlToHast(bibliography)
 
   // Add citekey id to each bibliography entry.
-  const biblioEntries = {}
   biblioNode.children
     .filter((node) => node.properties?.className?.includes('csl-entry'))
     .forEach((node, i) => {
       const citekey = params.entry_ids[i][0].toLowerCase()
-
       node.properties = node.properties || {}
       node.properties.id = 'bib-' + citekey
-
-      biblioEntries[citekey] = { ...node }
-      biblioEntries[citekey].properties = { id: 'inlinebib-' + citekey }
     })
-  return { biblioNode, biblioEntries }
+  return biblioNode
 }
 
 /**
@@ -204,8 +199,17 @@ const rehypeCitationGenerator = (Cite) => {
         citeproc.registry.mylist.length >= 1 &&
         (!options.suppressBibliography || options.inlineBibClass?.length > 0)
       ) {
-        const { biblioNode, biblioEntries } = genBiblioNode(citeproc)
+        const biblioNode = genBiblioNode(citeproc)
         let bilioInserted = false
+
+        const biblioMap = {}
+        biblioNode.children
+          .filter((node) => node.properties?.className?.includes('csl-entry'))
+          .forEach((node) => {
+            const citekey = node.properties.id.split('-').slice(1).join('-')
+            biblioMap[citekey] = { ...node }
+            biblioMap[citekey].properties = { id: 'inlinebib-' + citekey }
+          })
 
         // Insert it at ^ref, if not found insert it as the last element of the tree
         visit(tree, 'element', (node, idx, parent) => {
@@ -215,8 +219,8 @@ const rehypeCitationGenerator = (Cite) => {
             node.properties?.id?.toString().startsWith('citation-')
           ) {
             const citekey = node.properties.id.toString().split('-').slice(1, -1).join('-')
-            biblioEntries[citekey].properties.className = options.inlineBibClass
-            parent.children.push(biblioEntries[citekey])
+            biblioMap[citekey].properties.className = options.inlineBibClass
+            parent.children.push(biblioMap[citekey])
           }
 
           // Add bibliography
