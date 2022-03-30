@@ -21,7 +21,7 @@ const generatorTest = suite('generator')
 generatorTest('custom cite plugin', async () => {
   const rehypeCitation = rehypeCitationGenerator(Cite)
   const result = await processHtml(rehypeCitation, `<div>[@Nash1950]</div>`)
-  const expected = dedent`<div><span class="" id="citation-nash1950-1">(Nash, 1950)</span></div><div id="refs" class="references csl-bib-body">
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950)</span></div><div id="refs" class="references csl-bib-body">
           <div class="csl-entry" id="bib-nash1950">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
         </div>`
   assert.is(result, expected)
@@ -35,7 +35,7 @@ generatorTest('custom locale', async () => {
     suppressBibliography: true,
     lang: 'zh-CN',
   })
-  const expected = dedent`<div><span class="" id="citation-nash1950-1">(Nash, 1950, 章 1)</span></div>`
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950, 章 1)</span></div>`
   assert.is(result, expected)
 })
 
@@ -47,7 +47,7 @@ generatorTest('properly account for previous citation', async () => {
     suppressBibliography: true,
     csl: 'vancouver',
   })
-  const expected = dedent`<div><span class="" id="citation-nash1951-1">(1)</span> text <span class="" id="citation-nash1950-2">(2)</span></div>`
+  const expected = dedent`<div><span class="" id="citation--nash1951--1">(1)</span> text <span class="" id="citation--nash1950--2">(2)</span></div>`
   assert.is(result, expected)
 })
 

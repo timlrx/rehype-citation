@@ -65,13 +65,13 @@ const genCitation = (
     []
   )
   // c = [ { bibchange: true, citation_errors: [] }, [ [ 0, '(1)', 'CITATION-1' ] ]]
-  const idx = c[1].findIndex((x) => x[2] === citationId)
-  // const result = c[1].filter((x) => x[2] === citationId
+  const result = c[1].find((x) => x[2] === citationId)
+  const ids = `citation--${entries.map((x) => x.id.toLowerCase()).join('--')}--${
+    citationId.split('-')[1]
+  }`
   // Coerce to html to parse HTML code e.g. &#38; and return text node
   return htmlToHast(
-    `<span class="${(options.inlineClass ?? []).join(' ')}" id=${
-      'citation-' + entries[idx].id.toLowerCase() + '-' + citationId.split('-')[1]
-    }>${c[1][idx][1]}</span>`
+    `<span class="${(options.inlineClass ?? []).join(' ')}" id=${ids}>${result[1]}</span>`
   )
 }
 
@@ -218,9 +218,27 @@ const rehypeCitationGenerator = (Cite) => {
             options.inlineBibClass?.length > 0 &&
             node.properties?.id?.toString().startsWith('citation-')
           ) {
-            const citekey = node.properties.id.toString().split('-').slice(1, -1).join('-')
-            biblioMap[citekey].properties.className = options.inlineBibClass
-            parent.children.push(biblioMap[citekey])
+            // id is citation--nash1951--nash1950--1
+            const [, ...citekeys] = node.properties.id.toString().split('--')
+            const citationID = citekeys.pop()
+
+            const inlineBibNode = {
+              type: 'element',
+              tagName: 'div',
+              properties: {
+                className: options.inlineBibClass,
+                id: `inlineBib--${citekeys.join('--')}--${citationID}`,
+              },
+              children: citekeys.map((citekey) => {
+                const aBibNode = biblioMap[citekey]
+                aBibNode.properties = {
+                  class: 'inline-entry',
+                  id: `inline--${citekey}--${citationID}`,
+                }
+                return aBibNode
+              }),
+            }
+            parent.children.push(inlineBibNode)
           }
 
           // Add bibliography
