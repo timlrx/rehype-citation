@@ -200,7 +200,10 @@ const rehypeCitationGenerator = (Cite) => {
         citeproc.updateItems(options.noCite.map((x) => x.replace('@', '')))
       }
 
-      if (citeproc.registry.mylist.length >= 1) {
+      if (
+        citeproc.registry.mylist.length >= 1 &&
+        (!options.suppressBibliography || options.inlineBibClass?.length > 0)
+      ) {
         const { biblioNode, biblioEntries } = genBiblioNode(citeproc)
         let bilioInserted = false
 
