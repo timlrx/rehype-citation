@@ -19,6 +19,10 @@
  *   If the file contains `[^Ref]`, the biliography will be inserted there instead.
  * @property {string[]} [noCite]
  *   Citation IDs (@item1) to include in the bibliography even if they are not cited in the document
+ * @property {string[]} [inlineClass]
+ *   Class(es) to add to the inline citation.
+ * @property {string[]} [inlineBibClass]
+ *   Class(es) to add to the inline bibliography. Leave empty for no inline bibliography.
  */
 
 import { visit } from 'unist-util-visit'
@@ -39,10 +43,18 @@ const permittedTags = ['div', 'p', 'span', 'li']
  * @param {CiteItem[]} entries
  * @param {string} citationId
  * @param {any[]} citationPre
+ * @param {Options} options
  * @param {*} [properties={ noteIndex: 0 }]
  * @return {*}
  */
-const genCitation = (citeproc, entries, citationId, citationPre, properties = { noteIndex: 0 }) => {
+const genCitation = (
+  citeproc,
+  entries,
+  citationId,
+  citationPre,
+  options,
+  properties = { noteIndex: 0 }
+) => {
   const c = citeproc.processCitationCluster(
     {
       citationID: citationId,
@@ -53,11 +65,14 @@ const genCitation = (citeproc, entries, citationId, citationPre, properties = { 
     []
   )
   // c = [ { bibchange: true, citation_errors: [] }, [ [ 0, '(1)', 'CITATION-1' ] ]]
-  const result = c[1].filter((x) => x[2] === citationId)
+  const result = c[1].find((x) => x[2] === citationId)
+  const ids = `citation--${entries.map((x) => x.id.toLowerCase()).join('--')}--${
+    citationId.split('-')[1]
+  }`
   // Coerce to html to parse HTML code e.g. &#38; and return text node
-  const citeNode = htmlToHast(`<div>${result[0][1]}</div>`)
-  const textNode = citeNode.children[0]
-  return textNode
+  return htmlToHast(
+    `<span class="${(options.inlineClass ?? []).join(' ')}" id=${ids}>${result[1]}</span>`
+  )
 }
 
 /**
@@ -66,10 +81,19 @@ const genCitation = (citeproc, entries, citationId, citationPre, properties = { 
  * @param {*} citeproc
  */
 const genBiblioNode = (citeproc) => {
-  const [, bibBody] = citeproc.makeBibliography()
+  const [params, bibBody] = citeproc.makeBibliography()
   const bibliography =
     '<div id="refs" class="references csl-bib-body">\n' + bibBody.join('') + '</div>'
   const biblioNode = htmlToHast(bibliography)
+
+  // Add citekey id to each bibliography entry.
+  biblioNode.children
+    .filter((node) => node.properties?.className?.includes('csl-entry'))
+    .forEach((node, i) => {
+      const citekey = params.entry_ids[i][0].toLowerCase()
+      node.properties = node.properties || {}
+      node.properties.id = 'bib-' + citekey
+    })
   return biblioNode
 }
 
@@ -135,12 +159,12 @@ const rehypeCitationGenerator = (Cite) => {
         for (const citeItem of entries) {
           if (!citationIds.includes(citeItem.id)) return
         }
-
         const citedTextNode = genCitation(
           citeproc,
           entries,
           `CITATION-${citationId}`,
           citationPre,
+          options,
           properties
         )
 
@@ -171,13 +195,55 @@ const rehypeCitationGenerator = (Cite) => {
         citeproc.updateItems(options.noCite.map((x) => x.replace('@', '')))
       }
 
-      if (!options.suppressBibliography && citeproc.registry.mylist.length >= 1) {
+      if (
+        citeproc.registry.mylist.length >= 1 &&
+        (!options.suppressBibliography || options.inlineBibClass?.length > 0)
+      ) {
         const biblioNode = genBiblioNode(citeproc)
         let bilioInserted = false
 
+        const biblioMap = {}
+        biblioNode.children
+          .filter((node) => node.properties?.className?.includes('csl-entry'))
+          .forEach((node) => {
+            const citekey = node.properties.id.split('-').slice(1).join('-')
+            biblioMap[citekey] = { ...node }
+            biblioMap[citekey].properties = { id: 'inlinebib-' + citekey }
+          })
+
         // Insert it at ^ref, if not found insert it as the last element of the tree
         visit(tree, 'element', (node, idx, parent) => {
+          // Add inline bibliography
           if (
+            options.inlineBibClass?.length > 0 &&
+            node.properties?.id?.toString().startsWith('citation-')
+          ) {
+            // id is citation--nash1951--nash1950--1
+            const [, ...citekeys] = node.properties.id.toString().split('--')
+            const citationID = citekeys.pop()
+
+            const inlineBibNode = {
+              type: 'element',
+              tagName: 'div',
+              properties: {
+                className: options.inlineBibClass,
+                id: `inlineBib--${citekeys.join('--')}--${citationID}`,
+              },
+              children: citekeys.map((citekey) => {
+                const aBibNode = biblioMap[citekey]
+                aBibNode.properties = {
+                  class: 'inline-entry',
+                  id: `inline--${citekey}--${citationID}`,
+                }
+                return aBibNode
+              }),
+            }
+            parent.children.push(inlineBibNode)
+          }
+
+          // Add bibliography
+          if (
+            !options.suppressBibliography &&
             (node.tagName === 'p' || node.tagName === 'div') &&
             node.children[0].value === '[^ref]'
           ) {
@@ -186,7 +252,7 @@ const rehypeCitationGenerator = (Cite) => {
           }
         })
 
-        if (!bilioInserted) {
+        if (!options.suppressBibliography && !bilioInserted) {
           tree.children.push(biblioNode)
         }
       }
