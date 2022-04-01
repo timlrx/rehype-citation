@@ -98,7 +98,7 @@ rehypeCitationTest('supports csl from local path', async () => {
 rehypeCitationTest('supports csl from url', async () => {
   const result = await processHtml('<div>[@Nash1950]</div>', {
     suppressBibliography: true,
-    csl: 'https://www.zotero.org/styles/nature',
+    csl: 'https://raw.githubusercontent.com/citation-style-language/locales/master/locales-zh-CN.xml',
   })
   const expected = dedent`<div><span class="" id="citation--nash1950--1"><sup>1</sup></span></div>`
   assert.is(result, expected)
@@ -114,6 +114,37 @@ rehypeCitationTest('throw error if invalid csl', async () => {
   } catch (err) {
     assert.instance(err, Error)
     assert.match(err.message, `Input CSL option, unknown-csl, is invalid or is an unknown file`)
+  }
+})
+
+rehypeCitationTest('supports locale from local path', async () => {
+  const result = await processHtml('<div>[@Nash1950]</div>', {
+    suppressBibliography: true,
+    lang: './test/bg-BG.xml',
+  })
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('supports locale from url', async () => {
+  const result = await processHtml('<div>[@Nash1950]</div>', {
+    suppressBibliography: true,
+    lang: 'https://raw.githubusercontent.com/citation-style-language/locales/master/locales-zh-TW.xml',
+  })
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('throw error if invalid locale', async () => {
+  try {
+    await processHtml(dedent`<div>[@Nash1950]</div>`, {
+      suppressBibliography: true,
+      lang: 'unknown-lang',
+    })
+    assert.unreachable('should have thrown')
+  } catch (err) {
+    assert.instance(err, Error)
+    assert.match(err.message, `Input locale option, unknown-lang, is invalid or is an unknown file`)
   }
 })
 
