@@ -105,14 +105,14 @@ Required, path to file. Will be joined with `options.bibliography` and `options.
 Type: `'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string`.
 Default: `apa`.
 
-For the main `rehypeCitation` plugin, one of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla'. A local file path or URL to valid CSL file is also accepted.
+For the main `rehypeCitation` plugin, one of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla'. A local file path or URL to a valid CSL file is also accepted.
 
 #### options.lang
 
 Type: `string`.
 Default: `en-US`.
 
-Locale to use in formatting citations. Defaults to `en-US`. A local file path or URL to valid locale file is also accepted.
+Locale to use in formatting citations. Defaults to `en-US`. A local file path or URL to a valid locale file is also accepted.
 
 #### options.suppressBibliography
 
