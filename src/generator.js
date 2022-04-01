@@ -11,9 +11,9 @@
  * @property {string} [path]
  *   Optional path to file (node). Will be joined with `options.bibliography` and used in place of cwd of file if provided.
  * @property {'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string} [csl]
- *   One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the local csl file
+ *   One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla'. A local file path or URL to valid CSL file is also accepted.
  * @property {string} [lang]
- *   Locale to use in formatting citations. Defaults to en-US.
+ *   Locale to use in formatting citations. Defaults to en-US. A local file path or URL to valid locale file is also accepted.
  * @property {boolean} [suppressBibliography]
  *   By default, biliography is inserted after the entire markdown file.
  *   If the file contains `[^Ref]`, the biliography will be inserted there instead.
