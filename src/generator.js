@@ -29,7 +29,7 @@ import { visit } from 'unist-util-visit'
 import fetch from 'cross-fetch'
 import { parseCitation } from './parse-citation.js'
 import { citeExtractorRe } from './regex.js'
-import { isNode, isValidHttpUrl, readFile, getBibliography } from './utils.js'
+import { isNode, isValidHttpUrl, readFile, getBibliography, loadCSL } from './utils.js'
 import { htmlToHast } from './html-transform-node.js'
 
 const defaultCiteFormat = 'apa'
@@ -118,7 +118,10 @@ const rehypeCitationGenerator = (Cite) => {
       /** @type {string} */
       let bibtexFile
       /** @type {string} */ // @ts-ignore
-      const citeFormat = options.csl || file?.data?.frontmatter?.csl || defaultCiteFormat
+      const inputCiteformat = options.csl || file?.data?.frontmatter?.csl || defaultCiteFormat
+      const config = Cite.plugins.config.get('@csl')
+      const citeFormat = await loadCSL(Cite, inputCiteformat)
+
       if (isValidHttpUrl(bibliography)) {
         isNode
         const response = await fetch(bibliography)
@@ -135,7 +138,6 @@ const rehypeCitationGenerator = (Cite) => {
       const citationIds = citations.data.map((x) => x.id)
       const citationPre = []
       let citationId = 1
-      const config = Cite.plugins.config.get('@csl')
       const citeproc = config.engine(citations.data, citeFormat, options.lang || 'en-US', 'html')
       visit(tree, 'text', (node, idx, parent) => {
         const match = node.value.match(citeExtractorRe)

@@ -63,3 +63,31 @@ export const getBibliography = async (options, file) => {
 
   return bibliography
 }
+
+/**
+ * Load CSL if it is a file path
+ *
+ * @param {*} Cite cite object from citation-js configured with the required CSLs
+ * @param {string} format CSL name e.g. apa or file path to CSL file
+ * @param {string} root optional root path
+ */
+export const loadCSL = async (Cite, format, root = '') => {
+  const config = Cite.plugins.config.get('@csl')
+  if (!Object.keys(config.templates.data).includes(format)) {
+    let cslPath = ''
+    if (isValidHttpUrl(format)) cslPath = format
+    else {
+      if (isNode) {
+        cslPath = await import('path').then((path) => path.join(root, format))
+      }
+    }
+    try {
+      config.templates.add('customCSL', await readFile(cslPath))
+    } catch (err) {
+      throw new Error(`Input CSL option, ${format}, is invalid or is an unknown file.`)
+    }
+    return 'customCSL'
+  } else {
+    return format
+  }
+}
