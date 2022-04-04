@@ -65,9 +65,9 @@ export const getBibliography = async (options, file) => {
 }
 
 /**
- * Load CSL - supports predefined list as given from config, http, file path (nodejs)
+ * Load CSL - supports predefined name from config.templates.data or http, file path (nodejs)
  *
- * @param {*} Cite cite object from citation-js configured with the required CSLs
+ * @param {*} Cite cite object from citation-js
  * @param {string} format CSL name e.g. apa or file path to CSL file
  * @param {string} root optional root path
  */
@@ -91,9 +91,9 @@ export const loadCSL = async (Cite, format, root = '') => {
 }
 
 /**
- * Load Locale - supports predefined list as given from config, http, file path (nodejs)
+ * Load locale - supports predefined name from config.locales.data or http, file path (nodejs)
  *
- * @param {*} Cite cite object from citation-js configured with the required locale
+ * @param {*} Cite cite object from citation-js
  * @param {string} format locale name
  * @param {string} root optional root path
  */
