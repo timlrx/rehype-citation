@@ -11,9 +11,9 @@
  * @property {string} [path]
  *   Optional path to file (node). Will be joined with `options.bibliography` and used in place of cwd of file if provided.
  * @property {'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string} [csl]
- *   One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla' or name of the local csl file
+ *   One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla'. A local file path or URL to a valid CSL file is also accepted.
  * @property {string} [lang]
- *   Locale to use in formatting citations. Defaults to en-US.
+ *   Locale to use in formatting citations. Defaults to en-US. A local file path or URL to a valid locale file is also accepted.
  * @property {boolean} [suppressBibliography]
  *   By default, biliography is inserted after the entire markdown file.
  *   If the file contains `[^Ref]`, the biliography will be inserted there instead.
@@ -29,7 +29,7 @@ import { visit } from 'unist-util-visit'
 import fetch from 'cross-fetch'
 import { parseCitation } from './parse-citation.js'
 import { citeExtractorRe } from './regex.js'
-import { isNode, isValidHttpUrl, readFile, getBibliography } from './utils.js'
+import { isNode, isValidHttpUrl, readFile, getBibliography, loadCSL, loadLocale } from './utils.js'
 import { htmlToHast } from './html-transform-node.js'
 
 const defaultCiteFormat = 'apa'
@@ -118,7 +118,12 @@ const rehypeCitationGenerator = (Cite) => {
       /** @type {string} */
       let bibtexFile
       /** @type {string} */ // @ts-ignore
-      const citeFormat = options.csl || file?.data?.frontmatter?.csl || defaultCiteFormat
+      const inputCiteformat = options.csl || file?.data?.frontmatter?.csl || defaultCiteFormat
+      const inputLang = options.lang || 'en-US'
+      const config = Cite.plugins.config.get('@csl')
+      const citeFormat = await loadCSL(Cite, inputCiteformat, options.path)
+      const lang = await loadLocale(Cite, inputLang, options.path)
+
       if (isValidHttpUrl(bibliography)) {
         isNode
         const response = await fetch(bibliography)
@@ -135,8 +140,7 @@ const rehypeCitationGenerator = (Cite) => {
       const citationIds = citations.data.map((x) => x.id)
       const citationPre = []
       let citationId = 1
-      const config = Cite.plugins.config.get('@csl')
-      const citeproc = config.engine(citations.data, citeFormat, options.lang || 'en-US', 'html')
+      const citeproc = config.engine(citations.data, citeFormat, lang, 'html')
       visit(tree, 'text', (node, idx, parent) => {
         const match = node.value.match(citeExtractorRe)
         //@ts-ignore
