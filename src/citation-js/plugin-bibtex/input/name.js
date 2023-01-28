@@ -1,3 +1,9 @@
+// @ts-nocheck
+/**
+ * @access private
+ * @param {String}
+ * @returns {Boolean|null} true if uppercase, false if lowercase, null if neither
+ */
 export function getStringCase(string) {
   const a = string.toUpperCase()
   const b = string.toLowerCase()
@@ -10,6 +16,12 @@ export function getStringCase(string) {
 
   return null
 }
+
+/**
+ * @access private
+ * @param {Array<Object>} parts
+ * @return {String|undefined}
+ */
 export function formatNameParts(parts) {
   if (parts.length === 0) {
     return undefined
@@ -25,7 +37,14 @@ export function formatNameParts(parts) {
   const output = piece + parts[0].value
   return output[0] && output
 }
-export function orderNameParts(parts, orderGiven = true) {
+
+/**
+ * @access private
+ * @param {Array<Object>} parts
+ * @param {Boolean} [orderGiven=true] - also consider the given name
+ * @return {Array<String>}
+ */
+export function orderNameParts(parts, /* istanbul ignore next */ orderGiven = true) {
   const given = []
   const undecided = []
 
@@ -63,21 +82,24 @@ export function orderNameParts(parts, orderGiven = true) {
   if (undecided.length) {
     family.unshift(...undecided)
   }
-
   if (parts.length) {
     family.push(parts[0])
   }
 
   return [formatNameParts(given), formatNameParts(prefix), formatNameParts(family)]
 }
+
+/**
+ * @access private
+ * @param {Array<Array<Object>>} pieces
+ * @return {Object}
+ */
 export function orderNamePieces(pieces) {
   if (pieces[0][0].label) {
     const name = {}
-
     for (const [{ value, label }] of pieces) {
       name[label] = value
     }
-
     return name
   }
 
@@ -87,7 +109,6 @@ export function orderNamePieces(pieces) {
   if (family) {
     name.family = family
   }
-
   if (prefix) {
     name.prefix = prefix
   }

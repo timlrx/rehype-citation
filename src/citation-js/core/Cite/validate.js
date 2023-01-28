@@ -1,7 +1,25 @@
+// @ts-nocheck
 const formats = ['real', 'string']
 const types = ['json', 'html', 'string', 'rtf']
 const styles = ['csl', 'bibtex', 'bibtxt', 'citation-*', 'ris', 'ndjson']
 const wrapperTypes = ['string', 'function']
+
+/**
+ * @access public
+ * @method validateOutputOptions
+ * @memberof module:@citation-js/core.Cite
+ *
+ * @deprecated
+ * @param {module:@citation-js/core~OutputOptions} - options
+ *
+ * @return {Boolean} true (if valid)
+ * @throws {TypeError} Options not an object
+ * @throws {TypeError} Invalid options
+ * @throws {Error} Invalid options combination
+ *
+ * @todo check registers if styles and langs are present
+ */
+/* istanbul ignore next: deprecated */
 export function validateOutputOptions(options) {
   if (typeof options !== 'object') {
     throw new TypeError('Options not an object!')
@@ -31,11 +49,26 @@ export function validateOutputOptions(options) {
 
   return true
 }
+
+/**
+ * @access public
+ * @method valdiateOptions
+ * @memberof module:@citation-js/core.Cite
+ *
+ * @param {module:@citation-js/core~InputOptions} - options
+ *
+ * @return {Boolean} true (if valid)
+ * @throws {TypeError} Options not an object
+ * @throws {TypeError} Invalid options
+ *
+ * @todo check registers if type is present
+ */
 export function validateOptions(options) {
   if (typeof options !== 'object') {
     throw new TypeError('Options should be an object')
   }
 
+  /* istanbul ignore if: deprecated */
   if (options.output) {
     validateOutputOptions(options.output)
   } else if (options.maxChainLength && typeof options.maxChainLength !== 'number') {

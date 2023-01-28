@@ -1,4 +1,15 @@
+/**
+ * @module input/other
+ */
+
 import logger from '../../logger.js'
+
+/**
+ *
+ * @access private
+ * @constant substituters
+ * @default
+ */
 const substituters = [
   [/((?:\[|:|,)\s*)'((?:\\'|[^'])*?[^\\])?'(?=\s*(?:\]|}|,))/g, '$1"$2"'],
   [
@@ -7,7 +18,17 @@ const substituters = [
   ],
 ]
 
-const parseJSON = function (str) {
+/**
+ * Parse (in)valid JSON
+ *
+ * @access protected
+ * @method parseJSON
+ *
+ * @param {String} str - The input string
+ *
+ * @return {Object|Array<Object>|Array<String>} The parsed object
+ */
+function parseJSON(str) {
   if (typeof str !== 'string') {
     return JSON.parse(str)
   }

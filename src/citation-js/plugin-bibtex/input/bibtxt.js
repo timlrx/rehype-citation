@@ -1,3 +1,8 @@
+/**
+ * @access private
+ * @constant bibTxtRegex
+ * @default
+ */
 const bibTxtRegex = {
   splitEntries: /\n\s*(?=\[)/g,
   parseEntry: /^\[(.+?)\]\s*(?:\n([\s\S]+))?$/,
@@ -5,6 +10,16 @@ const bibTxtRegex = {
   splitPair: /:(.*)/,
 }
 
+/**
+ * Parse single Bib.TXT entry
+ *
+ * @access private
+ * @method parseBibTxtEntry
+ *
+ * @param {String} entry - The input data
+ *
+ * @return {Object} Array of BibTeX-JSON
+ */
 const parseBibTxtEntry = (entry) => {
   const [, label, pairs] = entry.match(bibTxtRegex.parseEntry) || []
 
@@ -16,6 +31,7 @@ const parseBibTxtEntry = (entry) => {
       label,
       properties: {},
     }
+
     pairs
       .trim()
       .split(bibTxtRegex.splitPairs)
@@ -23,6 +39,7 @@ const parseBibTxtEntry = (entry) => {
       .forEach((pair) => {
         let [key, value] = pair.split(bibTxtRegex.splitPair)
 
+        /* istanbul ignore else  */
         if (value) {
           key = key.trim()
           value = value.trim()
@@ -34,10 +51,21 @@ const parseBibTxtEntry = (entry) => {
           }
         }
       })
+
     return out
   }
 }
 
+/**
+ * Parse Bib.TXT data
+ *
+ * @access private
+ * @method parseBibTxt
+ *
+ * @param {String} src - The input data
+ *
+ * @return {Array<Object>} Array of BibTeX-JSON
+ */
 const parseBibTxt = (src) => src.trim().split(bibTxtRegex.splitEntries).map(parseBibTxtEntry)
 
 export { parseBibTxt as parse, parseBibTxt as text, parseBibTxtEntry as textEntry }

@@ -1,7 +1,26 @@
 import { getLabel } from '../plugin-common/output/label.js'
 import { format as getName } from '@citation-js/name'
 
-const getComparisonValue = function (obj, prop, label = prop === 'label') {
+/**
+ * @callback module:@citation-js/core.Cite#sort~sort
+ * @param {module:@citation-js/core~CSL} a - element a
+ * @param {module:@citation-js/core~CSL} b - element b
+ * @return {Number} positive for a > b, negative for b > a, zero for a = b
+ */
+
+/**
+ * Get value for comparing
+ *
+ * @access private
+ * @method getComparisonValue
+ *
+ * @param {module:@citation-js/core~CSL} obj - obj
+ * @param {String} prop - The prop in question
+ * @param {Boolean} label - Prop is label
+ *
+ * @return {String|Number} something to compare
+ */
+function getComparisonValue(obj, prop, label = prop === 'label') {
   let value = label ? getLabel(obj) : obj[prop]
 
   switch (prop) {
@@ -27,14 +46,38 @@ const getComparisonValue = function (obj, prop, label = prop === 'label') {
   }
 }
 
-const compareProp = function (entryA, entryB, prop, flip = /^!/.test(prop)) {
+/**
+ * Compares props
+ *
+ * @access private
+ * @method compareProp
+ *
+ * @param {module:@citation-js/core~CSL} entryA
+ * @param {module:@citation-js/core~CSL} entryB
+ * @param {String} prop - The prop in question. Prepend ! to sort the other way around.
+ * @param {Boolean} flip - Override flip
+ *
+ * @return {Number} positive for a > b, negative for b > a, zero for a = b (flips if prop has !)
+ */
+function compareProp(entryA, entryB, prop, flip = /^!/.test(prop)) {
   prop = prop.replace(/^!/, '')
   const a = getComparisonValue(entryA, prop)
   const b = getComparisonValue(entryB, prop)
+
   return (flip ? -1 : 1) * (a > b ? 1 : a < b ? -1 : 0)
 }
 
-const getSortCallback = function (...props) {
+/**
+ * Generates a sorting callback based on props.
+ *
+ * @access private
+ * @method getSortCallback
+ *
+ * @param {...String} props - How to sort
+ *
+ * @return {module:@citation-js/core.Cite#sort~sort} sorting callback
+ */
+function getSortCallback(...props) {
   return (a, b) => {
     const keys = props.slice()
     let output = 0
@@ -47,12 +90,23 @@ const getSortCallback = function (...props) {
   }
 }
 
-const sort = function (method = [], log) {
+/**
+ * Sort the dataset
+ *
+ * @memberof module:@citation-js/core.Cite#
+ *
+ * @param {module:@citation-js/core.Cite#sort~sort|Array<String>} [method=[]] - How to sort
+ * @param {Boolean} [log=false] - Show this call in the log
+ *
+ * @return {module:@citation-js/core.Cite} The updated parent object
+ */
+function sort(method = [], log) {
   if (log) {
     this.save()
   }
 
   this.data.sort(typeof method === 'function' ? method : getSortCallback(...method, 'label'))
+
   return this
 }
 

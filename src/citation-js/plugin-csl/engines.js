@@ -1,18 +1,19 @@
+// @ts-nocheck
 import CSL from 'citeproc'
+
 import { templates } from './styles.js'
 import { locales } from './locales.js'
-const proxied = Symbol.for('proxied')
 
+// BEGIN add sys function
+const proxied = Symbol.for('proxied')
 const getWrapperProxy = function (original) {
   const proxy = function (state, entry) {
     if (state.sys.wrapBibliographyEntry) {
       const [prefix, postfix] = state.sys.wrapBibliographyEntry(this.system_id)
       entry = [prefix, entry, postfix].join('')
     }
-
     return original.call(this, state, entry)
   }
-
   proxy[proxied] = true
   return proxy
 }
@@ -26,21 +27,50 @@ for (const format in CSL.Output.Formats) {
 
   CSL.Output.Formats[format]['@bibliography/entry'] = getWrapperProxy(original)
 }
+// END
 
-function retrieveLocale(lang) {
-  const unnormalised = lang.replace('-', '_')
+/**
+ * @access private
+ * @param {String} locale - locale code
+ * @return {String} locale XML
+ */
+function retrieveLocale(locale) {
+  if (locales.has(locale)) {
+    return locales.get(locale)
+  }
 
-  if (locales.has(lang)) {
-    return locales.get(lang)
-  } else if (locales.has(unnormalised)) {
+  const unnormalised = locale.replace('-', '_')
+  if (locales.has(unnormalised)) {
     return locales.get(unnormalised)
   }
+
+  // Should only occur when a cs:style default-locale is unknown
+  return {}
 }
 
+/**
+ * Object containing CSL Engines
+ *
+ * @access private
+ * @constant
+ */
 const engines = {}
 
-const fetchEngine = function (style, lang, template, retrieveItem, retrieveLocale) {
-  const engineHash = `${style}|${lang}`
+/**
+ * Retrieve CSL parsing engine
+ *
+ * @access private
+ *
+ * @param {String} style - CSL style id
+ * @param {String} lang - Language code
+ * @param {String} template - CSL XML template
+ * @param {module:output/csl~retrieveItem} retrieveItem - Code to retreive item
+ * @param {module:output/csl~retrieveLocale} retrieveLocale - Code to retreive locale
+ *
+ * @return {Object} CSL Engine
+ */
+const fetchEngine = function (style, locale, styleXml, retrieveItem, retrieveLocale) {
+  const engineHash = `${style}|${locale}`
   let engine
 
   if (engines[engineHash] instanceof CSL.Engine) {
@@ -49,12 +79,9 @@ const fetchEngine = function (style, lang, template, retrieveItem, retrieveLocal
     engine.updateItems([])
   } else {
     engine = engines[engineHash] = new CSL.Engine(
-      {
-        retrieveLocale,
-        retrieveItem,
-      },
-      template,
-      lang,
+      { retrieveLocale, retrieveItem },
+      styleXml,
+      locale,
       true
     )
   }
@@ -62,7 +89,19 @@ const fetchEngine = function (style, lang, template, retrieveItem, retrieveLocal
   return engine
 }
 
-const prepareEngine = function (data, templateName, language, format) {
+/**
+ * Prepare CSL parsing engine
+ *
+ * @access private
+ *
+ * @param {Array<CSL>} data
+ * @param {String} templateName
+ * @param {String} language
+ * @param {String} format
+ *
+ * @return {Object} CSL Engine
+ */
+const prepareEngine = function (data, style, locale, format) {
   if (!CSL.Output.Formats[format] || !CSL.Output.Formats[format]['@bibliography/entry']) {
     throw new TypeError(`Cannot find format '${format}'`)
   }
@@ -71,8 +110,8 @@ const prepareEngine = function (data, templateName, language, format) {
     store[entry.id] = entry
     return store
   }, {})
-  const template = templates.get(templates.has(templateName) ? templateName : 'apa')
-  language = locales.has(language) ? language : 'en-US'
+  const template = templates.get(templates.has(style) ? style : 'apa')
+  locale = locales.has(locale) ? locale : undefined
 
   const callback = function (key) {
     if (Object.prototype.hasOwnProperty.call(items, key)) {
@@ -82,8 +121,9 @@ const prepareEngine = function (data, templateName, language, format) {
     }
   }
 
-  const engine = fetchEngine(templateName, language, template, callback, retrieveLocale)
+  const engine = fetchEngine(style, locale, template, callback, retrieveLocale)
   engine.setOutputFormat(format)
+
   return engine
 }
 

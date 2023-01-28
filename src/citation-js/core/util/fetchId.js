@@ -1,4 +1,15 @@
-const fetchId = function (list, prefix) {
+/**
+ * Generate ID
+ *
+ * @access protected
+ * @memberof module:@citation-js/core.util
+ *
+ * @param {Array<String>} list - old ID list
+ * @param {String} prefix - ID prefix
+ *
+ * @return {String} CSL ID
+ */
+function fetchId(list, prefix) {
   let id
 
   while (id === undefined || list.includes(id)) {

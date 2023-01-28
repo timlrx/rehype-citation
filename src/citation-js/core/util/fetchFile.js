@@ -1,10 +1,11 @@
 //@ts-nocheck
 import syncFetch from 'sync-fetch'
-import 'isomorphic-fetch'
+import fetchPolyfill from 'fetch-ponyfill'
 import logger from '../logger.js'
 // import pkg from '../../package.json';
+const { fetch, Headers } = fetchPolyfill()
 const corsEnabled = typeof location !== 'undefined' && typeof document !== 'undefined'
-let userAgent = `Citation.js/0.5`
+let userAgent = `Citation.js/0.65`
 
 function normaliseHeaders(headers) {
   const result = {}
