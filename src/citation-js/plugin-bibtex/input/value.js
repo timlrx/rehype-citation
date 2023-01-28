@@ -425,7 +425,6 @@ export const valueGrammar = new util.Grammar(
 
       if (!this.state.sentenceCase) {
         var _this$state2
-
         ;(_this$state2 = this.state).partlyLowercase ||
           (_this$state2.partlyLowercase =
             text === text.toLowerCase() && text !== text.toUpperCase())

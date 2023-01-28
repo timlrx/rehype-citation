@@ -75,18 +75,17 @@ const locatorMapping = {
 }
 
 /**
- * Parses a given citation string and return properties and entries required for cite-proc.
+ * Parses a given citation string and return entries and isComposite flag required for cite-proc.
  * Adapted from https://github.com/Zettlr/Citr/blob/master/lib/citr.ts
  *
  * @param {string} citeString Cite string in the form of '[@item]' or '@item'
- * @return {[Object, CiteItem[]]} [properties, entries]
+ * @return {[CiteItem[], boolean]} [entries, isComposite]
  */
 export const parseCitation = (citeString) => {
   /** @type {CiteItem[]} */
   let entries = []
-  let properties
+  let isComposite = false
   if (citeBracketRe.test(citeString)) {
-    properties = { noteIndex: 0 }
     // Handle citations in the form of [@item1; @item2]
     const citeItems = citeString.substr(1, citeString.length - 2).split(';')
     for (const citeItem of citeItems) {
@@ -149,10 +148,10 @@ export const parseCitation = (citeString) => {
   } else {
     // Single item in the form of @item1
     // See https://citeproc-js.readthedocs.io/en/latest/running.html#special-citation-forms
-    properties = { noteIndex: 0, mode: 'composite' }
+    isComposite = true
     entries = [citeString].map((str) => ({
       id: str.match(citeKeyRe)[1],
     }))
   }
-  return [properties, entries]
+  return [entries, isComposite]
 }

@@ -10,15 +10,17 @@ function App() {
         bibliography:
           'https://raw.githubusercontent.com/timlrx/rehype-citation/main/test/references-data.bib',
         suppressBibliography: true,
+        csl: 'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl',
       })
-      .process(document.getElementById('citation').innerHTML)
+      .process('<div>abc [@Nash1950] cde</div>')
       .then((file) => {
-        document.getElementById('citation').innerHTML = file
+        console.log(String(file))
       })
   }, [])
   return (
     <div id="citation">
-      <div>[@Nash1950]</div>
+      <div>The brown fox [@Nash1950] jumps over the lazy dog</div>
+      <div></div>
     </div>
   )
 }
