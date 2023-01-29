@@ -1,4 +1,4 @@
-import { util, logger } from '@citation-js/core'
+import { util, logger } from '../../core/index.js'
 
 import moo from 'moo'
 import { defaultStrings } from './constants.js'
