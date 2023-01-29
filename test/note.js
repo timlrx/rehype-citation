@@ -39,7 +39,7 @@ rehypeCitationTest('supports footnote style csl', async () => {
   })
   const expected = dedent`<div><span class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></span></div><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
 <ol>
-<li id="user-content-fn-1"><p>John Nash, “Equilibrium Points in N-Person Games,” &#x3C;i>Proceedings of the National Academy of Sciences&#x3C;/i> 36, no. 1 (1950): 48–49.<a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
+<li id="user-content-fn-1"><p><span>John Nash, “Equilibrium Points in N-Person Games,” <i>Proceedings of the National Academy of Sciences</i> 36, no. 1 (1950): 48–49.</span><a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
 </li></ol></section>`
   assert.is(result, expected)
 })
@@ -51,8 +51,8 @@ rehypeCitationTest('handles multiple footnote', async () => {
   })
   const expected = dedent`<div><span class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></span> text <span class="" id="citation--nash1951--2"><sup><a href="#user-content-fn-2" id="user-content-fnref-2" data-footnote-ref="" aria-describedby="footnote-label">2</a></sup></span></div><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
 <ol>
-<li id="user-content-fn-1"><p>John Nash, “Equilibrium Points in N-Person Games,” &#x3C;i>Proceedings of the National Academy of Sciences&#x3C;/i> 36, no. 1 (1950): 48–49.<a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
-</li><li id="user-content-fn-2"><p>John Nash, “Non-Cooperative Games,” &#x3C;i>Annals of Mathematics&#x3C;/i>, 1951, 286–95.<a href="#user-content-fnref-2" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
+<li id="user-content-fn-1"><p><span>John Nash, “Equilibrium Points in N-Person Games,” <i>Proceedings of the National Academy of Sciences</i> 36, no. 1 (1950): 48–49.</span><a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
+</li><li id="user-content-fn-2"><p><span>John Nash, “Non-Cooperative Games,” <i>Annals of Mathematics</i>, 1951, 286–95.</span><a href="#user-content-fnref-2" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
 </li></ol></section>`
   assert.is(result, expected)
 })
@@ -64,7 +64,7 @@ rehypeCitationTest('integrates with github markdown', async () => {
   })
   const expected = dedent`<p>Hello world <span class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></span></p><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
 <ol>
-<li id="user-content-fn-1"><p>John Nash, “Equilibrium Points in N-Person Games,” &#x3C;i>Proceedings of the National Academy of Sciences&#x3C;/i> 36, no. 1 (1950): 48–49.<a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
+<li id="user-content-fn-1"><p><span>John Nash, “Equilibrium Points in N-Person Games,” <i>Proceedings of the National Academy of Sciences</i> 36, no. 1 (1950): 48–49.</span><a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
 </li></ol></section>`
   assert.is(result, expected)
 })
@@ -86,7 +86,7 @@ rehypeCitationTest('integrates with existing gfm footnote and re-numbers correct
 <ol>
 <li id="user-content-fn-1">
 <p>First note <a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
-</li><li id="user-content-fn-2"><p>John Nash, “Non-Cooperative Games,” &#x3C;i>Annals of Mathematics&#x3C;/i>, 1951, 286–95.<a href="#user-content-fnref-2" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
+</li><li id="user-content-fn-2"><p><span>John Nash, “Non-Cooperative Games,” <i>Annals of Mathematics</i>, 1951, 286–95.</span><a href="#user-content-fnref-2" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
 </li><li id="user-content-fn-3">
 <p>Second note <a href="#user-content-fnref-3" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
 </li></ol></section>`

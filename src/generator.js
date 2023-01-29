@@ -133,10 +133,7 @@ const genFootnoteSection = (citationDict, footnoteArray, footnoteSection) => {
             tagName: 'p',
             properties: {},
             children: [
-              {
-                type: 'text',
-                value: citationDict[oldId],
-              },
+              htmlToHast(`<span>${citationDict[oldId]}</span>`),
               {
                 type: 'element',
                 tagName: 'a',
