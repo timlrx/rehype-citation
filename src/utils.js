@@ -74,17 +74,18 @@ export const getBibliography = async (options, file) => {
 export const loadCSL = async (Cite, format, root = '') => {
   const config = Cite.plugins.config.get('@csl')
   if (!Object.keys(config.templates.data).includes(format)) {
+    const cslName = `customCSL-${Math.random().toString(36).slice(2, 7)}`
     let cslPath = ''
     if (isValidHttpUrl(format)) cslPath = format
     else {
       if (isNode) cslPath = await import('path').then((path) => path.join(root, format))
     }
     try {
-      config.templates.add('customCSL', await readFile(cslPath))
+      config.templates.add(cslName, await readFile(cslPath))
     } catch (err) {
       throw new Error(`Input CSL option, ${format}, is invalid or is an unknown file.`)
     }
-    return 'customCSL'
+    return cslName
   } else {
     return format
   }

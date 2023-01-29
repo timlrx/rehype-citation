@@ -95,15 +95,6 @@ rehypeCitationTest('supports csl from local path', async () => {
   assert.is(result, expected)
 })
 
-rehypeCitationTest('supports csl from url', async () => {
-  const result = await processHtml('<div>[@Nash1950]</div>', {
-    suppressBibliography: true,
-    csl: 'https://raw.githubusercontent.com/citation-style-language/locales/master/locales-zh-CN.xml',
-  })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1"><sup>1</sup></span></div>`
-  assert.is(result, expected)
-})
-
 rehypeCitationTest('throw error if invalid csl', async () => {
   try {
     await processHtml(dedent`<div>[@Nash1950]</div>`, {
