@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { util } from '@citation-js/core'
+import { util } from '../core/index.js'
 import prepareEngine from './engines.js'
 
 /**

@@ -1,5 +1,4 @@
-import { util } from '@citation-js/core'
-
+import { util } from '../../core/index.js'
 import moo from 'moo'
 import config from '../config.js'
 import * as constants from './constants.js'

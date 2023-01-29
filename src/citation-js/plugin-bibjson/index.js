@@ -13,7 +13,7 @@
  */
 
 import * as json from './json.js'
-import { plugins } from '@citation-js/core'
+import { plugins } from '../core/index.js'
 
 const scraperLinks = ['fulltext_html', 'fulltext_xml', 'fulltext_pdf']
 
