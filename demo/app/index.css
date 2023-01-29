@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.csl-left-margin {
+  @apply float-left min-w-[2em];
+}

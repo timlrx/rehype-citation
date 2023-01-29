@@ -49,7 +49,7 @@
     "vite:build": "vite build",
     "vite:preview": "vite preview",
     "test": "NODE_OPTIONS='--experimental-json-modules  --experimental-specifier-resolution=node' uvu test",
-    "e2e": "cd e2e && playwright test"
+    "e2e": "cd demo && playwright test"
   },
   "repository": {
     "type": "git",
@@ -89,8 +89,10 @@
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
     "@playwright/test": "^1.18.1",
+    "@tailwindcss/typography": "^0.5.9",
     "@types/node": "^16.11.1",
     "@vitejs/plugin-react": "^1.1.4",
+    "autoprefixer": "^10.4.13",
     "dedent": "^0.7.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
@@ -99,6 +101,7 @@
     "husky": "^4.0.0",
     "lint-staged": "^11.1.2",
     "microbundle": "^0.14.1",
+    "postcss": "^8.4.21",
     "prettier": "^2.3.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -109,6 +112,7 @@
     "remark-rehype": "^10.1.0",
     "rollup-plugin-polyfill-node": "^0.8.0",
     "rollup-plugin-visualizer": "^5.5.4",
+    "tailwindcss": "^3.2.4",
     "typescript": "^4.3.5",
     "uvu": "^0.5.1",
     "vite": "^2.7.13"
