@@ -1,4 +1,20 @@
-const getLabel = (entry) => {
+// @ts-nocheck
+/**
+ * @module output/label
+ */
+
+/**
+ * Get a label from CSL data
+ *
+ * @access protected
+ * @method getLabel
+ * @todo flavors/formats
+ *
+ * @param {CSL} entry - Input CSL
+ *
+ * @return {String} The label
+ */
+function getLabel(entry) {
   if ('citation-label' in entry) {
     return entry['citation-label']
   }
@@ -8,11 +24,9 @@ const getLabel = (entry) => {
   if (entry.author) {
     res += entry.author[0].family || entry.author[0].literal
   }
-
   if (entry.issued && entry.issued['date-parts'] && entry.issued['date-parts'][0]) {
     res += entry.issued['date-parts'][0][0]
   }
-
   if (entry['year-suffix']) {
     res += entry['year-suffix']
   } else if (entry.title) {

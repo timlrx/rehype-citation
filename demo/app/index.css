@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.csl-left-margin {
+  @apply float-left min-w-[2em];
+}
+
+.footnotes {
+  @apply mt-4 border-t border-gray-300;
+}

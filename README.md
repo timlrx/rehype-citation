@@ -6,6 +6,8 @@
 
 It supports both normal citations (such as [@foo]) and in-text citation (such as @foo), as well as author-date, numerical, and note styles.
 
+Note styles is only compatible with Github Formatted Markdown (GFM). It is recommended to run `remark-gfm` before `rehype-citation` to ensure all footnote elements are correctly formatted.
+
 API and options follows very closely to [Rmarkdown](https://bookdown.org/yihui/rmarkdown-cookbook/bibliography.html) and [Pandoc](https://pandoc.org/MANUAL.html#citations)
 
 ## Installation

@@ -224,7 +224,7 @@ for (let citation of singleCitations) {
   } else {
     // Should evaluate correctly
     parseCitationTest(`should parse the citation correctly: ${citation.input}`, function () {
-      let csl = parseCitation(citation.input)[1]
+      let csl = parseCitation(citation.input)[0]
       assert.equal(csl, citation.expected)
     })
   }

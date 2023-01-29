@@ -1,6 +1,43 @@
+// @ts-nocheck
+/**
+ * @namespace dict
+ * @memberof module:@citation-js/core.plugins
+ */
+
 import Register from '../util/register.js'
 
-const validate = (name, dict) => {
+/**
+ * @typedef module:@citation-js/core.plugins.dict~dictName
+ * @type String
+ */
+
+/**
+ * @typedef module:@citation-js/core.plugins.dict~dict
+ * @type Object<module:@citation-js/core.plugins.dict~entryName,module:@citation-js/core.plugins.dict~dictEntry>
+ */
+
+/**
+ * @typedef module:@citation-js/core.plugins.dict~entryName
+ * @type String
+ */
+
+/**
+ * @typedef module:@citation-js/core.plugins.dict~dictEntry
+ * @type Array<String>
+ */
+
+/**
+ * Validate input arguments
+ *
+ * @access private
+ * @memberof module:@citation-js/core.plugins.dict
+ *
+ * @param {module:@citation-js/core.plugins.dict~dictName} name - output format name
+ * @param {module:@citation-js/core.plugins.dict~dict} formatter - outputting function
+ * @throws {TypeError} Invalid output format name
+ * @throws {TypeError} Invalid formatter
+ */
+function validate(name, dict) {
   if (typeof name !== 'string') {
     throw new TypeError(`Invalid dict name, expected string, got ${typeof name}`)
   } else if (typeof dict !== 'object') {
@@ -9,13 +46,19 @@ const validate = (name, dict) => {
 
   for (const entryName in dict) {
     const entry = dict[entryName]
-
     if (!Array.isArray(entry) || entry.some((part) => typeof part !== 'string')) {
       throw new TypeError(`Invalid dict entry "${entryName}", expected array of strings`)
     }
   }
 }
 
+/**
+ * @access public
+ * @memberof module:@citation-js/core.plugins.dict
+ * @constant register
+ *
+ * @type module:@citation-js/core.util.Register
+ */
 export const register = new Register({
   html: {
     bibliographyContainer: ['<div class="csl-bib-body">', '</div>'],
@@ -30,26 +73,89 @@ export const register = new Register({
     listItem: ['\t', '\n'],
   },
 })
-export const add = (name, dict) => {
+
+/**
+ * Add dictionary to register. Can be used by output plugins.
+ *
+ * @todo docs
+ *
+ * @access public
+ * @memberof module:@citation-js/core.plugins.dict
+ * @method add
+ *
+ * @param {module:@citation-js/core.plugins.dict~dictName} name - dictionary name
+ * @param {module:@citation-js/core.plugins.dict~dict} dict - dictionary data
+ * @throws {TypeError} argument validation error
+ */
+export function add(name, dict) {
   validate(name, dict)
   register.set(name, dict)
 }
-export const remove = (name) => {
+
+/**
+ * Remove dictionary.
+ *
+ * @access public
+ * @memberof module:@citation-js/core.plugins.dict
+ * @method remove
+ *
+ * @param {module:@citation-js/core.plugins.dict~dictName} name - output format name
+ */
+export function remove(name) {
   register.remove(name)
 }
-export const has = (name) => {
+
+/**
+ * Check if dictionary plugin exists.
+ *
+ * @access public
+ * @memberof module:@citation-js/core.plugins.dict
+ * @method has
+ *
+ * @param {module:@citation-js/core.plugins.dict~dictName} name - output format name
+ * @return {Boolean} register has plugin
+ */
+export function has(name) {
   return register.has(name)
 }
-export const list = () => {
+
+/**
+ * List dictionary plugins.
+ *
+ * @access public
+ * @memberof module:@citation-js/core.plugins.dict
+ * @method list
+ *
+ * @return {Array<String>} list of plugins
+ */
+export function list() {
   return register.list()
 }
-export const get = (name) => {
+
+/**
+ * Get dictionary data.
+ *
+ * @access public
+ * @memberof module:@citation-js/core.plugins.dict
+ * @method get
+ *
+ * @param {module:@citation-js/core.plugins.dict~dictName} name - output format name
+ * @return {module:@citation-js/core.plugins.dict~dict} dictionary data
+ */
+export function get(name) {
   if (!register.has(name)) {
     throw new Error(`Dict "${name}" unavailable`)
   }
-
   return register.get(name)
 }
+
+/**
+ * Object containing HTML strings for building JSON and BibTeX. Made to match citeproc, for compatibility.
+ *
+ * @access protected
+ * @memberof module:@citation-js/core.plugins.dict
+ * @deprecated use the new formatting dicts: {@link module:@citation-js/core.plugins.dict}
+ */
 export const htmlDict = {
   wr_start: '<div class="csl-bib-body">',
   wr_end: '</div>',
@@ -60,6 +166,14 @@ export const htmlDict = {
   li_start: '<li>',
   li_end: '</li>',
 }
+
+/**
+ * Object containing text strings for building JSON and BibTeX. Made to match citeproc, for compatibility.
+ *
+ * @access protected
+ * @memberof module:@citation-js/core.plugins.dict
+ * @deprecated use the new formatting dicts: {@link module:@citation-js/core.plugins.dict}
+ */
 export const textDict = {
   wr_start: '',
   wr_end: '\n',

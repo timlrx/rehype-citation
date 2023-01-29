@@ -5,6 +5,9 @@ export const required = _required
 export const fieldTypes = _fieldTypes
 export const diacritics = unicode.diacritics
 export const commands = unicode.commands
+
+// Adapted from astrocite-bibtex (accessed 2018-02-22)
+// https://github.com/dsifford/astrocite/blob/668a9e4/packages/astrocite-bibtex/src/constants.ts#L112-L148
 export const defaultStrings = {
   jan: '01',
   feb: '02',
@@ -45,34 +48,46 @@ export const formattingEnvs = {
   sl: 'italics',
   slshape: 'italics',
   em: 'italics',
+
   bf: 'bold',
   bfseries: 'bold',
+
   sc: 'smallcaps',
   scshape: 'smallcaps',
+
+  // Font selection
   rm: undefined,
   sf: undefined,
   tt: undefined,
 }
+
 export const formattingCommands = {
   textit: 'italics',
   textsl: 'italics',
   emph: 'italics',
   mkbibitalic: 'italics',
   mkbibemph: 'italics',
+
   textbf: 'bold',
   strong: 'bold',
   mkbibbold: 'bold',
+
   textsc: 'smallcaps',
+
   textsuperscript: 'superscript',
   textsubscript: 'subscript',
+
   enquote: 'quotes',
   mkbibquote: 'quotes',
+
+  // Font selection
   textmd: undefined,
   textrm: undefined,
   textsf: undefined,
   texttt: undefined,
   textup: undefined,
 }
+
 export const formatting = {
   italics: ['<i>', '</i>'],
   bold: ['<b>', '</b>'],
@@ -82,20 +97,23 @@ export const formatting = {
   nocase: ['<span class="nocase">', '</span>'],
   quotes: ['\u201C', '\u201D'],
 }
+
+// Partly adapted from retorquere/bibtex-parser (2020-11-16)
+// https://github.com/retorquere/bibtex-parser/blob/7ad73df/index.ts
 export const argumentCommands = {
   ElsevierGlyph(glyph) {
     return String.fromCharCode(parseInt(glyph, 16))
   },
-
   href(url, text) {
     return url
   },
-
   url(url) {
     return url
   },
 }
+
 export const ligaturePattern = /---?|''|``|~/g
+
 export const ligatures = {
   '--': '\u2013',
   '---': '\u2014',
@@ -103,13 +121,18 @@ export const ligatures = {
   "''": '\u201D',
   '~': '\u00A0',
 }
+
 export const mathScriptFormatting = {
   '^': 'superscript',
   sp: 'superscript',
+
   _: 'subscript',
   sb: 'subscript',
+
   mathrm: undefined,
 }
+
+/* eslint-disable quote-props */
 export const mathScripts = {
   '^': {
     0: '\u2070',
@@ -161,6 +184,10 @@ export const mathScripts = {
     t: '\u209C',
   },
 }
+/* eslint-enable quote-props */
+
+// Adapted from retorquere/bibtex-parser (2020-10-15)
+// https://github.com/retorquere/bibtex-parser/blob/0c8bd92/index.ts#L416-L441
 export const sentenceCaseLanguages = [
   'american',
   'british',

@@ -1,166 +1,68 @@
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object)
-  if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object)
-    if (enumerableOnly) {
-      symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable
-      })
-    }
-    keys.push.apply(keys, symbols)
-  }
-  return keys
-}
-
-function _objectSpread(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {}
-    if (i % 2) {
-      ownKeys(Object(source), true).forEach(function (key) {
-        _defineProperty(target, key, source[key])
-      })
-    } else if (Object.getOwnPropertyDescriptors) {
-      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source))
-    } else {
-      ownKeys(Object(source)).forEach(function (key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key))
-      })
-    }
-  }
-  return target
-}
-
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    })
-  } else {
-    obj[key] = value
-  }
-  return obj
-}
-
 import { util, logger } from '../../core/index.js'
+
 import moo from 'moo'
 import { defaultStrings } from './constants.js'
+
 const identifier = /[a-zA-Z_][a-zA-Z0-9_:-]*/
 const whitespace = {
   comment: /%.*/,
-  whitespace: {
-    match: /\s+/,
-    lineBreaks: true,
-  },
+  whitespace: { match: /\s+/, lineBreaks: true },
 }
+
 const lexer = moo.states({
   main: {
-    junk: {
-      match: /@[cC][oO][mM][mM][eE][nN][tT].+|[^@]+/,
-      lineBreaks: true,
+    junk: { match: /@[cC][oO][mM][mM][eE][nN][tT].+|[^@]+/, lineBreaks: true },
+    at: { match: '@', push: 'entry' },
+  },
+  entry: {
+    ...whitespace,
+    otherEntryType: {
+      match: /[sS][tT][rR][iI][nN][gG]|[pP][rR][eE][aA][mM][bB][lL][eE]/,
+      next: 'otherEntryContents',
     },
-    at: {
-      match: '@',
-      push: 'entry',
+    dataEntryType: {
+      match: identifier,
+      next: 'dataEntryContents',
     },
   },
-  entry: _objectSpread(
-    _objectSpread({}, whitespace),
-    {},
-    {
-      otherEntryType: {
-        match: /[sS][tT][rR][iI][nN][gG]|[pP][rR][eE][aA][mM][bB][lL][eE]/,
-        next: 'otherEntryContents',
-      },
-      dataEntryType: {
-        match: identifier,
-        next: 'dataEntryContents',
-      },
-    }
-  ),
-  otherEntryContents: _objectSpread(
-    _objectSpread({}, whitespace),
-    {},
-    {
-      lbrace: {
-        match: /[{(]/,
-        next: 'fields',
-      },
-    }
-  ),
-  dataEntryContents: _objectSpread(
-    _objectSpread({}, whitespace),
-    {},
-    {
-      lbrace: {
-        match: /[{(]/,
-        next: 'dataEntryContents',
-      },
-      label: /[^,\s]+/,
-      comma: {
-        match: ',',
-        next: 'fields',
-      },
-    }
-  ),
-  fields: _objectSpread(
-    _objectSpread({}, whitespace),
-    {},
-    {
-      identifier,
-      number: /-?\d+/,
-      hash: '#',
-      equals: '=',
-      comma: ',',
-      quote: {
-        match: '"',
-        push: 'quotedLiteral',
-      },
-      lbrace: {
-        match: '{',
-        push: 'bracedLiteral',
-      },
-      rbrace: {
-        match: /[})]/,
-        pop: true,
-      },
-    }
-  ),
+  otherEntryContents: {
+    ...whitespace,
+    lbrace: { match: /[{(]/, next: 'fields' },
+  },
+  dataEntryContents: {
+    ...whitespace,
+    lbrace: { match: /[{(]/, next: 'dataEntryContents' },
+    label: /[^,\s]+/,
+    comma: { match: ',', next: 'fields' },
+  },
+  fields: {
+    ...whitespace,
+    identifier,
+    number: /-?\d+/,
+    hash: '#',
+    equals: '=',
+    comma: ',',
+    quote: { match: '"', push: 'quotedLiteral' },
+    lbrace: { match: '{', push: 'bracedLiteral' },
+    rbrace: { match: /[})]/, pop: true },
+  },
   quotedLiteral: {
-    lbrace: {
-      match: '{',
-      push: 'bracedLiteral',
-    },
-    quote: {
-      match: '"',
-      pop: true,
-    },
-    text: {
-      match: /(?:\\[\\{]|[^{"])+/,
-      lineBreaks: true,
-    },
+    lbrace: { match: '{', push: 'bracedLiteral' },
+    quote: { match: '"', pop: true },
+    text: { match: /(?:\\[\\{]|[^{"])+/, lineBreaks: true },
   },
   bracedLiteral: {
-    lbrace: {
-      match: '{',
-      push: 'bracedLiteral',
-    },
-    rbrace: {
-      match: '}',
-      pop: true,
-    },
-    text: {
-      match: /(?:\\[\\{}]|[^{}])+/,
-      lineBreaks: true,
-    },
+    lbrace: { match: '{', push: 'bracedLiteral' },
+    rbrace: { match: '}', pop: true },
+    text: { match: /(?:\\[\\{}]|[^{}])+/, lineBreaks: true },
   },
 })
+
 const delimiters = {
   '(': ')',
   '{': '}',
 }
+
 export const bibtexGrammar = new util.Grammar(
   {
     Main() {
@@ -183,7 +85,6 @@ export const bibtexGrammar = new util.Grammar(
 
     _() {
       let oldToken
-
       while (oldToken !== this.token) {
         oldToken = this.token
         this.consumeToken('whitespace', true)
@@ -194,14 +95,17 @@ export const bibtexGrammar = new util.Grammar(
     Entry() {
       this.consumeToken('at')
       this.consumeRule('_')
+
       const type = (
         this.matchToken('otherEntryType')
           ? this.consumeToken('otherEntryType')
           : this.consumeToken('dataEntryType')
       ).value.toLowerCase()
+
       this.consumeRule('_')
       const openBrace = this.consumeToken('lbrace').value
       this.consumeRule('_')
+
       let result
 
       if (type === 'string') {
@@ -211,20 +115,18 @@ export const bibtexGrammar = new util.Grammar(
         this.consumeRule('Expression')
       } else {
         const label = this.consumeToken('label').value
+
         this.consumeRule('_')
         this.consumeToken('comma')
         this.consumeRule('_')
+
         const properties = this.consumeRule('EntryBody')
-        result = {
-          type,
-          label,
-          properties,
-        }
+
+        result = { type, label, properties }
       }
 
       this.consumeRule('_')
       const closeBrace = this.consumeToken('rbrace').value
-
       if (closeBrace !== delimiters[openBrace]) {
         logger.warn(
           '[plugin-bibtex]',
@@ -241,8 +143,8 @@ export const bibtexGrammar = new util.Grammar(
       while (this.matchToken('identifier')) {
         const [field, value] = this.consumeRule('Field')
         properties[field] = value
-        this.consumeRule('_')
 
+        this.consumeRule('_')
         if (this.consumeToken('comma', true)) {
           this.consumeRule('_')
         } else {
@@ -255,10 +157,13 @@ export const bibtexGrammar = new util.Grammar(
 
     Field() {
       const field = this.consumeToken('identifier').value.toLowerCase()
+
       this.consumeRule('_')
       this.consumeToken('equals')
       this.consumeRule('_')
+
       const value = this.consumeRule('Expression')
+
       return [field, value]
     },
 
@@ -291,11 +196,9 @@ export const bibtexGrammar = new util.Grammar(
     QuoteString() {
       let output = ''
       this.consumeToken('quote')
-
       while (!this.matchToken('quote')) {
         output += this.consumeRule('Text')
       }
-
       this.consumeToken('quote')
       return output
     },
@@ -303,11 +206,9 @@ export const bibtexGrammar = new util.Grammar(
     BracketString() {
       let output = ''
       this.consumeToken('lbrace')
-
       while (!this.matchToken('rbrace')) {
         output += this.consumeRule('Text')
       }
-
       this.consumeToken('rbrace')
       return output
     },
@@ -324,6 +225,7 @@ export const bibtexGrammar = new util.Grammar(
     strings: defaultStrings,
   }
 )
+
 export function parse(text) {
   return bibtexGrammar.parse(lexer.reset(text))
 }

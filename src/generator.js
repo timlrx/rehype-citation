@@ -2,8 +2,10 @@
  * @typedef {import('hast').Node} Node
  * @typedef {import('hast').Parent} Parent
  * @typedef {import('hast').Root} Root
+ * @typedef {import('hast').Element} Element
  * @typedef {import('unist-util-visit').Visitor<Node>} Visitor
  * @typedef {import('./parse-citation').CiteItem} CiteItem
+ * @typedef {"note" | "in-text"} Mode
  * @typedef Options
  *   Configuration.
  * @property {string} [bibliography]
@@ -34,45 +36,149 @@ import { htmlToHast } from './html-transform-node.js'
 
 const defaultCiteFormat = 'apa'
 const permittedTags = ['div', 'p', 'span', 'li']
+const idRoot = 'CITATION'
 
 /**
  * Generate citation using citeproc
  * This accounts for prev citations and additional properties
  *
  * @param {*} citeproc
+ * @param {Mode} mode
  * @param {CiteItem[]} entries
- * @param {string} citationId
+ * @param {number} citationId
  * @param {any[]} citationPre
  * @param {Options} options
- * @param {*} [properties={ noteIndex: 0 }]
- * @return {*}
+ * @param {boolean} isComposite
+ * @return {[string, string]}
  */
-const genCitation = (
-  citeproc,
-  entries,
-  citationId,
-  citationPre,
-  options,
-  properties = { noteIndex: 0 }
-) => {
+const genCitation = (citeproc, mode, entries, citationId, citationPre, options, isComposite) => {
+  const key = `${idRoot}-${citationId}`
   const c = citeproc.processCitationCluster(
     {
-      citationID: citationId,
+      citationID: key,
       citationItems: entries,
-      properties: properties,
+      properties:
+        mode === 'in-text'
+          ? { noteIndex: 0, mode: isComposite ? 'composite' : '' }
+          : { noteIndex: citationId, mode: isComposite ? 'composite' : '' },
     },
     citationPre.length > 0 ? citationPre : [],
     []
   )
+
+  // console.log(Object.getOwnPropertyNames(citeproc.registry))
+  // console.log(citeproc.registry.citationreg.citationByIndex)
   // c = [ { bibchange: true, citation_errors: [] }, [ [ 0, '(1)', 'CITATION-1' ] ]]
-  const result = c[1].find((x) => x[2] === citationId)
-  const ids = `citation--${entries.map((x) => x.id.toLowerCase()).join('--')}--${
-    citationId.split('-')[1]
-  }`
+  const citationText = c[1].find((x) => x[2] === key)[1]
+  const ids = `citation--${entries.map((x) => x.id.toLowerCase()).join('--')}--${citationId}`
+  if (mode === 'note') {
+    // Use cite-fn-{id} to denote footnote from citation, will clean it up later to follow gfm "user-content" format
+    return [
+      citationText,
+      htmlToHast(
+        `<span class="${(options.inlineClass ?? []).join(
+          ' '
+        )}" id=${ids}><sup><a href="#cite-fn-${citationId}" id="cite-fnref-${citationId}" data-footnote-ref aria-describedby="footnote-label">${citationId}</a></sup></span>`
+      ),
+    ]
+  }
   // Coerce to html to parse HTML code e.g. &#38; and return text node
-  return htmlToHast(
-    `<span class="${(options.inlineClass ?? []).join(' ')}" id=${ids}>${result[1]}</span>`
-  )
+  return [
+    citationText,
+    htmlToHast(
+      `<span class="${(options.inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</span>`
+    ),
+  ]
+}
+
+{
+  /* <section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
+<ol>
+<li id="user-content-fn-1">
+<p>First note <a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
+</li>
+</ol>
+</section> */
+}
+
+/**
+ * Create new footnote section node based on footnoteArray mappings
+ *
+ * @param {{int: string}} citationDict
+ * @param {{type: 'citation' | 'existing', oldId: number}[]} footnoteArray
+ * @param {Element | undefined} footnoteSection
+ * @return {Element}
+ */
+const genFootnoteSection = (citationDict, footnoteArray, footnoteSection) => {
+  /** @type {Element} */
+  const list = {
+    type: 'element',
+    tagName: 'ol',
+    children: [{ type: 'text', value: '\n' }],
+  }
+  let oldFootnoteList
+  if (footnoteSection) {
+    oldFootnoteList = footnoteSection.children.find((n) => n.tagName === 'ol')
+  }
+  for (const [idx, item] of footnoteArray.entries()) {
+    const { type, oldId } = item
+    if (type === 'citation') {
+      list.children.push({
+        type: 'element',
+        tagName: 'li',
+        properties: { id: `user-content-fn-${idx + 1}` },
+        children: [
+          {
+            type: 'element',
+            tagName: 'p',
+            properties: {},
+            children: [
+              htmlToHast(`<span>${citationDict[oldId]}</span>`),
+              {
+                type: 'element',
+                tagName: 'a',
+                properties: {
+                  href: `#user-content-fnref-${idx + 1}`,
+                  dataFootnoteBackref: true,
+                  className: ['data-footnote-backref'],
+                  ariaLabel: 'Back to content',
+                },
+                children: [{ type: 'text', value: '↩' }],
+              },
+            ],
+          },
+          { type: 'text', value: '\n' },
+        ],
+      })
+    } else if (type === 'existing') {
+      // @ts-ignore
+      const liNode = oldFootnoteList.children.find(
+        (n) => n.tagName === 'li' && n.properties.id === `user-content-fn-${oldId}`
+      )
+      liNode.properties.id = `user-content-fn-${idx + 1}`
+      const aNode = liNode.children[1].children.find((n) => n.tagName === 'a')
+      aNode.properties.href = `#user-content-fnref-${idx + 1}`
+      list.children.push(liNode)
+    }
+  }
+
+  /** @type {Element} */
+  const newfootnoteSection = {
+    type: 'element',
+    tagName: 'section',
+    properties: { dataFootnotes: true, className: ['footnotes'] },
+    children: [
+      {
+        type: 'element',
+        tagName: 'h2',
+        properties: { className: ['sr-only'], id: 'footnote-label' },
+        children: [{ type: 'text', value: 'Footnotes' }],
+      },
+      { type: 'text', value: '\n' },
+      list,
+    ],
+  }
+  return newfootnoteSection
 }
 
 /**
@@ -139,8 +245,12 @@ const rehypeCitationGenerator = (Cite) => {
       const citations = new Cite(bibtexFile)
       const citationIds = citations.data.map((x) => x.id)
       const citationPre = []
+      const citationDict = {}
       let citationId = 1
       const citeproc = config.engine(citations.data, citeFormat, lang, 'html')
+      /** @type {Mode} */
+      const mode = citeproc.opt.xclass
+
       visit(tree, 'text', (node, idx, parent) => {
         const match = node.value.match(citeExtractorRe)
         //@ts-ignore
@@ -157,23 +267,25 @@ const rehypeCitationGenerator = (Cite) => {
           })
         }
 
-        const [properties, entries] = parseCitation(match[0])
+        const [entries, isComposite] = parseCitation(match[0])
 
         // If id is not in citation file (e.g. route alias or js package), abort process
         for (const citeItem of entries) {
           if (!citationIds.includes(citeItem.id)) return
         }
-        const citedTextNode = genCitation(
+        const [citedText, citedTextNode] = genCitation(
           citeproc,
+          mode,
           entries,
-          `CITATION-${citationId}`,
+          citationId,
           citationPre,
           options,
-          properties
+          isComposite
         )
+        citationDict[citationId] = citedText
 
         // Prepare citationPre and citationId for the next cite instance
-        citationPre.push([`CITATION-${citationId}`, 0])
+        citationPre.push([`${idRoot}-${citationId}`, 0])
         citationId = citationId + 1
 
         // TODO: return html with link
@@ -188,6 +300,7 @@ const rehypeCitationGenerator = (Cite) => {
         }
 
         // insert into the parent
+        // @ts-ignore
         parent.children = [
           ...parent.children.slice(0, idx),
           ...newChildren,
@@ -259,6 +372,51 @@ const rehypeCitationGenerator = (Cite) => {
         if (!options.suppressBibliography && !bilioInserted) {
           tree.children.push(biblioNode)
         }
+      }
+
+      let footnoteSection
+      visit(tree, 'element', (node, index, parent) => {
+        if (node.tagName === 'section' && node.properties.dataFootnotes) {
+          footnoteSection = node
+          parent.children.splice(index, 1)
+        }
+      })
+
+      // Need to adjust footnote numbering based on existing ones already assigned
+      // And insert them into the footnote section (if exists)
+      // Footnote comes after bibliography
+      if (mode === 'note' && Object.keys(citationDict).length > 0) {
+        /** @type {{type: 'citation' | 'existing', oldId: number}[]} */
+        let fnArray = []
+        let index = 1
+        visit(tree, 'element', (node) => {
+          if (node.tagName === 'sup') {
+            let nextNode = node.children[0]
+            if (nextNode.tagName === 'a') {
+              // @ts-ignore
+              const { href, id } = nextNode.properties
+              if (href.includes('fn') && id.includes('fnref')) {
+                const oldId = href.split('-').pop()
+                fnArray.push({
+                  type: href.includes('cite') ? 'citation' : 'existing',
+                  oldId,
+                })
+                // Update ref number
+                // @ts-ignore
+                nextNode.properties.href = `#user-content-fn-${index}`
+                // @ts-ignore
+                nextNode.properties.id = `user-content-fnref-${index}`
+                nextNode.children[0].value = index.toString()
+                index += 1
+              }
+            }
+          }
+        })
+        // @ts-ignore
+        const newFootnoteSection = genFootnoteSection(citationDict, fnArray, footnoteSection)
+        tree.children.push(newFootnoteSection)
+      } else {
+        if (footnoteSection) tree.children.push(footnoteSection)
       }
     }
   }
