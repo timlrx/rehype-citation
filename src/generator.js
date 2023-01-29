@@ -312,55 +312,6 @@ const rehypeCitationGenerator = (Cite) => {
         citeproc.updateItems(options.noCite.map((x) => x.replace('@', '')))
       }
 
-      // Need to adjust footnote numbering based on existing ones already assigned
-      // And insert them into the footnote section (if exists)
-      if (mode === 'note' && Object.keys(citationDict).length > 0) {
-        let footnoteSection
-        visit(tree, 'element', (node) => {
-          if (node.tagName === 'section' && node.properties.dataFootnotes) {
-            footnoteSection = node
-          }
-        })
-        /** @type {{type: 'citation' | 'existing', oldId: number}[]} */
-        let fnArray = []
-        let index = 1
-        visit(tree, 'element', (node) => {
-          if (node.tagName === 'sup') {
-            let nextNode = node.children[0]
-            if (nextNode.tagName === 'a') {
-              // @ts-ignore
-              const { href, id } = nextNode.properties
-              if (href.includes('fn') && id.includes('fnref')) {
-                const oldId = href.split('-').pop()
-                fnArray.push({
-                  type: href.includes('cite') ? 'citation' : 'existing',
-                  oldId,
-                })
-                // Update ref number
-                // @ts-ignore
-                nextNode.properties.href = `#user-content-fn-${index}`
-                // @ts-ignore
-                nextNode.properties.id = `user-content-fnref-${index}`
-                nextNode.children[0].value = index.toString()
-                index += 1
-              }
-            }
-          }
-        })
-        // @ts-ignore
-        const newFootnoteSection = genFootnoteSection(citationDict, fnArray, footnoteSection)
-        if (footnoteSection) {
-          // Insert in place
-          visit(tree, 'element', (node) => {
-            if (node.tagName === 'section' && node.properties.dataFootnotes) {
-              node.children = newFootnoteSection.children
-            }
-          })
-        } else {
-          tree.children.push(newFootnoteSection)
-        }
-      }
-
       if (
         citeproc.registry.mylist.length >= 1 &&
         (!options.suppressBibliography || options.inlineBibClass?.length > 0)
@@ -421,6 +372,51 @@ const rehypeCitationGenerator = (Cite) => {
         if (!options.suppressBibliography && !bilioInserted) {
           tree.children.push(biblioNode)
         }
+      }
+
+      let footnoteSection
+      visit(tree, 'element', (node, index, parent) => {
+        if (node.tagName === 'section' && node.properties.dataFootnotes) {
+          footnoteSection = node
+          parent.children.splice(index, 1)
+        }
+      })
+
+      // Need to adjust footnote numbering based on existing ones already assigned
+      // And insert them into the footnote section (if exists)
+      // Footnote comes after bibliography
+      if (mode === 'note' && Object.keys(citationDict).length > 0) {
+        /** @type {{type: 'citation' | 'existing', oldId: number}[]} */
+        let fnArray = []
+        let index = 1
+        visit(tree, 'element', (node) => {
+          if (node.tagName === 'sup') {
+            let nextNode = node.children[0]
+            if (nextNode.tagName === 'a') {
+              // @ts-ignore
+              const { href, id } = nextNode.properties
+              if (href.includes('fn') && id.includes('fnref')) {
+                const oldId = href.split('-').pop()
+                fnArray.push({
+                  type: href.includes('cite') ? 'citation' : 'existing',
+                  oldId,
+                })
+                // Update ref number
+                // @ts-ignore
+                nextNode.properties.href = `#user-content-fn-${index}`
+                // @ts-ignore
+                nextNode.properties.id = `user-content-fnref-${index}`
+                nextNode.children[0].value = index.toString()
+                index += 1
+              }
+            }
+          }
+        })
+        // @ts-ignore
+        const newFootnoteSection = genFootnoteSection(citationDict, fnArray, footnoteSection)
+        tree.children.push(newFootnoteSection)
+      } else {
+        if (footnoteSection) tree.children.push(footnoteSection)
       }
     }
   }

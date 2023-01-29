@@ -37,8 +37,8 @@ Customizable CSL and locale.
 
 const CustomCSLExample = `## Welcome
 
-Choose from one of the multiple preconfigured CSLs:
-apa, vancouver, harvard1, chicago, mla
+Choose from one of the multiple preconfigured CSLs[^1]
+[^1]: apa, vancouver, harvard1, chicago, mla
 
 or pass in a valid file path or url to the _csl_ argument.
 
@@ -47,7 +47,7 @@ Here's an example in ACM format:
 Supports standard citations [@Nash1950], in-text citations [@Nash1951]
 and multiple citations [@Nash1950; @Nash1951]
 
-## References
+### References
 `
 
 const FootnotesExample = `## Welcome
@@ -62,6 +62,8 @@ Here's an example in Chicago fullnote style:
 
 Supports standard citations [@Nash1950], in-text citations [@Nash1951]
 and multiple citations [@Nash1950; @Nash1951]
+
+### References
 `
 
 const examples = ['Default', 'Suppress Bibliography', 'Custom CSL', 'Footnote Style']
@@ -107,7 +109,6 @@ function App() {
             markdown={FootnotesExample}
             rehypeCitationOptions={{
               bibliography,
-              suppressBibliography: true,
               csl: chicagofullnoteCSL,
             }}
           />
