@@ -87,8 +87,8 @@ const genCitation = (
     citationPre.length > 0 ? citationPre : [],
     []
   )
-
   // c = [ { bibchange: true, citation_errors: [] }, [ [ 0, '(1)', 'CITATION-1' ] ]]
+
   const citationText = c[1].find((x) => x[2] === key)[1]
   const ids = `citation--${entries.map((x) => x.id.toLowerCase()).join('--')}--${citationId}`
   if (mode === 'note') {
@@ -103,12 +103,21 @@ const genCitation = (
     ]
   } else if (linkCitations && citationFormat === 'numeric') {
     // e.g. [1, 2]
+    let i = 0
+    const refIds = entries.map((e) => e.id)
+    const output = citationText.replace(/\d/g, function (d) {
+      const url = `<a href="#bib-${refIds[i].toLowerCase()}">${d}</a>`
+      i++
+      return url
+    })
+
     return [
       citationText,
-      htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</span>`),
+      htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output}</span>`),
     ]
   } else if (linkCitations && citationFormat === 'author-date') {
     // Same author (see Nash, 1950, pp. 12–13, 1951); diff author (Nash, 1950; Xie, 2016)
+    // Citeproc adds an additional item field that links to the bib
     return [
       citationText,
       htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</span>`),
