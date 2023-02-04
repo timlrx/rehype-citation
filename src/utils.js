@@ -119,3 +119,19 @@ export const loadLocale = async (Cite, format, root = '') => {
     return format
   }
 }
+
+/**
+ * Get citation format
+ *
+ * @param {*} citeproc citeproc
+ * @returns string
+ */
+export const getCitationFormat = (citeproc) => {
+  const info = citeproc.cslXml.dataObj.children[0]
+  const node = info.children.find((x) => x['attrs'] && x['attrs']['citation-format'])
+  // citation-format takes 5 possible values
+  // https://docs.citationstyles.org/en/stable/specification.html#toc-entry-14
+  /** @type {'author-date' | 'author' | 'numeric' | 'note' | 'label'} */
+  const citationFormat = node['attrs']['citation-format']
+  return citationFormat
+}

@@ -19,6 +19,9 @@
  * @property {boolean} [suppressBibliography]
  *   By default, biliography is inserted after the entire markdown file.
  *   If the file contains `[^Ref]`, the biliography will be inserted there instead.
+ * @property {boolean} [linkCitations]
+ *   If true, citations will be hyperlinked to the corresponding bibliography entries (for author-date and numeric styles only).
+ *   Defaults to false.
  * @property {string[]} [noCite]
  *   Citation IDs (@item1) to include in the bibliography even if they are not cited in the document
  * @property {string[]} [inlineClass]
@@ -31,7 +34,15 @@ import { visit } from 'unist-util-visit'
 import fetch from 'cross-fetch'
 import { parseCitation } from './parse-citation.js'
 import { citeExtractorRe } from './regex.js'
-import { isNode, isValidHttpUrl, readFile, getBibliography, loadCSL, loadLocale } from './utils.js'
+import {
+  isNode,
+  isValidHttpUrl,
+  readFile,
+  getBibliography,
+  loadCSL,
+  loadLocale,
+  getCitationFormat,
+} from './utils.js'
 import { htmlToHast } from './html-transform-node.js'
 
 const defaultCiteFormat = 'apa'
@@ -49,9 +60,20 @@ const idRoot = 'CITATION'
  * @param {any[]} citationPre
  * @param {Options} options
  * @param {boolean} isComposite
+ * @param {'author-date' | 'author' | 'numeric' | 'note' | 'label'} citationFormat
  * @return {[string, string]}
  */
-const genCitation = (citeproc, mode, entries, citationId, citationPre, options, isComposite) => {
+const genCitation = (
+  citeproc,
+  mode,
+  entries,
+  citationId,
+  citationPre,
+  options,
+  isComposite,
+  citationFormat
+) => {
+  const { inlineClass, linkCitations } = options
   const key = `${idRoot}-${citationId}`
   const c = citeproc.processCitationCluster(
     {
@@ -66,8 +88,6 @@ const genCitation = (citeproc, mode, entries, citationId, citationPre, options, 
     []
   )
 
-  // console.log(Object.getOwnPropertyNames(citeproc.registry))
-  // console.log(citeproc.registry.citationreg.citationByIndex)
   // c = [ { bibchange: true, citation_errors: [] }, [ [ 0, '(1)', 'CITATION-1' ] ]]
   const citationText = c[1].find((x) => x[2] === key)[1]
   const ids = `citation--${entries.map((x) => x.id.toLowerCase()).join('--')}--${citationId}`
@@ -76,29 +96,29 @@ const genCitation = (citeproc, mode, entries, citationId, citationPre, options, 
     return [
       citationText,
       htmlToHast(
-        `<span class="${(options.inlineClass ?? []).join(
+        `<span class="${(inlineClass ?? []).join(
           ' '
         )}" id=${ids}><sup><a href="#cite-fn-${citationId}" id="cite-fnref-${citationId}" data-footnote-ref aria-describedby="footnote-label">${citationId}</a></sup></span>`
       ),
     ]
+  } else if (linkCitations && citationFormat === 'numeric') {
+    // e.g. [1, 2]
+    return [
+      citationText,
+      htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</span>`),
+    ]
+  } else if (linkCitations && citationFormat === 'author-date') {
+    // Same author (see Nash, 1950, pp. 12–13, 1951); diff author (Nash, 1950; Xie, 2016)
+    return [
+      citationText,
+      htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</span>`),
+    ]
+  } else {
+    return [
+      citationText,
+      htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</span>`),
+    ]
   }
-  // Coerce to html to parse HTML code e.g. &#38; and return text node
-  return [
-    citationText,
-    htmlToHast(
-      `<span class="${(options.inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</span>`
-    ),
-  ]
-}
-
-{
-  /* <section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
-<ol>
-<li id="user-content-fn-1">
-<p>First note <a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
-</li>
-</ol>
-</section> */
 }
 
 /**
@@ -250,6 +270,7 @@ const rehypeCitationGenerator = (Cite) => {
       const citeproc = config.engine(citations.data, citeFormat, lang, 'html')
       /** @type {Mode} */
       const mode = citeproc.opt.xclass
+      const citationFormat = getCitationFormat(citeproc)
 
       visit(tree, 'text', (node, idx, parent) => {
         const match = node.value.match(citeExtractorRe)
@@ -280,7 +301,8 @@ const rehypeCitationGenerator = (Cite) => {
           citationId,
           citationPre,
           options,
-          isComposite
+          isComposite,
+          citationFormat
         )
         citationDict[citationId] = citedText
 
