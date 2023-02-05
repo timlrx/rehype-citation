@@ -52,3 +52,20 @@ and multiple citations [@Nash1950; @Nash1951]
 
 ### References
 `
+
+export const LinkCitationsExample = `## Welcome
+
+Rehype plugin to nicely format citations in markdown
+documents and insert bibliography in html format.
+
+Supports standard citations [@Nash1950], in-text citations @Nash1951
+and multiple citations [@Nash1950; @Xie2016; @Nash1951]
+
+The _link-citations_ option can be used to add a link from citations to the references sections.
+
+This applies to numeric and author-date styles only.
+
+Implementation might differ from Pandoc, but if you run into any problems please file an issue.
+
+### Bibliography
+`

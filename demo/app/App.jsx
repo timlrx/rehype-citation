@@ -6,6 +6,7 @@ import {
   SuppressBibliographyExample,
   CustomCSLExample,
   FootnotesExample,
+  LinkCitationsExample,
 } from './md-examples'
 
 const bibliography =
@@ -17,7 +18,13 @@ const acmCSL =
 const chicagofullnoteCSL =
   'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl'
 
-const examples = ['Default', 'Suppress Bibliography', 'Custom CSL', 'Footnote Style']
+const examples = [
+  'Default',
+  'Suppress Bibliography',
+  'Custom CSL',
+  'Footnote Style',
+  'Link Citations',
+]
 
 function App() {
   const [selected, setSelected] = useState(examples[0])
@@ -61,6 +68,15 @@ function App() {
             rehypeCitationOptions={{
               bibliography,
               csl: chicagofullnoteCSL,
+            }}
+          />
+        )}
+        {selected === examples[4] && (
+          <Example
+            markdown={LinkCitationsExample}
+            rehypeCitationOptions={{
+              bibliography,
+              linkCitations: true,
             }}
           />
         )}
