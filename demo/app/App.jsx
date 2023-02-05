@@ -37,11 +37,12 @@ function App() {
   const [selected, setSelected] = useState()
   return (
     <>
-      <body className="mx-6 pt-12 lg:pl-12 mb-12">
+      <div className="mx-6 pt-12 lg:pl-12 mb-12">
         <h1 className="text-4xl font-bold">Rehype Citation</h1>
         <div className="mt-8 space-x-4 space-y-2">
           {examples.map((x) => (
             <button
+              key={x}
               onClick={() => {
                 window.history.pushState({}, '', x.toLowerCase().replace(' ', '-'))
                 setSelected(x)
@@ -90,7 +91,7 @@ function App() {
             }}
           />
         )}
-      </body>
+      </div>
     </>
   )
 }
