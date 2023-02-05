@@ -42,6 +42,9 @@ import {
   loadCSL,
   loadLocale,
   getCitationFormat,
+  getSortedRelevantRegistryItems,
+  split,
+  isSameAuthor,
 } from './utils.js'
 import { htmlToHast } from './html-transform-node.js'
 
@@ -116,12 +119,47 @@ const genCitation = (
       htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output}</span>`),
     ]
   } else if (linkCitations && citationFormat === 'author-date') {
-    // Same author (see Nash, 1950, pp. 12–13, 1951); diff author (Nash, 1950; Xie, 2016)
-    // Citeproc adds an additional item field that links to the bib
-    return [
-      citationText,
-      htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</span>`),
-    ]
+    // E.g. (see Nash, 1950, pp. 12–13, 1951); (Nash, 1950; Xie, 2016)
+    if (entries.length === 1) {
+      // Do not link bracket
+      const output = isComposite
+        ? `<a href="#bib-${entries[0].id.toLowerCase()}">${citationText}</a>`
+        : `(<a href="#bib-${entries[0].id.toLowerCase()}">${citationText.slice(1, -1)}</a>)`
+      return [
+        citationText,
+        htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output}</span>`),
+      ]
+    } else {
+      // Retrieve the items in the correct order and attach link each of them
+      const refIds = entries.map((e) => e.id)
+      const results = getSortedRelevantRegistryItems(citeproc, refIds, citeproc.opt.sort_citations)
+      const output = []
+      let str = citationText
+
+      for (const [i, item] of results.entries()) {
+        // Need to compare author. If same just match on date.
+        const id = item.id
+        let citeMatch = item.ambig
+        // If author is the same as the previous, some styles like apa collapse the author
+        if (i > 0 && isSameAuthor(results[i - 1], item) && str.indexOf(citeMatch) === -1) {
+          // Just match on year
+          citeMatch = item.ref.issued.year.toString()
+        }
+        const startPos = str.indexOf(citeMatch)
+        const [start, rest] = split(str, startPos)
+        output.push(start) // Irrelevant parts
+        const url = `<a href="#bib-${id.toLowerCase()}">${rest.substring(0, citeMatch.length)}</a>`
+        output.push(url)
+        str = rest.substr(citeMatch.length)
+      }
+      output.push(str)
+      return [
+        citationText,
+        htmlToHast(
+          `<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output.join('')}</span>`
+        ),
+      ]
+    }
   } else {
     return [
       citationText,

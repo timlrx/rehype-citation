@@ -48,4 +48,57 @@ rehypeCitationTest('citation link should have same key as bib', async () => {
   assert.ok(result.match(/#bib-nash1951/g))
 })
 
+rehypeCitationTest('supports link citation for author-date style', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950]</div>`, {
+    csl: 'apa',
+    suppressBibliography: true,
+    linkCitations: true,
+  })
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(<a href="#bib-nash1950">Nash, 1950</a>)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('multiple citations for author-date style which collapses author', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950; @Nash1951]</div>`, {
+    csl: 'apa',
+    suppressBibliography: true,
+    linkCitations: true,
+  })
+  const expected = dedent`<div><span class="" id="citation--nash1950--nash1951--1">(<a href="#bib-nash1950">Nash, 1950</a>, <a href="#bib-nash1951">1951</a>)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest(
+  'multiple citations for author-date style which does not collapse author',
+  async () => {
+    const result = await processHtml(dedent`<div>[@Nash1950; @Nash1951]</div>`, {
+      csl: 'harvard1',
+      suppressBibliography: true,
+      linkCitations: true,
+    })
+    const expected = dedent`<div><span class="" id="citation--nash1950--nash1951--1">(<a href="#bib-nash1950">Nash 1950</a>; <a href="#bib-nash1951">Nash 1951</a>)</span></div>`
+    assert.is(result, expected)
+  }
+)
+
+rehypeCitationTest('multiple citations for author-date style which sorts', async () => {
+  const result = await processHtml(dedent`<div>[@Xie2016; @Nash1950]</div>`, {
+    csl: 'apa',
+    suppressBibliography: true,
+    linkCitations: true,
+  })
+  const expected = dedent`<div><span class="" id="citation--xie2016--nash1950--1">(<a href="#bib-nash1950">Nash, 1950</a>; <a href="#bib-xie2016">Xie, 2016</a>)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('multiple citations for author-date style which does not sort', async () => {
+  const result = await processHtml(dedent`<div>[@Xie2016; @Nash1950]</div>`, {
+    csl: 'harvard1',
+    suppressBibliography: true,
+    linkCitations: true,
+  })
+  const expected = dedent`<div><span class="" id="citation--xie2016--nash1950--1">(<a href="#bib-xie2016">Xie 2016</a>; <a href="#bib-nash1950">Nash 1950</a>)</span></div>`
+  assert.is(result, expected)
+})
+
 rehypeCitationTest.run()
