@@ -15,7 +15,7 @@ import { parseCitation } from './parse-citation.js'
 import { genCitation } from './gen-citation.js'
 import { genBiblioNode } from './gen-biblio.js'
 import { genFootnoteSection } from './gen-footnote.js'
-import { citeExtractorRe } from './regex.js'
+import { citationRE } from './regex.js'
 import {
   isNode,
   isValidHttpUrl,
@@ -80,11 +80,17 @@ const rehypeCitationGenerator = (Cite) => {
       const citationFormat = getCitationFormat(citeproc)
 
       visit(tree, 'text', (node, idx, parent) => {
-        const match = node.value.match(citeExtractorRe)
+        const match = node.value.match(citationRE)
         //@ts-ignore
         if (!match || !permittedTags.includes(parent.tagName)) return
-        const citeStartIdx = match.index
-        const citeEndIdx = match.index + match[0].length
+        let citeStartIdx = match.index
+        let citeEndIdx = match.index + match[0].length
+        // If we have an in-text citation and we should suppress the author, the
+        // match.index does NOT include the positive lookbehind, so we have to manually
+        // shift "from" to one before.
+        if (match[2] !== undefined) {
+          citeStartIdx--
+        }
         const newChildren = []
         // if preceding string
         if (citeStartIdx !== 0) {
@@ -95,7 +101,7 @@ const rehypeCitationGenerator = (Cite) => {
           })
         }
 
-        const [entries, isComposite] = parseCitation(match[0])
+        const [entries, isComposite] = parseCitation(match)
 
         // If id is not in citation file (e.g. route alias or js package), abort process
         for (const citeItem of entries) {
@@ -118,7 +124,6 @@ const rehypeCitationGenerator = (Cite) => {
         citationPre.push([`${idRoot}-${citationId}`, 0])
         citationId = citationId + 1
 
-        // TODO: return html with link
         newChildren.push(citedTextNode)
 
         // if trailing string
