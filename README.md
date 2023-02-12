@@ -1,6 +1,6 @@
 # rehype-citation
 
-![rehype citation example](./example.png)
+![rehype citation](./rehype-citation.png)
 
 [rehype](https://github.com/wooorm/rehype) plugin to nicely format citations in markdown documents and insert bibliography in html format. It is meant to be used as a server side plugin and neatly integrates [citeproc-js](https://github.com/Juris-M/citeproc-js) and [citation-js](https://github.com/citation-js/citation-js) within the remark-rehype ecosystem. Parsing of citations and all the wonderful regexes are adapted from [Zettlr](https://github.com/Zettlr/Zettlr).
 
