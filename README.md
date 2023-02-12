@@ -1,8 +1,8 @@
 # rehype-citation
 
-![rehype citation example](./example.png)
+![rehype citation](./rehype-citation.png)
 
-[rehype](https://github.com/wooorm/rehype) plugin to nicely format citations in markdown documents and insert bibliography in html format. It is meant to be used as a server side plugin and neatly integrates [citeproc-js](https://github.com/Juris-M/citeproc-js) and [citation-js](https://github.com/citation-js/citation-js) within the remark-rehype ecosystem.
+[rehype](https://github.com/wooorm/rehype) plugin to nicely format citations in markdown documents and insert bibliography in html format. It is meant to be used as a server side plugin and neatly integrates [citeproc-js](https://github.com/Juris-M/citeproc-js) and [citation-js](https://github.com/citation-js/citation-js) within the remark-rehype ecosystem. Parsing of citations and all the wonderful regexes are adapted from [Zettlr](https://github.com/Zettlr/Zettlr).
 
 It supports both normal citations (such as [@foo]) and in-text citation (such as @foo), as well as author-date, numerical, and note styles.
 
@@ -155,9 +155,3 @@ Type: `boolean`.
 Default: `false`.
 
 If true, citations will be hyperlinked to the corresponding bibliography entries (for author-date and numeric styles only).
-
-### Limitations
-
-1. In-text citation does not parse additional locator information e.g. `@foo [p. 33]`, please use either `[@foo, p. 33]` or `@foo`.
-2. Parsing of locators such as page or chapter is done by heuristics and limited to only `en` content.
-3. Does not support using curly braces to protect citation key or locator information.

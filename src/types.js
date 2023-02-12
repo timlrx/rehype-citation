@@ -24,6 +24,16 @@
  */
 
 /**
+ * @typedef CiteItemSuffix
+ *  This interface describes the potential return of the parseSuffix function. It
+ *  can return a locator, a label, and a suffix. More specifically, it will return
+ *  a label in any case, defaulting to "page", just like citeproc.
+ * @property {string} [locator]
+ * @property {string} [label]
+ * @property {string} [suffix]
+ * /
+
+/**
  * @typedef CiteItem
  *   Cite item to be passed into citeproc-js
  * @property {string} [id]
