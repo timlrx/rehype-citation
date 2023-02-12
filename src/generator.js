@@ -4,204 +4,31 @@
  * @typedef {import('hast').Root} Root
  * @typedef {import('hast').Element} Element
  * @typedef {import('unist-util-visit').Visitor<Node>} Visitor
- * @typedef {import('./parse-citation').CiteItem} CiteItem
- * @typedef {"note" | "in-text"} Mode
- * @typedef Options
- *   Configuration.
- * @property {string} [bibliography]
- *   Name of bibtex or CSL-JSON file
- * @property {string} [path]
- *   Optional path to file (node). Will be joined with `options.bibliography` and used in place of cwd of file if provided.
- * @property {'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string} [csl]
- *   One of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla'. A local file path or URL to a valid CSL file is also accepted.
- * @property {string} [lang]
- *   Locale to use in formatting citations. Defaults to en-US. A local file path or URL to a valid locale file is also accepted.
- * @property {boolean} [suppressBibliography]
- *   By default, biliography is inserted after the entire markdown file.
- *   If the file contains `[^Ref]`, the biliography will be inserted there instead.
- * @property {string[]} [noCite]
- *   Citation IDs (@item1) to include in the bibliography even if they are not cited in the document
- * @property {string[]} [inlineClass]
- *   Class(es) to add to the inline citation.
- * @property {string[]} [inlineBibClass]
- *   Class(es) to add to the inline bibliography. Leave empty for no inline bibliography.
+ * @typedef {import('./types').CiteItem} CiteItem
+ * @typedef {import('./types').Mode} Mode
+ * @typedef {import('./types').Options} Options
  */
 
 import { visit } from 'unist-util-visit'
 import fetch from 'cross-fetch'
 import { parseCitation } from './parse-citation.js'
+import { genCitation } from './gen-citation.js'
+import { genBiblioNode } from './gen-biblio.js'
+import { genFootnoteSection } from './gen-footnote.js'
 import { citeExtractorRe } from './regex.js'
-import { isNode, isValidHttpUrl, readFile, getBibliography, loadCSL, loadLocale } from './utils.js'
-import { htmlToHast } from './html-transform-node.js'
+import {
+  isNode,
+  isValidHttpUrl,
+  readFile,
+  getBibliography,
+  loadCSL,
+  loadLocale,
+  getCitationFormat,
+} from './utils.js'
 
 const defaultCiteFormat = 'apa'
 const permittedTags = ['div', 'p', 'span', 'li']
 const idRoot = 'CITATION'
-
-/**
- * Generate citation using citeproc
- * This accounts for prev citations and additional properties
- *
- * @param {*} citeproc
- * @param {Mode} mode
- * @param {CiteItem[]} entries
- * @param {number} citationId
- * @param {any[]} citationPre
- * @param {Options} options
- * @param {boolean} isComposite
- * @return {[string, string]}
- */
-const genCitation = (citeproc, mode, entries, citationId, citationPre, options, isComposite) => {
-  const key = `${idRoot}-${citationId}`
-  const c = citeproc.processCitationCluster(
-    {
-      citationID: key,
-      citationItems: entries,
-      properties:
-        mode === 'in-text'
-          ? { noteIndex: 0, mode: isComposite ? 'composite' : '' }
-          : { noteIndex: citationId, mode: isComposite ? 'composite' : '' },
-    },
-    citationPre.length > 0 ? citationPre : [],
-    []
-  )
-
-  // console.log(Object.getOwnPropertyNames(citeproc.registry))
-  // console.log(citeproc.registry.citationreg.citationByIndex)
-  // c = [ { bibchange: true, citation_errors: [] }, [ [ 0, '(1)', 'CITATION-1' ] ]]
-  const citationText = c[1].find((x) => x[2] === key)[1]
-  const ids = `citation--${entries.map((x) => x.id.toLowerCase()).join('--')}--${citationId}`
-  if (mode === 'note') {
-    // Use cite-fn-{id} to denote footnote from citation, will clean it up later to follow gfm "user-content" format
-    return [
-      citationText,
-      htmlToHast(
-        `<span class="${(options.inlineClass ?? []).join(
-          ' '
-        )}" id=${ids}><sup><a href="#cite-fn-${citationId}" id="cite-fnref-${citationId}" data-footnote-ref aria-describedby="footnote-label">${citationId}</a></sup></span>`
-      ),
-    ]
-  }
-  // Coerce to html to parse HTML code e.g. &#38; and return text node
-  return [
-    citationText,
-    htmlToHast(
-      `<span class="${(options.inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</span>`
-    ),
-  ]
-}
-
-{
-  /* <section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
-<ol>
-<li id="user-content-fn-1">
-<p>First note <a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
-</li>
-</ol>
-</section> */
-}
-
-/**
- * Create new footnote section node based on footnoteArray mappings
- *
- * @param {{int: string}} citationDict
- * @param {{type: 'citation' | 'existing', oldId: number}[]} footnoteArray
- * @param {Element | undefined} footnoteSection
- * @return {Element}
- */
-const genFootnoteSection = (citationDict, footnoteArray, footnoteSection) => {
-  /** @type {Element} */
-  const list = {
-    type: 'element',
-    tagName: 'ol',
-    children: [{ type: 'text', value: '\n' }],
-  }
-  let oldFootnoteList
-  if (footnoteSection) {
-    oldFootnoteList = footnoteSection.children.find((n) => n.tagName === 'ol')
-  }
-  for (const [idx, item] of footnoteArray.entries()) {
-    const { type, oldId } = item
-    if (type === 'citation') {
-      list.children.push({
-        type: 'element',
-        tagName: 'li',
-        properties: { id: `user-content-fn-${idx + 1}` },
-        children: [
-          {
-            type: 'element',
-            tagName: 'p',
-            properties: {},
-            children: [
-              htmlToHast(`<span>${citationDict[oldId]}</span>`),
-              {
-                type: 'element',
-                tagName: 'a',
-                properties: {
-                  href: `#user-content-fnref-${idx + 1}`,
-                  dataFootnoteBackref: true,
-                  className: ['data-footnote-backref'],
-                  ariaLabel: 'Back to content',
-                },
-                children: [{ type: 'text', value: '↩' }],
-              },
-            ],
-          },
-          { type: 'text', value: '\n' },
-        ],
-      })
-    } else if (type === 'existing') {
-      // @ts-ignore
-      const liNode = oldFootnoteList.children.find(
-        (n) => n.tagName === 'li' && n.properties.id === `user-content-fn-${oldId}`
-      )
-      liNode.properties.id = `user-content-fn-${idx + 1}`
-      const aNode = liNode.children[1].children.find((n) => n.tagName === 'a')
-      aNode.properties.href = `#user-content-fnref-${idx + 1}`
-      list.children.push(liNode)
-    }
-  }
-
-  /** @type {Element} */
-  const newfootnoteSection = {
-    type: 'element',
-    tagName: 'section',
-    properties: { dataFootnotes: true, className: ['footnotes'] },
-    children: [
-      {
-        type: 'element',
-        tagName: 'h2',
-        properties: { className: ['sr-only'], id: 'footnote-label' },
-        children: [{ type: 'text', value: 'Footnotes' }],
-      },
-      { type: 'text', value: '\n' },
-      list,
-    ],
-  }
-  return newfootnoteSection
-}
-
-/**
- * Generate bibliography in html and convert it to hast
- *
- * @param {*} citeproc
- */
-const genBiblioNode = (citeproc) => {
-  const [params, bibBody] = citeproc.makeBibliography()
-  const bibliography =
-    '<div id="refs" class="references csl-bib-body">\n' + bibBody.join('') + '</div>'
-  const biblioNode = htmlToHast(bibliography)
-
-  // Add citekey id to each bibliography entry.
-  biblioNode.children
-    .filter((node) => node.properties?.className?.includes('csl-entry'))
-    .forEach((node, i) => {
-      const citekey = params.entry_ids[i][0].toLowerCase()
-      node.properties = node.properties || {}
-      node.properties.id = 'bib-' + citekey
-    })
-  return biblioNode
-}
 
 /**
  * Rehype plugin that formats citations in markdown documents and insert bibliography in html format
@@ -250,6 +77,7 @@ const rehypeCitationGenerator = (Cite) => {
       const citeproc = config.engine(citations.data, citeFormat, lang, 'html')
       /** @type {Mode} */
       const mode = citeproc.opt.xclass
+      const citationFormat = getCitationFormat(citeproc)
 
       visit(tree, 'text', (node, idx, parent) => {
         const match = node.value.match(citeExtractorRe)
@@ -277,10 +105,12 @@ const rehypeCitationGenerator = (Cite) => {
           citeproc,
           mode,
           entries,
+          idRoot,
           citationId,
           citationPre,
           options,
-          isComposite
+          isComposite,
+          citationFormat
         )
         citationDict[citationId] = citedText
 

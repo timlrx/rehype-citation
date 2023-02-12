@@ -38,7 +38,10 @@ function Example({ markdown, rehypeCitationOptions }) {
         </div>
         <div className="mt-4 lg:mt-8">
           <h2 className="text-2xl mb-2">Result</h2>
-          <div className="prose pb-4 marker:text-black bg-blue-100 rounded p-4" id="results">
+          <div
+            className="prose pb-4 marker:text-black bg-blue-100 rounded p-4 prose-a:text-gray-800 hover:prose-a:text-gray-600 prose-a:no-underline"
+            id="results"
+          >
             processing markdown...
           </div>
         </div>

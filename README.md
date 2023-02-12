@@ -10,6 +10,14 @@ Note styles is only compatible with Github Formatted Markdown (GFM). It is recom
 
 API and options follows very closely to [Rmarkdown](https://bookdown.org/yihui/rmarkdown-cookbook/bibliography.html) and [Pandoc](https://pandoc.org/MANUAL.html#citations)
 
+## Examples
+
+- [Citations with Bibliography](https://rehype-citation.netlify.app)
+- [Suppress Bibliography](https://rehype-citation.netlify.app/suppress-bibliography)
+- [Custom CSL](https://rehype-citation.netlify.app/custom-csl)
+- [Footnote style](https://rehype-citation.netlify.app/footnote-style)
+- [Link Citations](https://rehype-citation.netlify.app/link-citations)
+
 ## Installation
 
 This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
@@ -141,9 +149,15 @@ Type: `string[]`.
 
 Array of classes for inline bibliography. Leave empty to disable inline bibliography.
 
+#### options.linkCitations
+
+Type: `boolean`.
+Default: `false`.
+
+If true, citations will be hyperlinked to the corresponding bibliography entries (for author-date and numeric styles only).
+
 ### Limitations
 
-1. `link-citations` is not implemented.
-2. In-text citation does not parse additional locator information e.g. `@foo [p. 33]`, please use either `[@foo, p. 33]` or `@foo`.
-3. Parsing of locators such as page or chapter is done by heuristics and limited to only `en` content.
-4. Does not support using curly braces to protect citation key or locator information.
+1. In-text citation does not parse additional locator information e.g. `@foo [p. 33]`, please use either `[@foo, p. 33]` or `@foo`.
+2. Parsing of locators such as page or chapter is done by heuristics and limited to only `en` content.
+3. Does not support using curly braces to protect citation key or locator information.

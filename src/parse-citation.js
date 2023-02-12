@@ -1,20 +1,5 @@
 /**
- * @typedef CiteItem
- *   Cite item to be passed into citeproc-js
- * @property {string} [id]
- *   The id field is required
- * @property {string} [locator]
- *   A string identifying a page number or other pinpoint location or range within the resource;
- * @property {string} [label]
- *   Path to file
- * @property {string} [prefix]
- *   A string to print before this cite item
- * @property {string} [suffix]
- *   A string to print after this cite item
- * @property {boolean} [suppress-author]
- *   If true, author names will not be included in the citation output for this cite
- * @property {boolean} [author-only]
- *   If true, only the author name will be included in the citation output for this cite
+ * @typedef {import('./types').CiteItem} CiteItem
  */
 
 import { citeBracketRe, citeKeyRe } from './regex.js'
