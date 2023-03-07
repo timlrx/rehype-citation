@@ -65,7 +65,7 @@ export const genCitation = (
     // e.g. [1, 2]
     let i = 0
     const refIds = entries.map((e) => e.id)
-    const output = citationText.replace(/\d/g, function (d) {
+    const output = citationText.replace(/\d+/g, function (d) {
       const url = `<a href="#bib-${refIds[i].toLowerCase()}">${d}</a>`
       i++
       return url
