@@ -44,6 +44,18 @@ rehypeCitationTest('properly account for previous citation', async () => {
   assert.is(result, expected)
 })
 
+rehypeCitationTest('parses citation in tables', async () => {
+  const result = await processHtml(
+    '<div><table><tr><th>Header [@Nash1951]</th></tr><tr><td>Content [@Nash1950]</td></tr></table></div>',
+    {
+      suppressBibliography: true,
+      csl: 'vancouver',
+    }
+  )
+  const expected = dedent`<div><table><tbody><tr><th>Header <span class="" id="citation--nash1951--1">(1)</span></th></tr><tr><td>Content <span class="" id="citation--nash1950--2">(2)</span></td></tr></tbody></table></div>`
+  assert.is(result, expected)
+})
+
 rehypeCitationTest('parse multiple citations correctly', async () => {
   const result = await processHtml(
     '<div>First citation @Nash1950 and second citation [@Nash1951]</div>',

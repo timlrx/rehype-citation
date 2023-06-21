@@ -27,7 +27,7 @@ import {
 } from './utils.js'
 
 const defaultCiteFormat = 'apa'
-const permittedTags = ['div', 'p', 'span', 'li']
+const permittedTags = ['div', 'p', 'span', 'li', 'td', 'th']
 const idRoot = 'CITATION'
 
 /**
