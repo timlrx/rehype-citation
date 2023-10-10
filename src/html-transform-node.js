@@ -8,5 +8,6 @@ import { fromParse5 } from 'hast-util-from-parse5'
  */
 export const htmlToHast = (html) => {
   const p5ast = parse5.parseFragment(html)
+  // @ts-ignore
   return fromParse5(p5ast).children[0]
 }

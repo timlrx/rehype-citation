@@ -190,6 +190,7 @@ const rehypeCitationGenerator = (Cite) => {
                 return aBibNode
               }),
             }
+            // @ts-ignore
             parent.children.push(inlineBibNode)
           }
 
@@ -198,6 +199,7 @@ const rehypeCitationGenerator = (Cite) => {
             !options.suppressBibliography &&
             (node.tagName === 'p' || node.tagName === 'div') &&
             node.children.length >= 1 &&
+            // @ts-ignore
             node.children[0].value === '[^ref]'
           ) {
             parent.children[idx] = biblioNode
@@ -228,6 +230,7 @@ const rehypeCitationGenerator = (Cite) => {
         visit(tree, 'element', (node) => {
           if (node.tagName === 'sup') {
             let nextNode = node.children[0]
+            // @ts-ignore
             if (nextNode.tagName === 'a') {
               // @ts-ignore
               const { href, id } = nextNode.properties
@@ -242,6 +245,7 @@ const rehypeCitationGenerator = (Cite) => {
                 nextNode.properties.href = `#user-content-fn-${index}`
                 // @ts-ignore
                 nextNode.properties.id = `user-content-fnref-${index}`
+                // @ts-ignore
                 nextNode.children[0].value = index.toString()
                 index += 1
               }
