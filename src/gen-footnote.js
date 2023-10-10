@@ -21,6 +21,7 @@ export const genFootnoteSection = (citationDict, footnoteArray, footnoteSection)
   }
   let oldFootnoteList
   if (footnoteSection) {
+    // @ts-ignore
     oldFootnoteList = footnoteSection.children.find((n) => n.tagName === 'ol')
   }
   for (const [idx, item] of footnoteArray.entries()) {
