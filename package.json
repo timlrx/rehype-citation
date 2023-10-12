@@ -81,6 +81,7 @@
     "cross-fetch": "^4.0.0",
     "hast-util-from-dom": "^5.0.0",
     "hast-util-from-parse5": "^8.0.1",
+    "js-yaml": "^4.1.0",
     "parse5": "^7.1.2",
     "unified": "^11.0.0",
     "unist-util-visit": "^5.0.0"

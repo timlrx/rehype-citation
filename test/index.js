@@ -6,6 +6,7 @@ import rehypeCitation from '../index.js'
 
 const bibliography = './test/references-data.bib'
 const cslJSON = './test/csl-json-data.json'
+const cff = './test/CITATION.cff'
 
 const processHtml = (html, options, input = bibliography) => {
   return rehype()
@@ -273,6 +274,16 @@ rehypeCitationTest('generates multiple inline bibs', async () => {
     <div class="inline-entry" id="inline--nash1951--1">Nash, J. (1951). Non-cooperative games. <i>Annals of Mathematics</i>, 286–295.</div>
     </div>
     </div>`.replace(/\n/g, '')
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('works with cff file', async () => {
+  const result = await processHtml(
+    dedent`<div>[@10.5281/zenodo.1234]<</div>`,
+    { suppressBibliography: true },
+    cff
+  )
+  const expected = dedent`<div><span class="" id="citation--10.5281/zenodo.1234--1">(Lisa &#x26; Bot, 2017)</span>&#x3C;</div>`
   assert.is(result, expected)
 })
 
