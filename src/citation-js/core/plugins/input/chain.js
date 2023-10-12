@@ -10,24 +10,23 @@ import { applyGraph, removeGraph } from './graph.js'
 /**
  * @access private
  * @param {Array<Object>} graph
+ * @return {String}
  */
 function prepareParseGraph(graph) {
-  return (
-    graph
-      // collapse continuous iterations of the same type
-      .reduce((array, next) => {
-        const last = array[array.length - 1]
-        if (last && last.type === next.type) {
-          last.count = last.count + 1 || 2
-        } else {
-          array.push(next)
-        }
-        return array
-      }, [])
-      // presentation
-      .map((element) => (element.count > 1 ? element.count + 'x ' : '') + element.type)
-      .join(' -> ')
-  )
+  return graph
+    // collapse continuous iterations of the same type
+    .reduce((array, next) => {
+      const last = array[array.length - 1]
+      if (last && last.type === next.type) {
+        last.count = last.count + 1 || 2
+      } else {
+        array.push(next)
+      }
+      return array
+    }, [])
+    // presentation
+    .map(element => (element.count > 1 ? element.count + 'x ' : '') + element.type)
+    .join(' -> ')
 }
 
 /**
@@ -40,20 +39,19 @@ function prepareParseGraph(graph) {
  */
 class ChainParser {
   constructor(input, options = {}) {
-    this.options = Object.assign(
-      {
-        generateGraph: true,
-        forceType: parseType(input),
-        maxChainLength: 10,
-        strict: true,
-        target: '@csl/list+object',
-      },
-      options
-    )
+    this.options = Object.assign({
+      generateGraph: true,
+      forceType: parseType(input),
+      maxChainLength: 10,
+      strict: true,
+      target: '@csl/list+object'
+    }, options)
 
     this.type = this.options.forceType
     this.data = typeof input === 'object' ? deepCopy(input) : input
-    this.graph = [{ type: this.type, data: input }]
+    this.graph = [
+      { type: this.type, data: input }
+    ]
     this.iteration = 0
   }
 
@@ -79,9 +77,8 @@ class ChainParser {
     if (this.error || this.type === this.options.target) {
       return false
     } else if (this.iteration >= this.options.maxChainLength) {
-      this.error = new RangeError(
-        `Max. number of parsing iterations reached (${prepareParseGraph(this.graph)})`
-      )
+      this.error = new RangeError(`Max. number of parsing iterations reached (${prepareParseGraph(this.graph)
+        })`)
       return false
     } else {
       this.iteration++
@@ -104,8 +101,9 @@ class ChainParser {
         return []
       }
     } else if (this.options.target === '@csl/list+object') {
-      return upgradeCsl(this.data).map(
-        this.options.generateGraph ? (entry) => applyGraph(entry, this.graph) : removeGraph
+      return upgradeCsl(this.data).map(this.options.generateGraph
+        ? entry => applyGraph(entry, this.graph)
+        : removeGraph
       )
     } else {
       return this.data
@@ -173,9 +171,7 @@ export const chainAsync = async (...args) => {
   const chain = new ChainParser(...args)
 
   while (chain.iterate()) {
-    chain.data = await parseDataAsync(chain.data, chain.type).catch((e) => {
-      chain.error = e
-    })
+    chain.data = await parseDataAsync(chain.data, chain.type).catch(e => { chain.error = e })
   }
 
   return chain.end()

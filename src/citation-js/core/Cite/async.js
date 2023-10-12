@@ -1,6 +1,4 @@
-//@ts-nocheck
-import Cite from './index.js'
-
+// @ts-nocheck
 /**
  * @callback module:@citation-js/core.Cite~asyncCallback
  * @param {Cite} data - Cite object
@@ -22,7 +20,7 @@ function async(data, options, callback) {
     options = undefined
   }
 
-  const promise = Cite().setAsync(data, options)
+  const promise = (new this()).setAsync(data, options)
 
   if (typeof callback === 'function') {
     promise.then(callback)

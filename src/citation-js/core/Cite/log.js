@@ -1,8 +1,7 @@
-import Cite from './index.js'
-
+// @ts-nocheck
 /**
- * @memberof module:@citation-js/core.Cite#
- *
+  * @memberof module: @citation-js / core.Cite#
+  *
  * @return {Number} The latest version of the object
  */
 function currentVersion() {
@@ -23,7 +22,7 @@ function retrieveVersion(versnum = 1) {
     return null
   } else {
     const [data, options] = this.log[versnum - 1]
-    const image = new Cite(JSON.parse(data), JSON.parse(options))
+    const image = new this.constructor(JSON.parse(data), JSON.parse(options))
     image.log = this.log.slice(0, versnum)
     return image
   }

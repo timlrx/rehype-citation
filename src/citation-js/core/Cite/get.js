@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { validateOutputOptions as validate } from './static.js'
+import { validateOutputOptions as validate } from './validate.js'
 import { format as formatData } from '../plugins/output.js'
 import { clean as parseCsl } from '../plugins/input/csl.js'
 
@@ -13,7 +13,7 @@ import { clean as parseCsl } from '../plugins/input/csl.js'
  * @return {Array<String>} List of IDs
  */
 export function getIds() {
-  return this.data.map((entry) => entry.id)
+  return this.data.map(entry => entry.id)
 }
 
 /**
@@ -53,8 +53,7 @@ export function get(options = {}) {
 
   const { type, style } = parsedOptions
   const [styleType, styleFormat] = style.split('-')
-  const newStyle =
-    styleType === 'citation' ? 'bibliography' : styleType === 'csl' ? 'data' : styleType
+  const newStyle = styleType === 'citation' ? 'bibliography' : styleType === 'csl' ? 'data' : styleType
   const newType = type === 'string' ? 'text' : type === 'json' ? 'object' : type
 
   let formatOptions
@@ -81,12 +80,7 @@ export function get(options = {}) {
   const result = this.format(newStyle, Object.assign(formatOptions, options._newOptions))
 
   const { format } = parsedOptions
-  if (
-    format === 'real' &&
-    newType === 'html' &&
-    typeof document !== 'undefined' &&
-    typeof document.createElement === 'function'
-  ) {
+  if (format === 'real' && newType === 'html' && typeof document !== 'undefined' && typeof document.createElement === 'function') {
     const tmp = document.createElement('div')
     tmp.innerHTML = result
     return tmp.firstChild
