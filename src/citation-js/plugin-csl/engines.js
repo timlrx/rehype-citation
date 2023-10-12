@@ -21,6 +21,7 @@ const getWrapperProxy = function (original) {
 for (const format in CSL.Output.Formats) {
   const original = CSL.Output.Formats[format]['@bibliography/entry']
 
+  /* istanbul ignore if: currently unreachable */
   if (!original || original[proxied]) {
     continue
   }
@@ -76,6 +77,7 @@ const fetchEngine = function (style, locale, styleXml, retrieveItem, retrieveLoc
   if (engines[engineHash] instanceof CSL.Engine) {
     engine = engines[engineHash]
     engine.sys.retrieveItem = retrieveItem
+    engine.sys.wrapBibliographyEntry = undefined
     engine.updateItems([])
   } else {
     engine = engines[engineHash] = new CSL.Engine(

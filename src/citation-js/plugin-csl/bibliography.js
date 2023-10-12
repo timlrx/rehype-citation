@@ -116,8 +116,6 @@ export default function bibliography(data, options = {}) {
       const entry = items[id]
       return [getAffix(entry, options.prepend), getAffix(entry, options.append)]
     }
-  } else {
-    citeproc.sys.wrapBibliographyEntry = () => ['', '']
   }
 
   const bibliography = citeproc.makeBibliography()
