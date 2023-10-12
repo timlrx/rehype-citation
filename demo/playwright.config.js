@@ -104,7 +104,7 @@ const config = {
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npm run vite',
-    port: 3000,
+    port: 5173,
   },
 }
 

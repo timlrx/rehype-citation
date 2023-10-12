@@ -3,6 +3,59 @@ import { util } from '../core/index.js'
 import prepareEngine from './engines.js'
 
 /**
+ * https://citeproc-js.readthedocs.io/en/latest/csl-json/markup.html#cite-items
+ *
+ * @typedef {Object} module:@citation-js/plugin-csl.output~CiteItem
+ * @property {String} id
+ */
+
+/**
+ * https://citeproc-js.readthedocs.io/en/latest/csl-json/markup.html#citations
+ *
+ * @typedef {Object} module:@citation-js/plugin-csl.output~Citation
+ * @property {Array<module:@citation-js/plugin-csl.output~CiteItem>} citationItems
+ * @property {Object} properties
+ * @property {Number} properties.noteIndex
+ */
+
+/**
+ * @access private
+ * @param {String|module:@citation-js/plugin-csl.output~CiteItem} citeItem
+ * @return {module:@citation-js/plugin-csl.output~CiteItem} citeItem
+ */
+function prepareCiteItem(citeItem) {
+  return typeof citeItem === 'object' ? citeItem : { id: citeItem }
+}
+
+/**
+ * @access private
+ * @param {String|Array<String>|Array<module:@citation-js/plugin-csl.output~CiteItem>|module:@citation-js/plugin-csl.output~CiteItem|module:@citation-js/plugin-csl.output~Citation} citation
+ * @return {module:@citation-js/plugin-csl.output~Citation} citation
+ */
+function prepareCitation(citation) {
+  if (citation.citationItems) {
+    return citation
+  }
+
+  return {
+    citationItems: [].concat(citation).map(prepareCiteItem),
+    properties: { noteIndex: 0 },
+  }
+}
+
+/**
+ * @access private
+ * @param {Array<String>|Array<module:@citation-js/plugin-csl.output~CiteItem>|Array<module:@citation-js/plugin-csl.output~Citation>} [context=[]]
+ * @return {Array<module:@citation-js/plugin-csl.output~Citation>} citations
+ */
+function prepareCitations(context) {
+  if (!context) {
+    return []
+  }
+  return context.map(prepareCitation)
+}
+
+/**
  * Here's an example for `entry`:
  *
  * ```js
@@ -43,22 +96,15 @@ import prepareEngine from './engines.js'
 export default function citation(data, options = {}) {
   const { template = 'apa', lang, format = 'text' } = options
   const ids = data.map(({ id }) => id)
-  const entries = options.entry ? [].concat(options.entry) : ids
+  const entries = options.entry ? options.entry : ids
   data = util.downgradeCsl(data)
 
   const citeproc = prepareEngine(data, template, lang, format)
-  citeproc.updateItems(ids)
 
-  const { citationsPre = [], citationsPost = [] } = options
-  const citation = citeproc.previewCitationCluster(
-    {
-      citationItems: entries.map((id) => (typeof id === 'object' ? id : { id })),
-      properties: { noteIndex: 0 },
-    },
-    citationsPre,
-    citationsPost,
-    format
-  )
+  const before = prepareCitations(options.citationsPre)
+  const citation = prepareCitation(entries)
+  const after = prepareCitations(options.citationsPost)
+  const output = citeproc.rebuildProcessorState([...before, citation, ...after], format, [])
 
-  return citation
+  return output[before.length][2]
 }

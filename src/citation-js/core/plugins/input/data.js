@@ -56,10 +56,9 @@ const nativeAsyncParsers = {
 export function data(input, type) {
   if (typeof parsers[type] === 'function') {
     return parsers[type](input)
-  } else if (typeof nativeParsers[type] === 'function') {
-    return nativeParsers[type](input)
   } else {
-    throw new TypeError(`No synchronous parser found for ${type}`)
+    throw new Error('This format is not supported or recognized')
+    // throw new TypeError(`No synchronous parser found for ${type}`)
   }
 }
 

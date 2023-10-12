@@ -81,8 +81,7 @@ const rehypeCitationGenerator = (Cite) => {
 
       visit(tree, 'text', (node, idx, parent) => {
         const match = node.value.match(citationRE)
-        //@ts-ignore
-        if (!match || !permittedTags.includes(parent.tagName)) return
+        if (!match || ('tagName' in parent && !permittedTags.includes(parent.tagName))) return
         let citeStartIdx = match.index
         let citeEndIdx = match.index + match[0].length
         // If we have an in-text citation and we should suppress the author, the
@@ -174,6 +173,7 @@ const rehypeCitationGenerator = (Cite) => {
             const [, ...citekeys] = node.properties.id.toString().split('--')
             const citationID = citekeys.pop()
 
+            /** @type {Element} */
             const inlineBibNode = {
               type: 'element',
               tagName: 'div',
@@ -190,7 +190,6 @@ const rehypeCitationGenerator = (Cite) => {
                 return aBibNode
               }),
             }
-            // @ts-ignore
             parent.children.push(inlineBibNode)
           }
 
@@ -199,7 +198,7 @@ const rehypeCitationGenerator = (Cite) => {
             !options.suppressBibliography &&
             (node.tagName === 'p' || node.tagName === 'div') &&
             node.children.length >= 1 &&
-            // @ts-ignore
+            node.children[0].type === 'text' &&
             node.children[0].value === '[^ref]'
           ) {
             parent.children[idx] = biblioNode
@@ -224,15 +223,14 @@ const rehypeCitationGenerator = (Cite) => {
       // And insert them into the footnote section (if exists)
       // Footnote comes after bibliography
       if (mode === 'note' && Object.keys(citationDict).length > 0) {
-        /** @type {{type: 'citation' | 'existing', oldId: number}[]} */
+        /** @type {{type: 'citation' | 'existing', oldId: string}[]} */
         let fnArray = []
         let index = 1
         visit(tree, 'element', (node) => {
-          if (node.tagName === 'sup') {
+          if (node.tagName === 'sup' && node.children[0].type === 'element') {
             let nextNode = node.children[0]
-            // @ts-ignore
             if (nextNode.tagName === 'a') {
-              // @ts-ignore
+              /** @type {{href: string, id: string}} */ // @ts-ignore
               const { href, id } = nextNode.properties
               if (href.includes('fn') && id.includes('fnref')) {
                 const oldId = href.split('-').pop()
@@ -241,9 +239,7 @@ const rehypeCitationGenerator = (Cite) => {
                   oldId,
                 })
                 // Update ref number
-                // @ts-ignore
                 nextNode.properties.href = `#user-content-fn-${index}`
-                // @ts-ignore
                 nextNode.properties.id = `user-content-fnref-${index}`
                 // @ts-ignore
                 nextNode.children[0].value = index.toString()

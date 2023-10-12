@@ -71,51 +71,52 @@
   },
   "homepage": "https://github.com/timlrx/rehype-citation#readme",
   "dependencies": {
-    "@citation-js/core": "^0.6.8",
+    "@citation-js/core": "^0.7.1",
     "@citation-js/date": "^0.5.1",
     "@citation-js/name": "^0.4.2",
-    "@citation-js/plugin-bibjson": "^0.6.8",
-    "@citation-js/plugin-bibtex": "^0.6.8",
-    "@citation-js/plugin-csl": "^0.6.8",
+    "@citation-js/plugin-bibjson": "^0.7.1",
+    "@citation-js/plugin-bibtex": "^0.7.1",
+    "@citation-js/plugin-csl": "^0.7.1",
     "citeproc": "^2.4.63",
-    "cross-fetch": "^3.1.5",
-    "hast-util-from-dom": "^4.2.0",
-    "hast-util-from-parse5": "^7.1.0",
-    "parse5": "^6.0.1",
-    "unified": "^10.1.0",
-    "unist-util-visit": "^4.1.0"
+    "cross-fetch": "^4.0.0",
+    "hast-util-from-dom": "^5.0.0",
+    "hast-util-from-parse5": "^8.0.1",
+    "js-yaml": "^4.1.0",
+    "parse5": "^7.1.2",
+    "unified": "^11.0.0",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
-    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
-    "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
-    "@playwright/test": "^1.18.1",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
+    "@playwright/test": "^1.39.0",
     "@tailwindcss/typography": "^0.5.9",
-    "@types/node": "^16.11.1",
-    "@vitejs/plugin-react": "^1.1.4",
+    "@types/node": "^20.8.4",
+    "@vitejs/plugin-react": "^4.1.0",
     "autoprefixer": "^10.4.13",
     "dedent": "^0.7.0",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
+    "eslint": "^8.51.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-node": "^11.1.0",
     "glob": "^7.2.0",
-    "husky": "^4.0.0",
-    "lint-staged": "^11.1.2",
+    "husky": "^8.0.0",
+    "lint-staged": "^14.0.0",
     "microbundle": "^0.14.1",
     "postcss": "^8.4.21",
     "prettier": "^2.3.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "rehype": "^12.0.0",
-    "rehype-stringify": "^9.0.3",
-    "remark-gfm": "^3.0.1",
-    "remark-parse": "^10.0.1",
-    "remark-rehype": "^10.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rehype": "^13.0.0",
+    "rehype-stringify": "^10.0.0",
+    "remark-gfm": "^4.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.0.0",
     "rollup-plugin-polyfill-node": "^0.8.0",
     "rollup-plugin-visualizer": "^5.5.4",
     "tailwindcss": "^3.2.4",
-    "typescript": "^4.3.5",
+    "typescript": "^5.2.2",
     "uvu": "^0.5.1",
-    "vite": "^2.7.13"
+    "vite": "^4.4.11"
   },
   "prettier": {
     "printWidth": 100,
@@ -133,10 +134,5 @@
     "*.+(js|jsx|ts|tsx|json|css|md|mdx)": [
       "prettier --write"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   }
 }

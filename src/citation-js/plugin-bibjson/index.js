@@ -16,6 +16,7 @@ import * as json from './json.js'
 import { plugins } from '../core/index.js'
 
 const scraperLinks = ['fulltext_html', 'fulltext_xml', 'fulltext_pdf']
+const authorNameFields = ['name', 'lastname', 'lastName', 'firstname', 'firstName']
 
 /**
  * @constant {module:@citation-js/core.plugins~pluginRef} ref
@@ -84,7 +85,11 @@ const formats = {
           props: ['author', 'editor'],
           match: 'some',
           value(authors) {
-            return Array.isArray(authors) && authors[0] && 'name' in authors[0]
+            return (
+              Array.isArray(authors) &&
+              authors[0] &&
+              authorNameFields.some((field) => field in authors[0])
+            )
           },
         },
       ],

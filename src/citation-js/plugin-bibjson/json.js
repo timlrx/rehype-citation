@@ -1,4 +1,4 @@
-//@ts-nocheck
+// @ts-nocheck
 import { parse as parseDate } from '@citation-js/date'
 import { parse as parseName } from '@citation-js/name'
 
@@ -73,11 +73,9 @@ function quickscrapeSpecificProps() {
 function generalProps(input) {
   const output = {
     type: typeMap[input.type] || 'document',
+    title: input.title,
   }
 
-  if (input.title) {
-    output.title = input.title
-  }
   if (input.author) {
     output.author = input.author.map(nameProps).filter(Boolean)
   }
@@ -91,6 +89,7 @@ function generalProps(input) {
     output.author = input.reviewer.map(nameProps).filter(Boolean)
   }
 
+  /* istanbul ignore next: no examples found */
   if (Array.isArray(input.keywords)) {
     output.keyword = input.keywords.join()
   } else if (input.keywords) {
@@ -101,27 +100,25 @@ function generalProps(input) {
     output.publisher = input.publisher.name || input.publisher
   }
 
-  if (input.date && Object.keys(input.date).length > 0) {
-    const dates = input.date
-    if (dates.submitted) {
-      output.submitted = parseDate(dates.submitted)
-    }
-    if (dates.published) {
-      output.issued = parseDate(dates.published)
-    }
+  if (input.date && input.date.published) {
+    output.issued = parseDate(input.date.published)
   } else if (input.year) {
     output.issued = { 'date-parts': [[+input.year]] }
   }
+  if (input.date && input.date.submitted) {
+    output.submitted = parseDate(input.date.submitted)
+  }
+
   if (input.journal) {
     const journal = input.journal
     if (journal.name) {
       output['container-title'] = journal.name
     }
     if (journal.volume) {
-      output.volume = +journal.volume
+      output.volume = journal.volume
     }
     if (journal.issue) {
-      output.issue = +journal.issue
+      output.issue = journal.issue
     }
 
     Object.assign(output, idProps(journal, journalIdentifiers))
@@ -129,6 +126,7 @@ function generalProps(input) {
     if (journal.firstpage) {
       output['page-first'] = journal.firstpage
     }
+    /* istanbul ignore else: no examples found */
     if (journal.pages) {
       output.page = journal.pages.replace('--', '-')
     } else if (journal.firstpage && journal.lastpage) {

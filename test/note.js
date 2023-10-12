@@ -85,10 +85,10 @@ rehypeCitationTest('integrates with existing gfm footnote and re-numbers correct
 <section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
 <ol>
 <li id="user-content-fn-1">
-<p>First note <a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
+<p>First note <a href="#user-content-fnref-1" data-footnote-backref="" aria-label="Back to reference 1" class="data-footnote-backref">↩</a></p>
 </li><li id="user-content-fn-2"><p><span>John Nash, “Non-Cooperative Games,” <i>Annals of Mathematics</i>, 1951, 286–95.</span><a href="#user-content-fnref-2" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
 </li><li id="user-content-fn-3">
-<p>Second note <a href="#user-content-fnref-3" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
+<p>Second note <a href="#user-content-fnref-3" data-footnote-backref="" aria-label="Back to reference 2" class="data-footnote-backref">↩</a></p>
 </li></ol></section>`
   assert.is(result, expected)
 })

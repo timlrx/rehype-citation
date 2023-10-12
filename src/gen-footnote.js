@@ -1,5 +1,6 @@
 /**
  * @typedef {import('hast').Element} Element
+ * @typedef {import('hast').ElementContent} ElementContent
  */
 
 import { htmlToHast } from './html-transform-node.js'
@@ -8,7 +9,7 @@ import { htmlToHast } from './html-transform-node.js'
  * Create new footnote section node based on footnoteArray mappings
  *
  * @param {{int: string}} citationDict
- * @param {{type: 'citation' | 'existing', oldId: number}[]} footnoteArray
+ * @param {{type: 'citation' | 'existing', oldId: string}[]} footnoteArray
  * @param {Element | undefined} footnoteSection
  * @return {Element}
  */
@@ -17,12 +18,13 @@ export const genFootnoteSection = (citationDict, footnoteArray, footnoteSection)
   const list = {
     type: 'element',
     tagName: 'ol',
+    properties: {},
     children: [{ type: 'text', value: '\n' }],
   }
   let oldFootnoteList
   if (footnoteSection) {
-    // @ts-ignore
-    oldFootnoteList = footnoteSection.children.find((n) => n.tagName === 'ol')
+    /** @type {Element} */ // @ts-ignore - for some reason, the type does not narrow even after filtering
+    oldFootnoteList = footnoteSection.children.filter(n => (n.type == "element")).find((n) => (n.tagName === 'ol'))
   }
   for (const [idx, item] of footnoteArray.entries()) {
     const { type, oldId } = item

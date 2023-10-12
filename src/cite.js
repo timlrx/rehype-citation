@@ -2,6 +2,7 @@ import { Cite as CiteCore, plugins } from './citation-js/core/index.js'
 import './citation-js/plugin-bibjson/index.js'
 import './citation-js/plugin-bibtex/index.js'
 import './citation-js/plugin-csl/index.js'
+import './citation-js/plugin-cff/index.js'
 
 function clone(obj) {
   const copy = {}
@@ -17,6 +18,7 @@ function Cite(data, opts) {
   }
 
   const self = new CiteCore(data, opts)
+  console.log(self)
   this._options = self._options
   this.log = self.log
   this.data = self.data
