@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { parse as parseDate } from '@citation-js/date'
 import { parse as parseName } from '@citation-js/name'
 
