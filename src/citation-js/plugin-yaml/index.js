@@ -12,12 +12,12 @@ const date = new yaml.Type(timestampTag, {
   instanceOf: Date,
   represent(object) {
     return object.toISOString().split('T')[0]
-  }
+  },
 })
 
 const CFF_SCHEMA = yaml.DEFAULT_SCHEMA.extend({
   implicit: [date],
-  explicit: []
+  explicit: [],
 })
 
 plugins.add('@else', {
@@ -28,17 +28,17 @@ plugins.add('@else', {
         tokenList: {
           split: /\n(\s{2})*(-\s)?/,
           token: /^[\w-]*: /,
-          every: false
-        }
+          every: false,
+        },
       },
       parse(file) {
         return yaml.load(file, { json: true })
-      }
-    }
+      },
+    },
   },
   output: {
     yaml(data) {
       return yaml.dump(data, { schema: CFF_SCHEMA })
-    }
-  }
+    },
+  },
 })

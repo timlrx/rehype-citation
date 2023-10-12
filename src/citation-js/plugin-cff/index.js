@@ -55,7 +55,7 @@ const TYPES_TO_TARGET = {
   thesis: 'thesis',
   unpublished: 'article',
   video: 'motion_picture',
-  website: 'webpage'
+  website: 'webpage',
 }
 
 const TYPES_TO_SOURCE = {
@@ -103,7 +103,7 @@ const TYPES_TO_SOURCE = {
   standard: 'standard',
   thesis: 'thesis',
   treaty: 'generic',
-  webpage: 'website'
+  webpage: 'website',
 }
 
 const ENTITY_PROPS = [
@@ -112,7 +112,7 @@ const ENTITY_PROPS = [
   { source: 'name-particle', target: 'non-dropping-particle' },
   { source: 'name-suffix', target: 'suffix' },
   { source: 'name', target: 'literal' },
-  { source: 'orcid', target: '_orcid' }
+  { source: 'orcid', target: '_orcid' },
 ]
 
 const entity = new util.Translator(ENTITY_PROPS)
@@ -124,7 +124,7 @@ const PROP_CONVERTERS = {
     },
     toSource(names) {
       return names.map(entity.convertToSource)
-    }
+    },
   },
   publisher: {
     toTarget({ name, city, region, country }) {
@@ -141,12 +141,16 @@ const PROP_CONVERTERS = {
         //   - City, Region, Country
         const parts = place.split(', ')
         entity.country = parts.pop()
-        if (parts.length === 2) { entity.region = parts.pop() }
-        if (parts.length === 1) { entity.city = parts.pop() }
+        if (parts.length === 2) {
+          entity.region = parts.pop()
+        }
+        if (parts.length === 1) {
+          entity.city = parts.pop()
+        }
       }
 
       return entity
-    }
+    },
   },
   date: {
     toTarget(date) {
@@ -164,8 +168,8 @@ const PROP_CONVERTERS = {
       } else {
         return new Date(Date.UTC(year))
       }
-    }
-  }
+    },
+  },
 }
 
 const SHARED_PROPS = [
@@ -181,7 +185,7 @@ const SHARED_PROPS = [
     source: 'date-released',
     target: 'issued',
     when: { target: { type: 'software' } },
-    convert: PROP_CONVERTERS.date
+    convert: PROP_CONVERTERS.date,
   },
 
   { source: 'doi', target: 'DOI' },
@@ -193,8 +197,12 @@ const SHARED_PROPS = [
       toTarget(identifiers) {
         const newIdentifiers = Array(6).fill(undefined)
         for (const { type, value } of identifiers) {
-          if (!this.doi && type === 'doi') { newIdentifiers[0] = value }
-          if (!this.url && type === 'url') { newIdentifiers[5] = value }
+          if (!this.doi && type === 'doi') {
+            newIdentifiers[0] = value
+          }
+          if (!this.url && type === 'url') {
+            newIdentifiers[5] = value
+          }
           if (type === 'other' && value.startsWith('urn:isbn:')) {
             newIdentifiers[1] = value.slice(9)
           }
@@ -218,19 +226,23 @@ const SHARED_PROPS = [
           isbn && { type: 'other', value: `urn:isbn:${isbn}` },
           issn && { type: 'other', value: `urn:issn:${issn}` },
           pmcid && { type: 'other', value: `pmcid:${pmcid}` },
-          pmid && { type: 'other', value: `pmid:${pmid}` }
+          pmid && { type: 'other', value: `pmid:${pmid}` },
         ].filter(Boolean)
-      }
-    }
+      },
+    },
   },
 
   {
     source: 'keywords',
     target: 'keyword',
     convert: {
-      toTarget(keywords) { return keywords.join(',') },
-      toSource(keywords) { return keywords.split(/,\s*/g) }
-    }
+      toTarget(keywords) {
+        return keywords.join(',')
+      },
+      toSource(keywords) {
+        return keywords.split(/,\s*/g)
+      },
+    },
   },
 
   // TODO cff: license
@@ -250,9 +262,9 @@ const SHARED_PROPS = [
       target: {
         type(type) {
           return !['entry', 'entry-dictionary', 'entry-encyclopedia'].includes(type)
-        }
-      }
-    }
+        },
+      },
+    },
   },
 
   {
@@ -260,8 +272,8 @@ const SHARED_PROPS = [
     target: 'container-title',
     when: {
       source: { entry: true, journal: false },
-      target: { type: ['entry'] }
-    }
+      target: { type: ['entry'] },
+    },
   },
 
   {
@@ -269,13 +281,13 @@ const SHARED_PROPS = [
     target: 'container-title',
     when: {
       source: { term: true, journal: false },
-      target: { type: ['entry-dictionary', 'entry-encyclopedia'] }
-    }
+      target: { type: ['entry-dictionary', 'entry-encyclopedia'] },
+    },
   },
 
   { source: 'url', target: 'URL' },
 
-  'version'
+  'version',
 ]
 
 const MAIN_PROPS = [
@@ -284,13 +296,17 @@ const MAIN_PROPS = [
     source: 'type',
     target: 'type',
     convert: {
-      toSource(type) { return type === 'dataset' ? 'dataset' : 'software' },
-      toTarget(type) { return type === 'dataset' ? 'dataset' : 'software' }
-    }
+      toSource(type) {
+        return type === 'dataset' ? 'dataset' : 'software'
+      },
+      toTarget(type) {
+        return type === 'dataset' ? 'dataset' : 'software'
+      },
+    },
   },
 
   // Include main mappings
-  ...SHARED_PROPS
+  ...SHARED_PROPS,
 ]
 
 const REF_PROPS = [
@@ -318,13 +334,15 @@ const REF_PROPS = [
       toSource(name, date, place, nameFallback) {
         const entity = { name: name || nameFallback }
 
-        if (place) { entity.location = place }
+        if (place) {
+          entity.location = place
+        }
         if (date) {
           entity['date-start'] = PROP_CONVERTERS.date.toSource(date)
 
           if (date['date-parts'] && date['date-parts'].length === 2) {
             entity['date-end'] = PROP_CONVERTERS.date.toSource({
-              'date-parts': [date['date-parts'][1]]
+              'date-parts': [date['date-parts'][1]],
             })
           }
         }
@@ -334,14 +352,11 @@ const REF_PROPS = [
       toTarget(event) {
         return [
           event.name,
-          parseDate(
-            event['date-start'].toISOString(),
-            event['date-end'].toISOString()
-          ),
-          event.location
+          parseDate(event['date-start'].toISOString(), event['date-end'].toISOString()),
+          event.location,
         ]
-      }
-    }
+      },
+    },
   },
 
   // COPYRIGHT
@@ -359,7 +374,7 @@ const REF_PROPS = [
     source: 'date-downloaded',
     target: 'accessed',
     convert: PROP_CONVERTERS.date,
-    when: { source: { 'date-accessed': false }, target: false }
+    when: { source: { 'date-accessed': false }, target: false },
   },
 
   {
@@ -368,8 +383,10 @@ const REF_PROPS = [
     convert: PROP_CONVERTERS.date,
     when: {
       source: { 'date-released': false },
-      target() { return this.type !== 'book' || !this.version }
-    }
+      target() {
+        return this.type !== 'book' || !this.version
+      },
+    },
   },
 
   {
@@ -384,17 +401,21 @@ const REF_PROPS = [
       toSource(issued) {
         const [year, month] = issued['date-parts'][0]
         return [year, month]
-      }
-    }
+      },
+    },
   },
 
   {
     source: 'year-original',
     target: 'original-date',
     convert: {
-      toTarget(year) { return { 'date-parts': [[year]] } },
-      toSource(date) { return date['date-parts'][0][0] }
-    }
+      toTarget(year) {
+        return { 'date-parts': [[year]] }
+      },
+      toSource(date) {
+        return date['date-parts'][0][0]
+      },
+    },
   },
 
   // EDITION
@@ -410,15 +431,15 @@ const REF_PROPS = [
     target: 'title',
     when: {
       source: { term: false },
-      target: { type: 'entry' }
-    }
+      target: { type: 'entry' },
+    },
   },
   {
     source: 'term',
     target: 'title',
     when: {
-      target: { type: ['entry-dictionary', 'entry-encyclopedia'] }
-    }
+      target: { type: ['entry-dictionary', 'entry-encyclopedia'] },
+    },
   },
 
   // FORMAT
@@ -430,16 +451,20 @@ const REF_PROPS = [
     source: 'data-type',
     target: 'genre',
     when: {
-      target: { type(type) { return type !== 'thesis' } }
-    }
+      target: {
+        type(type) {
+          return type !== 'thesis'
+        },
+      },
+    },
   },
   {
     source: 'thesis-type',
     target: 'genre',
     when: {
       source: { 'data-type': false },
-      target: { type: 'thesis' }
-    }
+      target: { type: 'thesis' },
+    },
   },
 
   // IDENTIFIERS
@@ -459,8 +484,8 @@ const REF_PROPS = [
     target: 'volume-title',
     when: {
       source: { 'volume-title': false },
-      target: false
-    }
+      target: false,
+    },
   },
   // TODO cff: issue-date
 
@@ -471,20 +496,28 @@ const REF_PROPS = [
     when: {
       target: true,
       // NOTE: possible values not as strict in csl, so test (crudely) if the value is ok first
-      source: { language(code) { return /[a-z]{2,3}/.test(code) } }
+      source: {
+        language(code) {
+          return /[a-z]{2,3}/.test(code)
+        },
+      },
     },
     convert: {
       // NOTE: CSL can only hold one language
-      toSource(language) { return [language] },
-      toTarget(languages) { return languages[0] }
-    }
+      toSource(language) {
+        return [language]
+      },
+      toTarget(languages) {
+        return languages[0]
+      },
+    },
   },
 
   // LOCATION
   {
     source: 'location',
     target: ['archive', 'archive-place'],
-    convert: PROP_CONVERTERS.publisher
+    convert: PROP_CONVERTERS.publisher,
   },
 
   // LOCATION (CODE)
@@ -505,7 +538,11 @@ const REF_PROPS = [
     target: 'jurisdiction',
     // NOTE: CSL jurisdiction can contain more than just US states
     when: { target: false },
-    convert: { toTarget(states) { return states.join(', ') } }
+    convert: {
+      toTarget(states) {
+        return states.join(', ')
+      },
+    },
   },
 
   // PUBLISHER
@@ -519,19 +556,21 @@ const REF_PROPS = [
         return [department ? `${department}, ${name}` : name, place]
       },
       toSource(name, place) {
-        return [
-          PROP_CONVERTERS.publisher.toSource(name, place)
-        ]
-      }
-    }
+        return [PROP_CONVERTERS.publisher.toSource(name, place)]
+      },
+    },
   },
   {
     source: 'publisher',
     target: ['publisher', 'publisher-place'],
     when: {
-      target: { type(type) { return type !== 'thesis' } }
+      target: {
+        type(type) {
+          return type !== 'thesis'
+        },
+      },
     },
-    convert: PROP_CONVERTERS.publisher
+    convert: PROP_CONVERTERS.publisher,
   },
 
   // SECTION
@@ -544,8 +583,17 @@ const REF_PROPS = [
     when: {
       source: true,
       // NOTE: possible values not as strict in csl, so test if the value is ok first
-      target: { status: ['in-preparation', 'abstract', 'submitted', 'in-press', 'advance-online', 'preprint'] }
-    }
+      target: {
+        status: [
+          'in-preparation',
+          'abstract',
+          'submitted',
+          'in-press',
+          'advance-online',
+          'preprint',
+        ],
+      },
+    },
   },
 
   // PAGES
@@ -560,8 +608,8 @@ const REF_PROPS = [
       toSource(page) {
         const [start, end] = page.split('-')
         return end ? [start, end] : [start]
-      }
-    }
+      },
+    },
   },
   { source: 'pages', target: 'number-of-pages' },
 
@@ -573,19 +621,21 @@ const REF_PROPS = [
     source: 'type',
     target: 'type',
     convert: {
-      toTarget(type) { return TYPES_TO_TARGET[type] || 'document' },
+      toTarget(type) {
+        return TYPES_TO_TARGET[type] || 'document'
+      },
       toSource(type) {
         if (type === 'book' && this['event-title']) {
           return 'proceedings'
         }
         return TYPES_TO_SOURCE[type] || 'generic'
-      }
-    }
+      },
+    },
   },
 
   // VOLUMES
   'volume',
-  { source: 'number-volumes', target: 'number-of-volumes' }
+  { source: 'number-volumes', target: 'number-of-volumes' },
 ]
 
 const mainTranslator = new util.Translator(MAIN_PROPS)
@@ -599,7 +649,7 @@ function parse(input) {
   }
   main._cff_mainReference = true
   // Use identifier as unique id to make citation easy
-  if ("DOI" in main) {
+  if ('DOI' in main) {
     main.id = main.DOI
   }
   const output = [main]
@@ -620,18 +670,20 @@ function format(input, options = {}) {
     main,
     preferred,
     cffVersion = CFF_VERSION,
-    message = 'Please cite the following works when using this software.'
+    message = 'Please cite the following works when using this software.',
   } = options
 
   let preferredCitation
-  const preferredIndex = input.findIndex(entry => preferred && entry.id === preferred)
+  const preferredIndex = input.findIndex((entry) => preferred && entry.id === preferred)
   if (cffVersion >= '1.2.0' && preferredIndex > -1) {
     preferredCitation = refTranslator.convertToSource(...input.splice(preferredIndex, 1))
   }
 
-  let mainIndex = input.findIndex(entry => main ? entry.id === main : entry._cff_mainReference)
+  let mainIndex = input.findIndex((entry) => (main ? entry.id === main : entry._cff_mainReference))
   mainIndex = mainIndex > -1 ? mainIndex : 0
-  const mainRef = input[mainIndex] ? mainTranslator.convertToSource(...input.splice(mainIndex, 1)) : {}
+  const mainRef = input[mainIndex]
+    ? mainTranslator.convertToSource(...input.splice(mainIndex, 1))
+    : {}
   if (mainRef && cffVersion < '1.2.0') {
     delete mainRef.type
   }
@@ -655,11 +707,11 @@ plugins.add('@cff', {
       parseType: {
         dataType: 'SimpleObject',
         propertyConstraint: {
-          props: 'cff-version'
-        }
+          props: 'cff-version',
+        },
       },
-      parse
-    }
+      parse,
+    },
   },
   output: {
     cff(data, options = {}) {
@@ -669,6 +721,6 @@ plugins.add('@cff', {
       } else {
         return plugins.output.format('yaml', output)
       }
-    }
-  }
+    },
+  },
 })

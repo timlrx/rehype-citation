@@ -81,7 +81,7 @@ const rehypeCitationGenerator = (Cite) => {
 
       visit(tree, 'text', (node, idx, parent) => {
         const match = node.value.match(citationRE)
-        if (!match || ("tagName" in parent && !permittedTags.includes(parent.tagName))) return
+        if (!match || ('tagName' in parent && !permittedTags.includes(parent.tagName))) return
         let citeStartIdx = match.index
         let citeEndIdx = match.index + match[0].length
         // If we have an in-text citation and we should suppress the author, the
@@ -198,7 +198,7 @@ const rehypeCitationGenerator = (Cite) => {
             !options.suppressBibliography &&
             (node.tagName === 'p' || node.tagName === 'div') &&
             node.children.length >= 1 &&
-            node.children[0].type === "text" &&
+            node.children[0].type === 'text' &&
             node.children[0].value === '[^ref]'
           ) {
             parent.children[idx] = biblioNode
@@ -227,7 +227,7 @@ const rehypeCitationGenerator = (Cite) => {
         let fnArray = []
         let index = 1
         visit(tree, 'element', (node) => {
-          if (node.tagName === 'sup' && node.children[0].type === "element") {
+          if (node.tagName === 'sup' && node.children[0].type === 'element') {
             let nextNode = node.children[0]
             if (nextNode.tagName === 'a') {
               /** @type {{href: string, id: string}} */ // @ts-ignore
