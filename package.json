@@ -86,25 +86,25 @@
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
-    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
-    "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
-    "@playwright/test": "^1.18.1",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
+    "@playwright/test": "^1.39.0",
     "@tailwindcss/typography": "^0.5.9",
     "@types/node": "^20.8.4",
-    "@vitejs/plugin-react": "^1.1.4",
+    "@vitejs/plugin-react": "^4.1.0",
     "autoprefixer": "^10.4.13",
     "dedent": "^0.7.0",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
+    "eslint": "^8.51.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-node": "^11.1.0",
     "glob": "^7.2.0",
-    "husky": "^4.0.0",
-    "lint-staged": "^11.1.2",
+    "husky": "^8.0.0",
+    "lint-staged": "^14.0.0",
     "microbundle": "^0.14.1",
     "postcss": "^8.4.21",
     "prettier": "^2.3.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "rehype": "^13.0.0",
     "rehype-stringify": "^10.0.0",
     "remark-gfm": "^4.0.0",
@@ -133,10 +133,5 @@
     "*.+(js|jsx|ts|tsx|json|css|md|mdx)": [
       "prettier --write"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   }
 }
