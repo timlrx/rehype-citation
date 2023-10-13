@@ -7,7 +7,7 @@ import rehypeCitation from '../index.js'
 const bibliography = './test/references-data.bib'
 const cslJSON = './test/csl-json-data.json'
 const cff = './test/CITATION.cff'
-const urlCff = "./test/pytorch-CITATION.cff"
+const urlCff = './test/pytorch-CITATION.cff'
 
 const processHtml = (html, options, input = bibliography) => {
   return rehype()
@@ -280,21 +280,31 @@ rehypeCitationTest('generates multiple inline bibs', async () => {
 
 rehypeCitationTest('works with cff file and add doi as id', async () => {
   const result = await processHtml(
-    dedent`<div>[@10.5281/zenodo.1234]<</div>`,
+    dedent`<div>[@10.5281/zenodo.1234]</div>`,
     { suppressBibliography: true },
     cff
   )
-  const expected = dedent`<div><span class="" id="citation--10.5281/zenodo.1234--1">(Lisa &#x26; Bot, 2017)</span>&#x3C;</div>`
+  const expected = dedent`<div><span class="" id="citation--10.5281/zenodo.1234--1">(Lisa &#x26; Bot, 2017)</span></div>`
   assert.is(result, expected)
 })
 
 rehypeCitationTest('adds url as id for preferred citation', async () => {
   const result = await processHtml(
-    dedent`<div>[@papers.neurips.cc/paper/9015-pytorch-an-imperative-style-high-performance-deep-learning-library.pdf]<</div>`,
+    dedent`<div>[@papers.neurips.cc/paper/9015-pytorch-an-imperative-style-high-performance-deep-learning-library.pdf]</div>`,
     { suppressBibliography: true },
     urlCff
   )
-  const expected = dedent`<div><span class="" id="citation--papers.neurips.cc/paper/9015-pytorch-an-imperative-style-high-performance-deep-learning-library.pdf--1">(Paszke et al., 2019)</span>&#x3C;</div>`
+  const expected = dedent`<div><span class="" id="citation--papers.neurips.cc/paper/9015-pytorch-an-imperative-style-high-performance-deep-learning-library.pdf--1">(Paszke et al., 2019)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('parses multiple bibliography files', async () => {
+  const result = await processHtml(
+    dedent`<div>[@10.5281/zenodo.1234] and [@Nash1950]</div>`,
+    { suppressBibliography: true },
+    [bibliography, cff]
+  )
+  const expected = dedent`<div><span class="" id="citation--10.5281/zenodo.1234--1">(Lisa &#x26; Bot, 2017)</span> and <span class="" id="citation--nash1950--2">(Nash, 1950)</span></div>`
   assert.is(result, expected)
 })
 

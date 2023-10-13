@@ -82,12 +82,12 @@ export const genCitation = (
       const output = isComposite
         ? `<a href="#bib-${entries[0].id.toLowerCase()}">${citationText}</a>`
         : `${citationText.slice(
-          0,
-          1
-        )}<a href="#bib-${entries[0].id.toLowerCase()}">${citationText.slice(
-          1,
-          -1
-        )}</a>${citationText.slice(-1)}`
+            0,
+            1
+          )}<a href="#bib-${entries[0].id.toLowerCase()}">${citationText.slice(
+            1,
+            -1
+          )}</a>${citationText.slice(-1)}`
       return [
         citationText,
         htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output}</span>`),

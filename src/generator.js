@@ -43,13 +43,9 @@ const idRoot = 'CITATION'
 const rehypeCitationGenerator = (Cite) => {
   return (options = {}) => {
     return async (tree, file) => {
-      let bibliography = await getBibliography(options, file)
-      if (!bibliography) {
-        return
-      }
 
-      /** @type {string} */
-      let bibtexFile
+      /** @type {string[]} */
+      let bibtexFile = []
       /** @type {string} */ // @ts-ignore
       const inputCiteformat = options.csl || file?.data?.frontmatter?.csl || defaultCiteFormat
       const inputLang = options.lang || 'en-US'
@@ -57,18 +53,23 @@ const rehypeCitationGenerator = (Cite) => {
       const citeFormat = await loadCSL(Cite, inputCiteformat, options.path)
       const lang = await loadLocale(Cite, inputLang, options.path)
 
-      if (isValidHttpUrl(bibliography)) {
-        isNode
-        const response = await fetch(bibliography)
-        bibtexFile = await response.text()
-      } else {
-        if (isNode) {
-          bibtexFile = await readFile(bibliography)
-        } else {
-          throw new Error(`Cannot read non valid bibliography URL in node env.`)
-        }
+      let bibliography = await getBibliography(options, file)
+      if (bibliography.length === 0) {
+        return
       }
 
+      for (let i = 0; i < bibliography.length; i++) {
+        if (isValidHttpUrl(bibliography[i])) {
+          const response = await fetch(bibliography[i])
+          bibtexFile.push(await response.text())
+        } else {
+          if (isNode) {
+            bibtexFile.push(await readFile(bibliography[i]))
+          } else {
+            throw new Error(`Cannot read non valid bibliography URL in node env.`)
+          }
+        }
+      }
       const citations = new Cite(bibtexFile)
       const citationIds = citations.data.map((x) => x.id)
       const citationPre = []

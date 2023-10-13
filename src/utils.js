@@ -42,21 +42,22 @@ export const isValidHttpUrl = (str) => {
  * @param {import('vfile').VFile} file
  */
 export const getBibliography = async (options, file) => {
-  let bibliography = ''
+  /** @type {string[]} */
+  let bibliography = []
   if (options.bibliography) {
-    bibliography = options.bibliography
+    bibliography = typeof options.bibliography === 'string' ? [options.bibliography] : options.bibliography
     // @ts-ignore
   } else if (file?.data?.frontmatter?.bibliography) {
     // @ts-ignore
-    bibliography = file.data.frontmatter.bibliography
+    bibliography = typeof file.data.frontmatter.bibliography === 'string' ? [file.data.frontmatter.bibliography] : file.data.frontmatter.bibliography
     // If local path, get absolute path
-    if (!isValidHttpUrl(bibliography)) {
-      if (isNode) {
-        bibliography = await import('path').then((path) =>
-          path.join(options.path || file.cwd, bibliography)
-        )
-      } else {
-        throw new Error(`Cannot read non valid bibliography URL in node env.`)
+    for (let i = 0; i < bibliography.length; i++) {
+      if (!isValidHttpUrl(bibliography[i])) {
+        if (isNode) {
+          bibliography[i] = await import('path').then((path) => path.join(options.path || file.cwd, bibliography[i]))
+        } else {
+          throw new Error(`Cannot read non valid bibliography URL in node env.`)
+        }
       }
     }
   }

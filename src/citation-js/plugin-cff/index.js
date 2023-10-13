@@ -647,7 +647,7 @@ function addId(entry) {
   if ('DOI' in entry) {
     entry.id = entry.DOI
   } else if ('URL' in entry) {
-    entry.id = entry.URL.replace("http://", "").replace("https://", "")
+    entry.id = entry.URL.replace('http://', '').replace('https://', '')
   }
 }
 
