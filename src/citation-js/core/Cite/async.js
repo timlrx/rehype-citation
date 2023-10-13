@@ -20,7 +20,7 @@ function async(data, options, callback) {
     options = undefined
   }
 
-  const promise = (new this()).setAsync(data, options)
+  const promise = new this().setAsync(data, options)
 
   if (typeof callback === 'function') {
     promise.then(callback)

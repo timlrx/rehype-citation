@@ -1,7 +1,7 @@
 // @ts-nocheck
 /**
-  * @memberof module: @citation-js / core.Cite#
-  *
+ * @memberof module: @citation-js / core.Cite#
+ *
  * @return {Number} The latest version of the object
  */
 function currentVersion() {

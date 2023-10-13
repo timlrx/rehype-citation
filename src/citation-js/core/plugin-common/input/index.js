@@ -17,35 +17,35 @@ export const formats = {
     parse: empty.parse,
     parseType: {
       dataType: 'String',
-      predicate: input => input === ''
-    }
+      predicate: (input) => input === '',
+    },
   },
   '@empty/whitespace+text': {
     parse: empty.parse,
     parseType: {
       dataType: 'String',
-      predicate: /^\s+$/
-    }
+      predicate: /^\s+$/,
+    },
   },
   '@empty': {
     parse: empty.parse,
     parseType: {
       dataType: 'Primitive',
-      predicate: input => input == null
-    }
+      predicate: (input) => input == null,
+    },
   },
   '@else/json': {
     parse: json.parse,
     parseType: {
       dataType: 'String',
-      predicate: /^\s*(\{[\S\s]*\}|\[[\S\s]*\])\s*$/
-    }
+      predicate: /^\s*(\{[\S\s]*\}|\[[\S\s]*\])\s*$/,
+    },
   },
   '@else/url': {
     parseType: {
       dataType: 'String',
-      predicate: /^https?:\/\/(([\w-]+\.)*[\w-]+)(:\d+)?(\/[^?/]*)*(\?[^#]*)?(#.*)?$/i
-    }
+      predicate: /^https?:\/\/(([\w-]+\.)*[\w-]+)(:\d+)?(\/[^?/]*)*(\?[^#]*)?(#.*)?$/i,
+    },
   },
   '@else/jquery': {
     parse: jquery.parse,
@@ -54,8 +54,8 @@ export const formats = {
       /* istanbul ignore next: not testable in Node */
       predicate(input) {
         return typeof jQuery !== 'undefined' && input instanceof jQuery
-      }
-    }
+      },
+    },
   },
   '@else/html': {
     parse: html.parse,
@@ -64,7 +64,7 @@ export const formats = {
       /* istanbul ignore next: not testable in Node */
       predicate(input) {
         return typeof HTMLElement !== 'undefined' && input instanceof HTMLElement
-      }
-    }
-  }
+      },
+    },
+  },
 }
