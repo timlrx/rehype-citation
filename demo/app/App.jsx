@@ -7,6 +7,7 @@ import {
   CustomCSLExample,
   FootnotesExample,
   LinkCitationsExample,
+  CFFExample,
 } from './md-examples'
 
 const bibliography =
@@ -18,12 +19,17 @@ const acmCSL =
 const chicagofullnoteCSL =
   'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl'
 
+const cff = 'https://raw.githubusercontent.com/timlrx/rehype-citation/main/test/CITATION.cff'
+const cff2 = 'https://raw.githubusercontent.com/tensorflow/tensorflow/master/CITATION.cff'
+const cff3 = 'https://raw.githubusercontent.com/langchain-ai/langchain/master/CITATION.cff'
+
 const examples = [
   'Default',
   'Suppress Bibliography',
   'Custom CSL',
   'Footnote Style',
   'Link Citations',
+  'CFF',
 ]
 const pathList = examples.map((e) => e.toLocaleLowerCase().replace(' ', '-'))
 
@@ -56,7 +62,10 @@ function App() {
           ))}
         </div>
         {selected === examples[0] && (
-          <Example markdown={defaultExample} rehypeCitationOptions={{ bibliography }} />
+          <Example
+            markdown={defaultExample}
+            rehypeCitationOptions={{ bibliography: [bibliography, cff] }}
+          />
         )}
         {selected === examples[1] && (
           <Example
@@ -88,6 +97,14 @@ function App() {
             rehypeCitationOptions={{
               bibliography,
               linkCitations: true,
+            }}
+          />
+        )}
+        {selected === examples[5] && (
+          <Example
+            markdown={CFFExample}
+            rehypeCitationOptions={{
+              bibliography: [cff, cff2, cff3],
             }}
           />
         )}
