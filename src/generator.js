@@ -43,7 +43,6 @@ const idRoot = 'CITATION'
 const rehypeCitationGenerator = (Cite) => {
   return (options = {}) => {
     return async (tree, file) => {
-
       /** @type {string[]} */
       let bibtexFile = []
       /** @type {string} */ // @ts-ignore
