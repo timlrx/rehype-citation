@@ -8,31 +8,31 @@ export default new util.Translator([
     target: 'accessed',
     when: {
       source: false,
-      target: { note: false }
+      target: { note: false },
     },
     convert: {
       toSource(accessed) {
         return `[Online; accessed ${formatDate(accessed)}]`
-      }
-    }
+      },
+    },
   },
   {
     source: 'annote',
-    target: 'annote'
+    target: 'annote',
   },
   {
     source: 'address',
     target: 'publisher-place',
-    convert: Converters.PICK
+    convert: Converters.PICK,
   },
   {
     source: 'author',
     target: 'author',
-    convert: Converters.NAMES
+    convert: Converters.NAMES,
   },
   {
     source: 'chapter',
-    target: 'chapter-number'
+    target: 'chapter-number',
   },
   {
     source: 'number',
@@ -51,8 +51,8 @@ export default new util.Translator([
           'suppperiodical',
           'proceedings',
           'mvproceedings',
-          'refererence'
-        ]
+          'refererence',
+        ],
       },
       target: {
         type: [
@@ -83,66 +83,60 @@ export default new util.Translator([
           'speech',
           'thesis',
           'treaty',
-          'webpage'
-        ]
-      }
-    }
+          'webpage',
+        ],
+      },
+    },
   },
   {
     source: 'series',
-    target: 'collection-title'
+    target: 'collection-title',
   },
   {
     source: 'booktitle',
     target: 'container-title',
     when: {
       target: {
-        type: ['chapter', 'paper-conference']
-      }
-    }
+        type: ['chapter', 'paper-conference'],
+      },
+    },
   },
   {
     source: 'journal',
     target: 'container-title',
     when: {
       source: {
-        [TYPE]: 'article'
+        [TYPE]: 'article',
       },
       target: {
-        type: [
-          'article',
-          'article-newspaper',
-          'article-journal',
-          'article-magazine'
-        ]
-      }
-    }
+        type: ['article', 'article-newspaper', 'article-journal', 'article-magazine'],
+      },
+    },
   },
   {
     source: 'edition',
-    target: 'edition'
+    target: 'edition',
   },
   {
     source: 'editor',
     target: 'editor',
-    convert: Converters.NAMES
+    convert: Converters.NAMES,
   },
   {
     source: LABEL,
     target: ['id', 'citation-key', 'author', 'issued', 'year-suffix', 'title'],
-    convert: Converters.LABEL
+    convert: Converters.LABEL,
   },
   {
     source: 'number',
     target: 'issue',
     when: {
       source: {
-        [TYPE]: ['article', 'periodical', 'inproceedings']
+        [TYPE]: ['article', 'periodical', 'inproceedings'],
       },
       target: {
         issue(issue) {
-          return typeof issue === 'number' ||
-            (typeof issue === 'string' && issue.match(/\d+/))
+          return typeof issue === 'number' || (typeof issue === 'string' && issue.match(/\d+/))
         },
         type: [
           'article',
@@ -150,32 +144,32 @@ export default new util.Translator([
           'article-newspaper',
           'article-magazine',
           'paper-conference',
-          'periodical'
-        ]
-      }
-    }
+          'periodical',
+        ],
+      },
+    },
   },
   {
     source: ['year', 'month', 'day'],
     target: 'issued',
-    convert: Converters.YEAR_MONTH
+    convert: Converters.YEAR_MONTH,
   },
   {
     source: 'note',
-    target: 'note'
+    target: 'note',
   },
   {
     source: 'number',
     target: 'number',
     when: {
       source: { [TYPE]: ['patent', 'report', 'techreport'] },
-      target: { type: ['patent', 'report'] }
-    }
+      target: { type: ['patent', 'report'] },
+    },
   },
   {
     source: 'pages',
     target: 'page',
-    convert: Converters.PAGES
+    convert: Converters.PAGES,
   },
   {
     source: 'publisher',
@@ -225,10 +219,10 @@ export default new util.Translator([
           'speech',
           'standard',
           'treaty',
-          'webpage'
-        ]
-      }
-    }
+          'webpage',
+        ],
+      },
+    },
   },
   {
     source: 'organization',
@@ -236,8 +230,8 @@ export default new util.Translator([
     convert: Converters.PICK,
     when: {
       source: { publisher: false },
-      target: { type: 'paper-conference' }
-    }
+      target: { type: 'paper-conference' },
+    },
   },
   {
     source: 'institution',
@@ -246,10 +240,10 @@ export default new util.Translator([
     when: {
       source: {
         publisher: false,
-        organization: false
+        organization: false,
       },
-      target: { type: 'report' }
-    }
+      target: { type: 'report' },
+    },
   },
   {
     source: 'school',
@@ -259,10 +253,10 @@ export default new util.Translator([
       source: {
         institution: false,
         organization: false,
-        publisher: false
+        publisher: false,
       },
-      target: { type: 'thesis' }
-    }
+      target: { type: 'thesis' },
+    },
   },
   {
     source: 'howpublished',
@@ -276,16 +270,16 @@ export default new util.Translator([
         publisher: false,
         organization: false,
         institution: false,
-        school: false
+        school: false,
       },
       target: {
-        type: 'manuscript'
-      }
-    }
+        type: 'manuscript',
+      },
+    },
   },
   {
     source: 'title',
-    target: 'title'
+    target: 'title',
   },
   {
     source: [TYPE, 'type'],
@@ -298,7 +292,7 @@ export default new util.Translator([
         if (subType) {
           return [type, subType]
         } else if (sourceType === 'mastersthesis') {
-          return [type, 'Master\'s thesis']
+          return [type, "Master's thesis"]
         } else if (sourceType === 'phdthesis') {
           return [type, 'PhD thesis']
         } else {
@@ -315,17 +309,19 @@ export default new util.Translator([
         } else {
           return [type, genre]
         }
-      }
-    }
+      },
+    },
   },
   {
     source: TYPE,
     when: {
-      target: { type: false }
+      target: { type: false },
     },
     convert: {
-      toSource() { return 'misc' }
-    }
+      toSource() {
+        return 'misc'
+      },
+    },
   },
   {
     source: 'howpublished',
@@ -333,12 +329,12 @@ export default new util.Translator([
     convert: Converters.HOW_PUBLISHED,
     when: {
       target: {
-        publisher: false
-      }
-    }
+        publisher: false,
+      },
+    },
   },
   {
     source: 'volume',
-    target: 'volume'
-  }
+    target: 'volume',
+  },
 ])
