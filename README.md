@@ -1,6 +1,12 @@
-# rehype-citation
-
 ![rehype citation](./rehype-citation.png)
+
+# Rehype-Citation
+
+[![GitHub Repo stars](https://img.shields.io/github/stars/timlrx/rehype-citation?style=social)](https://GitHub.com/timlrx/rehype-citation/stargazers/)
+[![GitHub forks](https://img.shields.io/github/forks/timlrx/rehype-citation?style=social)](https://GitHub.com/timlrx/rehype-citation/network/)
+[![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Ftimlrxx)](https://twitter.com/timlrxx)
+[![Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&link=https://github.com/sponsors/timlrx)](https://github.com/sponsors/timlrx)
+[![DOI](https://zenodo.org/badge/419657013.svg)](https://zenodo.org/doi/10.5281/zenodo.10004327)
 
 [rehype](https://github.com/wooorm/rehype) plugin to nicely format citations in markdown documents and insert bibliography in html format. It is meant to be used as a server side plugin and neatly integrates [citeproc-js](https://github.com/Juris-M/citeproc-js) and [citation-js](https://github.com/citation-js/citation-js) within the remark-rehype ecosystem. Parsing of citations and all the wonderful regexes are adapted from [Zettlr](https://github.com/Zettlr/Zettlr).
 

@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: Rehype Citation
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Timothy
+    family-names: Lin
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.10004327
+abstract: >-
+  Rehype plugin to add citations and bibliography from
+  multiple file formats
+license: MIT
+version: 2.0.0
