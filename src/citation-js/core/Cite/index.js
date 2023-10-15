@@ -52,7 +52,12 @@ function Cite(data, options = {}) {
    */
   this.data = []
 
-  this.set(data, options)
+  // Modified citation-js to accept an array of objects
+  // Use add instead of set to retain previous data
+  data.forEach((d) => {
+    this.add(d, options)
+  })
+  // this.set(data, options)
   this.options(options)
 
   return this

@@ -97,11 +97,11 @@ If no `bibliography` file is passed, the plugin will be skipped.
 
 #### options.bibliography
 
-Type: `string`.
+Type: `string|string[]`.
 
 By default, if no `bibliography` file is passed, the plugin will be skipped.
 
-Name of bibtex or CSL-JSON file.
+Name or path to Bibtex, CSL-JSON or CFF file. If multiple files are provided, they will be merged.
 
 #### options.path
 

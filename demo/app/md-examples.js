@@ -5,9 +5,12 @@ documents and insert bibliography in html format.
 
 - Supports standard citations [@Nash1950{pp. iv, vi-xi, (xv)-(xvii)}];
 - in-text citations, @Nash1951 [p. 33] says blah;
-- and multiple citations [see @Nash1950 pp 12-13; @Nash1951]
+- multiple citations [see @Nash1950 pp 12-13; @Nash1951];
+- multiple sources [@10.5281/zenodo.1234]
 
-Customizable CSL and locale.
+Customizable CSL and locale. Bibtex, BibJSON, and CFF files are supported.
+
+\`options.biliography\` can either be a string or an array with multiple sources.
 
 ### Bibliography
 `
@@ -71,6 +74,23 @@ The _link-citations_ option can be used to add a link from citations to the refe
 This applies to numeric and author-date styles only.
 
 Implementation might differ from Pandoc, but if you run into any problems please file an issue.
+
+### Bibliography
+`
+
+export const CFFExample = `## Welcome
+
+Supports CFF files as bibliography sources - 
+easily cite sources by their CITATION.cff file.
+
+- Citation from Github cff file e.g. @10.5281/zenodo.1234 with DOI as key; 
+- Tensorflow citation [@10.5281/zenodo.4724125];
+- Langchain citation with URL as key [@github.com/langchain-ai/langchain]
+
+If a DOI is included, it will be used as the citation key.
+Otherwise the URL will be used.
+
+To cite, use the DOI reference directly or use the URL without the protocol (https://).
 
 ### Bibliography
 `

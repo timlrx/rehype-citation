@@ -8,9 +8,7 @@ export default new util.Translator([
     target: 'accessed',
     when: {
       source: false,
-      target: {
-        note: false,
-      },
+      target: { note: false },
     },
     convert: {
       toSource(accessed) {
@@ -126,7 +124,7 @@ export default new util.Translator([
   },
   {
     source: LABEL,
-    target: ['id', 'citation-label', 'author', 'issued', 'year-suffix', 'title'],
+    target: ['id', 'citation-key', 'author', 'issued', 'year-suffix', 'title'],
     convert: Converters.LABEL,
   },
   {
@@ -140,13 +138,13 @@ export default new util.Translator([
         issue(issue) {
           return typeof issue === 'number' || (typeof issue === 'string' && issue.match(/\d+/))
         },
-
         type: [
           'article',
           'article-journal',
           'article-newspaper',
           'article-magazine',
           'paper-conference',
+          'periodical',
         ],
       },
     },
@@ -164,26 +162,14 @@ export default new util.Translator([
     source: 'number',
     target: 'number',
     when: {
-      source: {
-        [TYPE]: ['patent', 'report', 'techreport'],
-      },
-      target: {
-        type: ['patent', 'report'],
-      },
+      source: { [TYPE]: ['patent', 'report', 'techreport'] },
+      target: { type: ['patent', 'report'] },
     },
   },
   {
     source: 'pages',
     target: 'page',
-    convert: {
-      toTarget(text) {
-        return text.replace(/[–—]/, '-')
-      },
-
-      toSource(text) {
-        return text.replace('-', '--')
-      },
-    },
+    convert: Converters.PAGES,
   },
   {
     source: 'publisher',
@@ -191,6 +177,7 @@ export default new util.Translator([
     convert: Converters.PICK,
     when: {
       target: {
+        // All except manuscript, paper-conference, techreport and thesis
         type: [
           'article',
           'article-journal',
@@ -200,12 +187,17 @@ export default new util.Translator([
           'book',
           'broadcast',
           'chapter',
+          'classic',
+          'collection',
           'dataset',
+          'document',
           'entry',
           'entry-dictionary',
           'entry-encyclopedia',
+          'event',
           'figure',
           'graphic',
+          'hearing',
           'interview',
           'legal_case',
           'legislation',
@@ -214,13 +206,18 @@ export default new util.Translator([
           'musical_score',
           'pamphlet',
           'patent',
+          'performance',
+          'periodical',
           'personal_communication',
           'post',
           'post-weblog',
+          'regulation',
           'review',
           'review-book',
+          'software',
           'song',
           'speech',
+          'standard',
           'treaty',
           'webpage',
         ],
@@ -232,12 +229,8 @@ export default new util.Translator([
     target: 'publisher',
     convert: Converters.PICK,
     when: {
-      source: {
-        publisher: false,
-      },
-      target: {
-        type: 'paper-conference',
-      },
+      source: { publisher: false },
+      target: { type: 'paper-conference' },
     },
   },
   {
@@ -249,9 +242,7 @@ export default new util.Translator([
         publisher: false,
         organization: false,
       },
-      target: {
-        type: 'report',
-      },
+      target: { type: 'report' },
     },
   },
   {
@@ -264,9 +255,7 @@ export default new util.Translator([
         organization: false,
         publisher: false,
       },
-      target: {
-        type: 'thesis',
-      },
+      target: { type: 'thesis' },
     },
   },
   {
@@ -275,6 +264,9 @@ export default new util.Translator([
     convert: Converters.PICK,
     when: {
       source: {
+        howpublished(howPublished) {
+          return howPublished && !howPublished.startsWith('http')
+        },
         publisher: false,
         organization: false,
         institution: false,
@@ -294,7 +286,8 @@ export default new util.Translator([
     target: ['type', 'genre'],
     convert: {
       toTarget(sourceType, subType) {
-        const type = types.source[sourceType] || 'book'
+        /* istanbul ignore next */
+        const type = types.source[sourceType] || 'document'
 
         if (subType) {
           return [type, subType]
@@ -306,7 +299,6 @@ export default new util.Translator([
           return [type]
         }
       },
-
       toSource(targetType, genre) {
         const type = types.target[targetType] || 'misc'
 
@@ -323,9 +315,7 @@ export default new util.Translator([
   {
     source: TYPE,
     when: {
-      target: {
-        type: false,
-      },
+      target: { type: false },
     },
     convert: {
       toSource() {

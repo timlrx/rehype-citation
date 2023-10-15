@@ -154,7 +154,11 @@ const PROP_CONVERTERS = {
   },
   date: {
     toTarget(date) {
-      return parseDate(date.toISOString())
+      if (date instanceof Date) {
+        return parseDate(date.toISOString())
+      } else {
+        return parseDate(new Date(date).toISOString())
+      }
     },
     toSource(date) {
       if (date.raw) {
@@ -642,19 +646,28 @@ const mainTranslator = new util.Translator(MAIN_PROPS)
 const refTranslator = new util.Translator(REF_PROPS)
 const CFF_VERSION = '1.2.0'
 
+/** Add doi or url as unique id if available to make citation easy */
+function addId(entry) {
+  if ('DOI' in entry) {
+    entry.id = entry.DOI
+  } else if ('URL' in entry) {
+    entry.id = entry.URL.replace('http://', '').replace('https://', '')
+  }
+}
+
 function parse(input) {
   const main = mainTranslator.convertToTarget(input)
   if (input['cff-version'] <= '1.1.0') {
     main.type = TYPES_TO_TARGET.software
   }
   main._cff_mainReference = true
-  // Use identifier as unique id to make citation easy
-  if ('DOI' in main) {
-    main.id = main.DOI
-  }
+  addId(main)
+
   const output = [main]
   if (input['preferred-citation']) {
-    output.push(refTranslator.convertToTarget(input['preferred-citation']))
+    const preferredCitation = refTranslator.convertToTarget(input['preferred-citation'])
+    addId(preferredCitation)
+    output.push(preferredCitation)
   }
 
   if (Array.isArray(input.references)) {

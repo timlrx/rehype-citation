@@ -1,8 +1,8 @@
 /**
  * @typedef Options
  *   Configuration.
- * @property {string} [bibliography]
- *   Name of bibtex or CSL-JSON file
+ * @property {string | string[]} [bibliography]
+ *   Name or path to Bibtex, CSL-JSON or CFF file. If multiple files are provided, they will be merged.
  * @property {string} [path]
  *   Optional path to file (node). Will be joined with `options.bibliography` and used in place of cwd of file if provided.
  * @property {'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string} [csl]

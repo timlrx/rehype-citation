@@ -18,7 +18,6 @@ function Cite(data, opts) {
   }
 
   const self = new CiteCore(data, opts)
-  console.log(self)
   this._options = self._options
   this.log = self.log
   this.data = self.data

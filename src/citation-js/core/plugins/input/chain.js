@@ -10,6 +10,7 @@ import { applyGraph, removeGraph } from './graph.js'
 /**
  * @access private
  * @param {Array<Object>} graph
+ * @return {String}
  */
 function prepareParseGraph(graph) {
   return (
