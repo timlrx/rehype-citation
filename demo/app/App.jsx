@@ -29,7 +29,7 @@ const examples = [
   'Custom CSL',
   'Footnote Style',
   'Link Citations',
-  'CFF',
+  'Citation File Format',
 ]
 const pathList = examples.map((e) => e.toLocaleLowerCase().replace(' ', '-'))
 

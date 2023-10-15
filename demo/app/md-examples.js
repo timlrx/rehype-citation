@@ -81,7 +81,7 @@ Implementation might differ from Pandoc, but if you run into any problems please
 export const CFFExample = `## Welcome
 
 Supports CFF files as bibliography sources - 
-easily cite sources directly from Github if they include a CITATION.cff file.
+easily cite sources by their CITATION.cff file.
 
 - Citation from Github cff file e.g. @10.5281/zenodo.1234 with DOI as key; 
 - Tensorflow citation [@10.5281/zenodo.4724125];
