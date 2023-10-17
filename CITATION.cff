@@ -14,6 +14,5 @@ abstract: >-
   Rehype plugin to add citations and bibliography from
   multiple file formats
 license: MIT
-version: 2.0.0
 date-released: 2023-10-15
 doi: 10.5281/zenodo.10004327
