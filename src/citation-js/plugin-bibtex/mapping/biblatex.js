@@ -8,7 +8,10 @@ const nonSpec = [
     target: 'accessed',
     when: {
       source: false,
-      target: { note: false, addendum: false },
+      target: {
+        note: false,
+        addendum: false,
+      },
     },
     convert: {
       toSource(accessed) {
@@ -20,7 +23,9 @@ const nonSpec = [
     source: 'numpages',
     target: 'number-of-pages',
     when: {
-      source: { pagetotal: false },
+      source: {
+        pagetotal: false,
+      },
       target: false,
     },
   },
@@ -51,7 +56,9 @@ const nonSpec = [
     target: 'custom',
     convert: {
       toTarget(S2ID) {
-        return { S2ID }
+        return {
+          S2ID,
+        }
       },
       toSource({ S2ID }) {
         return S2ID
@@ -59,13 +66,14 @@ const nonSpec = [
     },
   },
 ]
-
 const aliases = [
   {
     source: 'annote',
     target: 'annote',
     when: {
-      source: { annotation: false },
+      source: {
+        annotation: false,
+      },
       target: false,
     },
   },
@@ -74,7 +82,9 @@ const aliases = [
     target: 'publisher-place',
     convert: Converters.PICK,
     when: {
-      source: { location: false },
+      source: {
+        location: false,
+      },
       target: false,
     },
   },
@@ -83,7 +93,9 @@ const aliases = [
     target: 'PMID',
     convert: Converters.EPRINT,
     when: {
-      source: { eprinttype: false },
+      source: {
+        eprinttype: false,
+      },
       target: false,
     },
   },
@@ -113,7 +125,6 @@ const aliases = [
     },
   },
 ]
-
 export default new util.Translator([
   ...aliases,
   ...nonSpec,
@@ -131,9 +142,9 @@ export default new util.Translator([
     target: 'annote',
   },
   {
-    source: 'author',
+    source: ['author', 'author+an:orcid'],
     target: 'author',
-    convert: Converters.NAMES,
+    convert: Converters.NAMES_ORCID,
   },
   {
     source: 'library',
@@ -148,19 +159,14 @@ export default new util.Translator([
     target: 'container-author',
     convert: Converters.NAMES,
   },
-
-  // Regarding maintitle, booktitle & journaltitle:
-  //     When importing, maintitle is preferred, since it represents the
-  // larger container. When exporting, booktitle is preferred since
-  // it is more common, unless number-of-volumes is present indicating a
-  // multi-volume book.
-  //     journaltitle is only used for articles.
   {
     source: ['maintitle', 'mainsubtitle', 'maintitleaddon'],
     target: 'container-title',
     when: {
       source: true,
-      target: { 'number-of-volumes': true },
+      target: {
+        'number-of-volumes': true,
+      },
     },
     convert: Converters.TITLE,
   },
@@ -168,7 +174,9 @@ export default new util.Translator([
     source: ['booktitle', 'booksubtitle', 'booktitleaddon'],
     target: 'container-title',
     when: {
-      source: { maintitle: false },
+      source: {
+        maintitle: false,
+      },
       target: {
         'number-of-volumes': false,
         type(type) {
@@ -182,7 +190,9 @@ export default new util.Translator([
     source: ['journaltitle', 'journalsubtitle', 'journaltitleaddon'],
     target: 'container-title',
     when: {
-      source: { [TYPE]: 'article' },
+      source: {
+        [TYPE]: 'article',
+      },
       target: {
         type: ['article', 'article-newspaper', 'article-journal', 'article-magazine'],
       },
@@ -193,7 +203,9 @@ export default new util.Translator([
     source: 'shortjournal',
     target: 'container-title-short',
     when: {
-      source: { [TYPE]: 'article' },
+      source: {
+        [TYPE]: 'article',
+      },
       target: {
         type: ['article', 'article-newspaper', 'article-journal', 'article-magazine'],
       },
@@ -302,7 +314,6 @@ export default new util.Translator([
             typeKey = 'techreport'
           }
         }
-
         return [types.source[type] || 'document', typeKey || subtype]
       },
       toSource(type, genre) {
@@ -313,7 +324,11 @@ export default new util.Translator([
   },
   {
     source: TYPE,
-    when: { target: { type: false } },
+    when: {
+      target: {
+        type: false,
+      },
+    },
     convert: {
       toSource() {
         return 'misc'
@@ -338,7 +353,12 @@ export default new util.Translator([
     source: ['eventtitle', 'eventtitleaddon'],
     target: 'event',
     convert: Converters.EVENT_TITLE,
-    when: { source: false, target: { 'event-title': false } },
+    when: {
+      source: false,
+      target: {
+        'event-title': false,
+      },
+    },
   },
   {
     source: LABEL,
@@ -401,7 +421,9 @@ export default new util.Translator([
     target: 'issued',
     convert: Converters.YEAR_MONTH,
     when: {
-      source: { date: false },
+      source: {
+        date: false,
+      },
       target: false,
     },
   },
@@ -409,8 +431,12 @@ export default new util.Translator([
     source: 'location',
     target: 'jurisdiction',
     when: {
-      source: { type: 'patent' },
-      target: { type: 'patent' },
+      source: {
+        type: 'patent',
+      },
+      target: {
+        type: 'patent',
+      },
     },
   },
   {
@@ -426,7 +452,12 @@ export default new util.Translator([
   {
     source: 'langid',
     target: 'language',
-    when: { source: { language: false }, target: false },
+    when: {
+      source: {
+        language: false,
+      },
+      target: false,
+    },
   },
   {
     source: 'note',
@@ -435,12 +466,21 @@ export default new util.Translator([
   {
     source: 'addendum',
     target: 'note',
-    when: { source: { note: false }, target: false },
+    when: {
+      source: {
+        note: false,
+      },
+      target: false,
+    },
   },
   {
     source: 'eid',
     target: 'number',
-    when: { target: { type: ['article-journal'] } },
+    when: {
+      target: {
+        type: ['article-journal'],
+      },
+    },
   },
   {
     source: ['isan', 'ismn', 'isrn', 'iswc'],
@@ -463,8 +503,12 @@ export default new util.Translator([
     source: 'number',
     target: 'number',
     when: {
-      source: { [TYPE]: ['patent', 'report', 'techreport', 'legislation'] },
-      target: { type: ['patent', 'report', 'legislation'] },
+      source: {
+        [TYPE]: ['patent', 'report', 'techreport', 'legislation'],
+      },
+      target: {
+        type: ['patent', 'report', 'legislation'],
+      },
     },
   },
   {
@@ -489,7 +533,11 @@ export default new util.Translator([
   {
     source: 'pages',
     target: 'page',
-    when: { source: { bookpagination: [undefined, 'page'] } },
+    when: {
+      source: {
+        bookpagination: [undefined, 'page'],
+      },
+    },
     convert: Converters.PAGES,
   },
   {
@@ -517,9 +565,6 @@ export default new util.Translator([
     when: {
       source: true,
       target: {
-        // All except:
-        //   - thesis, report: institution
-        //   - webpage: organization
         type: [
           'article',
           'article-journal',
@@ -576,7 +621,7 @@ export default new util.Translator([
         publisher: false,
       },
       target: {
-        type: 'webpage', // TODO paper-conference?
+        type: 'webpage',
       },
     },
   },
@@ -616,8 +661,12 @@ export default new util.Translator([
     source: ['pages', 'bookpagination'],
     target: 'section',
     when: {
-      source: { bookpagination: 'section' },
-      target: { page: false },
+      source: {
+        bookpagination: 'section',
+      },
+      target: {
+        page: false,
+      },
     },
     convert: {
       toTarget(section) {
@@ -640,7 +689,12 @@ export default new util.Translator([
   {
     source: 'shorttitle',
     target: 'shortTitle',
-    when: { source: false, target: { 'title-short': false } },
+    when: {
+      source: false,
+      target: {
+        'title-short': false,
+      },
+    },
   },
   {
     source: ['title', 'subtitle', 'titleaddon'],

@@ -1,17 +1,15 @@
 // @ts-nocheck
-/* global jQuery, HTMLElement */
-
-/**
- * @module input/other
- */
-
 import * as empty from './empty.js'
 import * as json from './json.js'
 import * as jquery from './jquery.js'
 import * as html from './html.js'
-
 export const ref = '@else'
-export const parsers = { empty, json, jquery, html }
+export const parsers = {
+  empty,
+  json,
+  jquery,
+  html,
+}
 export const formats = {
   '@empty/text': {
     parse: empty.parse,
@@ -51,7 +49,6 @@ export const formats = {
     parse: jquery.parse,
     parseType: {
       dataType: 'ComplexObject',
-      /* istanbul ignore next: not testable in Node */
       predicate(input) {
         return typeof jQuery !== 'undefined' && input instanceof jQuery
       },
@@ -61,7 +58,6 @@ export const formats = {
     parse: html.parse,
     parseType: {
       dataType: 'ComplexObject',
-      /* istanbul ignore next: not testable in Node */
       predicate(input) {
         return typeof HTMLElement !== 'undefined' && input instanceof HTMLElement
       },

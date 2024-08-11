@@ -1,26 +1,8 @@
-// @ts-nocheck
-/**
- * @module output/label
- */
-
-/**
- * Get a label from CSL data
- *
- * @access protected
- * @method getLabel
- * @todo flavors/formats
- *
- * @param {CSL} entry - Input CSL
- *
- * @return {String} The label
- */
 function getLabel(entry) {
   if ('citation-label' in entry) {
     return entry['citation-label']
   }
-
   let res = ''
-
   if (entry.author) {
     res += entry.author[0].family || entry.author[0].literal
   }
@@ -32,10 +14,8 @@ function getLabel(entry) {
   } else if (entry.title) {
     res += entry.title.replace(/<\/?.*?>/g, '').match(/^(?:(?:the|a|an)\s+)?(\S+)/i)[1]
   }
-
   return res
 }
-
 export { getLabel }
 export default {
   label(data) {

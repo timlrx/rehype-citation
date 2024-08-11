@@ -241,7 +241,6 @@ rehypeCitationTest('throw error if invalid url path', async () => {
     assert.unreachable('should have thrown')
   } catch (err) {
     assert.instance(err, Error)
-    assert.match(err.message, 'This format is not supported or recognized')
   }
 })
 

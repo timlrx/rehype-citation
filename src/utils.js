@@ -49,8 +49,8 @@ export const getBibliography = async (options, file) => {
       typeof options.bibliography === 'string' ? [options.bibliography] : options.bibliography
     // @ts-ignore
   } else if (file?.data?.frontmatter?.bibliography) {
-    // @ts-ignore
     bibliography =
+      // @ts-ignore
       typeof file.data.frontmatter.bibliography === 'string'
         ? [file.data.frontmatter.bibliography]
         : file.data.frontmatter.bibliography

@@ -708,6 +708,7 @@ function format(input, options = {}) {
   }
 
   if (input.length) {
+    // @ts-ignore
     cff.references = input.map(refTranslator.convertToSource)
   }
 

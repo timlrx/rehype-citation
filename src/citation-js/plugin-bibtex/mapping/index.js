@@ -13,7 +13,6 @@ function _objectWithoutProperties(source, excluded) {
   }
   return target
 }
-
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null) return {}
   var target = {}
@@ -26,56 +25,35 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   }
   return target
 }
-
-function _toPropertyKey(arg) {
-  var key = _toPrimitive(arg, 'string')
-  return typeof key === 'symbol' ? key : String(key)
-}
-
-function _toPrimitive(input, hint) {
-  if (typeof input !== 'object' || input === null) return input
-  var prim = input[Symbol.toPrimitive]
-  if (prim !== undefined) {
-    var res = prim.call(input, hint || 'default')
-    if (typeof res !== 'object') return res
-    throw new TypeError('@@toPrimitive must return a primitive value.')
-  }
-  return (hint === 'string' ? String : Number)(input)
-}
-
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object)
+function ownKeys(e, r) {
+  var t = Object.keys(e)
   if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object)
-    if (enumerableOnly) {
-      symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable
-      })
-    }
-    keys.push.apply(keys, symbols)
+    var o = Object.getOwnPropertySymbols(e)
+    r &&
+      (o = o.filter(function (r) {
+        return Object.getOwnPropertyDescriptor(e, r).enumerable
+      })),
+      t.push.apply(t, o)
   }
-  return keys
+  return t
 }
-
-function _objectSpread(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {}
-    if (i % 2) {
-      ownKeys(Object(source), true).forEach(function (key) {
-        _defineProperty(target, key, source[key])
-      })
-    } else if (Object.getOwnPropertyDescriptors) {
-      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source))
-    } else {
-      ownKeys(Object(source)).forEach(function (key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key))
-      })
-    }
+function _objectSpread(e) {
+  for (var r = 1; r < arguments.length; r++) {
+    var t = null != arguments[r] ? arguments[r] : {}
+    r % 2
+      ? ownKeys(Object(t), !0).forEach(function (r) {
+          _defineProperty(e, r, t[r])
+        })
+      : Object.getOwnPropertyDescriptors
+      ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t))
+      : ownKeys(Object(t)).forEach(function (r) {
+          Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r))
+        })
   }
-  return target
+  return e
 }
-
 function _defineProperty(obj, key, value) {
+  key = _toPropertyKey(key)
   if (key in obj) {
     Object.defineProperty(obj, key, {
       value: value,
@@ -88,32 +66,29 @@ function _defineProperty(obj, key, value) {
   }
   return obj
 }
-
+function _toPropertyKey(t) {
+  var i = _toPrimitive(t, 'string')
+  return 'symbol' == typeof i ? i : i + ''
+}
+function _toPrimitive(t, r) {
+  if ('object' != typeof t || !t) return t
+  var e = t[Symbol.toPrimitive]
+  if (void 0 !== e) {
+    var i = e.call(t, r || 'default')
+    if ('object' != typeof i) return i
+    throw new TypeError('@@toPrimitive must return a primitive value.')
+  }
+  return ('string' === r ? String : Number)(t)
+}
 import { TYPE, LABEL } from './shared.js'
 import biblatex from './biblatex.js'
 import bibtex from './bibtex.js'
-
-function crossref(entry, registry) {
-  if (entry.crossref in registry) {
-    const parent = registry[entry.crossref].properties
-
-    if (parent === entry) {
-      return entry
-    }
-
-    return Object.assign({}, crossref(parent, registry), entry)
-  }
-
-  return entry
-}
-
+import { crossref } from './crossref.js'
 function _parse(input, spec) {
   const registry = {}
-
   for (const entry of input) {
     registry[entry.label] = entry
   }
-
   return input.map(({ type, label, properties }) =>
     spec.convertToTarget(
       _objectSpread(
@@ -121,12 +96,11 @@ function _parse(input, spec) {
           [TYPE]: type,
           [LABEL]: label,
         },
-        crossref(properties, registry)
+        crossref(type, properties, registry)
       )
     )
   )
 }
-
 function _format(input, spec) {
   return input.map((entry) => {
     const _spec$convertToSource = spec.convertToSource(entry),
@@ -135,7 +109,6 @@ function _format(input, spec) {
         _spec$convertToSource,
         [TYPE, LABEL].map(_toPropertyKey)
       )
-
     return {
       type,
       label,
@@ -143,7 +116,6 @@ function _format(input, spec) {
     }
   })
 }
-
 export function parseBibtex(input) {
   return _parse(input, bibtex)
 }
