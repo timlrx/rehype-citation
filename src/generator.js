@@ -145,7 +145,11 @@ const rehypeCitationGenerator = (Cite) => {
       })
 
       if (noCite) {
-        citeproc.updateItems(noCite.map((x) => x.replace('@', '')))
+        if (noCite.length === 1 && noCite[0] === '@*') {
+          citeproc.updateItems(citationIds)
+        } else {
+          citeproc.updateItems(noCite.map((x) => x.replace('@', '')))
+        }
       }
 
       if (
