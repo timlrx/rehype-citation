@@ -8,7 +8,9 @@ export default new util.Translator([
     target: 'accessed',
     when: {
       source: false,
-      target: { note: false },
+      target: {
+        note: false,
+      },
     },
     convert: {
       toSource(accessed) {
@@ -114,6 +116,10 @@ export default new util.Translator([
     },
   },
   {
+    source: 'doi',
+    target: 'DOI',
+  },
+  {
     source: 'edition',
     target: 'edition',
   },
@@ -126,6 +132,14 @@ export default new util.Translator([
     source: LABEL,
     target: ['id', 'citation-key', 'author', 'issued', 'year-suffix', 'title'],
     convert: Converters.LABEL,
+  },
+  {
+    source: 'isbn',
+    target: 'ISBN',
+  },
+  {
+    source: 'issn',
+    target: 'ISSN',
   },
   {
     source: 'number',
@@ -162,8 +176,24 @@ export default new util.Translator([
     source: 'number',
     target: 'number',
     when: {
-      source: { [TYPE]: ['patent', 'report', 'techreport'] },
-      target: { type: ['patent', 'report'] },
+      source: {
+        [TYPE]: ['patent', 'report', 'techreport'],
+      },
+      target: {
+        type: ['patent', 'report'],
+      },
+    },
+  },
+  {
+    source: 'eid',
+    target: 'number',
+    when: {
+      source: {
+        number: false,
+      },
+      target: {
+        type: ['article-journal'],
+      },
     },
   },
   {
@@ -177,7 +207,6 @@ export default new util.Translator([
     convert: Converters.PICK,
     when: {
       target: {
-        // All except manuscript, paper-conference, techreport and thesis
         type: [
           'article',
           'article-journal',
@@ -229,8 +258,12 @@ export default new util.Translator([
     target: 'publisher',
     convert: Converters.PICK,
     when: {
-      source: { publisher: false },
-      target: { type: 'paper-conference' },
+      source: {
+        publisher: false,
+      },
+      target: {
+        type: 'paper-conference',
+      },
     },
   },
   {
@@ -242,7 +275,9 @@ export default new util.Translator([
         publisher: false,
         organization: false,
       },
-      target: { type: 'report' },
+      target: {
+        type: 'report',
+      },
     },
   },
   {
@@ -255,7 +290,9 @@ export default new util.Translator([
         organization: false,
         publisher: false,
       },
-      target: { type: 'thesis' },
+      target: {
+        type: 'thesis',
+      },
     },
   },
   {
@@ -286,9 +323,7 @@ export default new util.Translator([
     target: ['type', 'genre'],
     convert: {
       toTarget(sourceType, subType) {
-        /* istanbul ignore next */
         const type = types.source[sourceType] || 'document'
-
         if (subType) {
           return [type, subType]
         } else if (sourceType === 'mastersthesis') {
@@ -301,7 +336,6 @@ export default new util.Translator([
       },
       toSource(targetType, genre) {
         const type = types.target[targetType] || 'misc'
-
         if (/^(master'?s|diploma) thesis$/i.test(genre)) {
           return ['mastersthesis']
         } else if (/^(phd|doctoral) thesis$/i.test(genre)) {
@@ -315,13 +349,19 @@ export default new util.Translator([
   {
     source: TYPE,
     when: {
-      target: { type: false },
+      target: {
+        type: false,
+      },
     },
     convert: {
       toSource() {
         return 'misc'
       },
     },
+  },
+  {
+    source: 'url',
+    target: 'URL',
   },
   {
     source: 'howpublished',

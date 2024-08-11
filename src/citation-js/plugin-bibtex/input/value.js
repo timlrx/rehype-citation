@@ -1,72 +1,191 @@
+function ownKeys(e, r) {
+  var t = Object.keys(e)
+  if (Object.getOwnPropertySymbols) {
+    var o = Object.getOwnPropertySymbols(e)
+    r &&
+      (o = o.filter(function (r) {
+        return Object.getOwnPropertyDescriptor(e, r).enumerable
+      })),
+      t.push.apply(t, o)
+  }
+  return t
+}
+function _objectSpread(e) {
+  for (var r = 1; r < arguments.length; r++) {
+    var t = null != arguments[r] ? arguments[r] : {}
+    r % 2
+      ? ownKeys(Object(t), !0).forEach(function (r) {
+          _defineProperty(e, r, t[r])
+        })
+      : Object.getOwnPropertyDescriptors
+      ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t))
+      : ownKeys(Object(t)).forEach(function (r) {
+          Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r))
+        })
+  }
+  return e
+}
+function _defineProperty(obj, key, value) {
+  key = _toPropertyKey(key)
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    })
+  } else {
+    obj[key] = value
+  }
+  return obj
+}
+function _toPropertyKey(t) {
+  var i = _toPrimitive(t, 'string')
+  return 'symbol' == typeof i ? i : i + ''
+}
+function _toPrimitive(t, r) {
+  if ('object' != typeof t || !t) return t
+  var e = t[Symbol.toPrimitive]
+  if (void 0 !== e) {
+    var i = e.call(t, r || 'default')
+    if ('object' != typeof i) return i
+    throw new TypeError('@@toPrimitive must return a primitive value.')
+  }
+  return ('string' === r ? String : Number)(t)
+}
 import { util } from '../../core/index.js'
 import moo from 'moo'
 import config from '../config.js'
 import * as constants from './constants.js'
 import { orderNamePieces, formatNameParts, getStringCase } from './name.js'
-
 const text = {
+  commandBegin: {
+    match: '\\begin',
+    push: 'environment',
+  },
   command: {
     match: /\\(?:[a-zA-Z]+|.) */,
-    type: moo.keywords({
-      commandBegin: '\\begin',
-      commandEnd: '\\end',
-    }),
     value: (s) => s.slice(1).trim(),
   },
-  lbrace: { match: '{', push: 'bracedLiteral' },
-  mathShift: { match: '$', push: 'mathLiteral' },
+  lbrace: {
+    match: '{',
+    push: 'bracedLiteral',
+  },
+  mathShift: {
+    match: '$',
+    push: 'mathLiteral',
+  },
   whitespace: {
     match: /[\s]+|~/,
     lineBreaks: true,
-    // \xa0 = Non-breakable space
     value(token) {
       return token === '~' ? '\xa0' : ' '
     },
   },
 }
-
 const lexer = moo.states({
-  stringLiteral: {
-    ...text,
-    text: /[^{$}\s~\\]+/,
-  },
-  namesLiteral: {
-    and: /\s+[aA][nN][dD]\s+/,
-    comma: ',',
-    hyphen: '-',
-    equals: '=',
-    ...text,
-    text: /[^{$}\s~\\,=-]+/,
-  },
-  listLiteral: {
-    and: /\s+and\s+/,
-    ...text,
-    text: /[^{$}\s~\\]+/,
-  },
-  separatedLiteral: {
-    comma: ',',
-    ...text,
-    text: /[^{$}\s~\\,]+/,
-  },
-  bracedLiteral: {
-    ...text,
-    rbrace: { match: '}', pop: true },
-    text: /[^{$}\s~\\]+/,
-  },
-  mathLiteral: {
-    ...text,
-    mathShift: { match: '$', pop: true },
-    script: /[\^_]/,
-    text: /[^{$}\s~\\^_]+/,
-  },
+  stringLiteral: _objectSpread(
+    _objectSpread({}, text),
+    {},
+    {
+      text: /[^{$}\s~\\]+/,
+    }
+  ),
+  namesLiteral: _objectSpread(
+    _objectSpread(
+      {
+        and: /\s+[aA][nN][dD]\s+/,
+        comma: ',',
+        hyphen: '-',
+        equals: '=',
+      },
+      text
+    ),
+    {},
+    {
+      text: /[^{$}\s~\\,=-]+/,
+    }
+  ),
+  listLiteral: _objectSpread(
+    _objectSpread(
+      {
+        and: /\s+and\s+/,
+      },
+      text
+    ),
+    {},
+    {
+      text: /[^{$}\s~\\]+/,
+    }
+  ),
+  separatedLiteral: _objectSpread(
+    _objectSpread(
+      {
+        comma: ',',
+      },
+      text
+    ),
+    {},
+    {
+      text: /[^{$}\s~\\,]+/,
+    }
+  ),
+  annotation: _objectSpread(
+    _objectSpread({}, text),
+    {},
+    {
+      colon: ':',
+      equals: '=',
+      comma: ',',
+      semicolon: ';',
+      quote: '"',
+      itemCount: /\d+/,
+      text: /[^{$}\s~\\":;,=]+/,
+    }
+  ),
+  bracedLiteral: _objectSpread(
+    _objectSpread({}, text),
+    {},
+    {
+      rbrace: {
+        match: '}',
+        pop: true,
+      },
+      text: /[^{$}\s~\\]+/,
+    }
+  ),
+  mathLiteral: _objectSpread(
+    _objectSpread({}, text),
+    {},
+    {
+      mathShift: {
+        match: '$',
+        pop: true,
+      },
+      script: /[\^_]/,
+      text: /[^{$}\s~\\^_]+/,
+    }
+  ),
+  environment: _objectSpread(
+    _objectSpread(
+      {
+        commandEnd: {
+          match: '\\end',
+          pop: true,
+        },
+      },
+      text
+    ),
+    {},
+    {
+      text: /[^{$}\s~\\]+/,
+    }
+  ),
 })
-
 function flattenConsString(string) {
-  // eslint-disable-next-line no-unused-expressions
   string[0]
   return string
 }
-
 function applyFormatting(text, format) {
   if (format in constants.formatting) {
     return text && constants.formatting[format].join(text)
@@ -74,7 +193,6 @@ function applyFormatting(text, format) {
     return text
   }
 }
-
 export const valueGrammar = new util.Grammar(
   {
     String() {
@@ -84,15 +202,12 @@ export const valueGrammar = new util.Grammar(
       }
       return flattenConsString(output)
     },
-
     StringNames() {
       const list = []
-
       while (true) {
         this.consumeToken('whitespace', true)
         list.push(this.consumeRule('Name'))
         this.consumeToken('whitespace', true)
-
         if (this.matchEndOfFile()) {
           return list
         } else {
@@ -100,13 +215,10 @@ export const valueGrammar = new util.Grammar(
         }
       }
     },
-
     Name() {
       const pieces = []
-
       while (true) {
         pieces.push(this.consumeRule('NamePiece'))
-
         if (this.matchEndOfFile() || this.matchToken('and')) {
           return orderNamePieces(pieces)
         } else {
@@ -115,20 +227,20 @@ export const valueGrammar = new util.Grammar(
         }
       }
     },
-
     NamePiece() {
       const parts = []
-
       while (true) {
         const part = this.consumeRule('NameToken')
-
         if (part.label) {
-          part.label = formatNameParts([...parts, { value: part.label }])
+          part.label = formatNameParts([
+            ...parts,
+            {
+              value: part.label,
+            },
+          ])
           return [part]
         }
-
         parts.push(part)
-
         if (this.matchEndOfFile() || this.matchToken('and') || this.matchToken('comma')) {
           return parts
         } else {
@@ -138,48 +250,45 @@ export const valueGrammar = new util.Grammar(
         }
       }
     },
-
     NameToken() {
       let upperCase = null
       let value = ''
-
       while (true) {
-        // If needed, test regular text for case
         if (upperCase === null && this.matchToken('text')) {
           const text = this.consumeToken().value
           value += text
           upperCase = getStringCase(text)
-
-          // If end of name part, return up
         } else if (
           this.matchEndOfFile() ||
           this.matchToken('and') ||
           this.matchToken('comma') ||
           this.matchToken('whitespace')
         ) {
-          return { value, upperCase }
-
-          // Same for hyphen, but note it is hyphenated
+          return {
+            value,
+            upperCase,
+          }
         } else if (this.matchToken('hyphen')) {
-          return { value, upperCase, hyphenated: true }
-
-          // If equals we are in BibLaTeX extended mode
-          // 'family=Last, given=First, prefix=von'
+          return {
+            value,
+            upperCase,
+            hyphenated: true,
+          }
         } else if (this.matchToken('equals')) {
           this.consumeToken('equals')
           const text = this.consumeRule('NamePiece')
           if (text[0].label) {
             value += '=' + text[0].label
           }
-          return { value: formatNameParts(text), label: value }
-
-          // Else consume other text
+          return {
+            value: formatNameParts(text),
+            label: value,
+          }
         } else {
           value += this.consumeRule('Text')
         }
       }
     },
-
     StringList() {
       const list = []
       while (!this.matchEndOfFile()) {
@@ -188,12 +297,10 @@ export const valueGrammar = new util.Grammar(
           output += this.consumeRule('Text')
         }
         list.push(flattenConsString(output))
-
         this.consumeToken('and', true)
       }
       return list.length === 1 ? list[0] : list
     },
-
     StringSeparated() {
       const list = []
       while (!this.matchEndOfFile()) {
@@ -202,13 +309,11 @@ export const valueGrammar = new util.Grammar(
           output += this.consumeRule('Text')
         }
         list.push(output.trim())
-
         this.consumeToken('comma', true)
         this.consumeToken('whitespace', true)
       }
       return list
     },
-
     StringVerbatim() {
       let output = ''
       while (!this.matchEndOfFile()) {
@@ -216,7 +321,6 @@ export const valueGrammar = new util.Grammar(
       }
       return flattenConsString(output)
     },
-
     StringUri() {
       const uri = this.consumeRule('StringVerbatim')
       try {
@@ -226,50 +330,117 @@ export const valueGrammar = new util.Grammar(
           return uri
         }
       } catch (e) {
-        // malformed URI
         return encodeURI(uri)
       }
     },
-
     StringTitleCase() {
       this.state.sentenceCase = true
       let output = ''
-
       while (!this.matchEndOfFile()) {
         output += this.consumeRule('Text')
       }
-
       return flattenConsString(output)
     },
-
+    Annotations() {
+      const annotations = {}
+      while (true) {
+        const { scope, item, part, value } = this.consumeRule('Annotation')
+        if (scope === 'part') {
+          if (!annotations.part) {
+            annotations.part = []
+          }
+          if (!annotations.part[item]) {
+            annotations.part[item] = {}
+          }
+          annotations.part[item][part] = value
+        } else if (scope === 'item') {
+          if (!annotations.item) {
+            annotations.item = []
+          }
+          annotations.item[item] = value
+        } else {
+          annotations.field = value
+        }
+        if (this.matchEndOfFile()) {
+          break
+        } else {
+          this.consumeToken('semicolon')
+          this.consumeRule('_')
+        }
+      }
+      return annotations
+    },
+    Annotation() {
+      const annotation = {}
+      if (this.matchToken('itemCount')) {
+        annotation.item = parseInt(this.consumeToken('itemCount')) - 1
+        if (this.matchToken('colon')) {
+          this.consumeToken('colon')
+          annotation.part = this.consumeToken('text')
+          annotation.scope = 'part'
+        } else {
+          annotation.scope = 'item'
+        }
+      } else {
+        annotation.scope = 'field'
+      }
+      this.consumeToken('equals')
+      this.consumeRule('_')
+      if (this.matchToken('quote')) {
+        this.consumeToken('quote')
+        let literal = ''
+        while (!this.matchToken('quote')) {
+          if (
+            this.matchToken('itemCount') ||
+            this.matchToken('colon') ||
+            this.matchToken('comma') ||
+            this.matchToken('semicolon') ||
+            this.matchToken('equals')
+          ) {
+            literal += this.token.value
+            this.token = this.lexer.next()
+          } else {
+            literal += this.consumeRule('Text')
+          }
+        }
+        this.consumeToken('quote')
+        annotation.value = flattenConsString(literal)
+        this.consumeRule('_')
+      } else {
+        annotation.value = []
+        let output = ''
+        while (true) {
+          output += this.consumeRule('Text')
+          if (this.matchToken('comma')) {
+            this.consumeToken('comma')
+            this.consumeRule('_')
+            annotation.value.push(flattenConsString(output))
+            output = ''
+          } else if (this.matchEndOfFile() || this.matchToken('semicolon')) {
+            annotation.value.push(flattenConsString(output))
+            break
+          }
+        }
+      }
+      return annotation
+    },
     BracketString() {
+      var _this$state
       let output = ''
       this.consumeToken('lbrace')
-
       const sentenceCase = this.state.sentenceCase
-      // If the bracket string starts with a command the sentence case behavior
-      // is maintained within the brackets.
       this.state.sentenceCase = sentenceCase && this.matchToken('command')
-      this.state.partlyLowercase &&= this.state.sentenceCase
-
+      ;(_this$state = this.state).partlyLowercase &&
+        (_this$state.partlyLowercase = this.state.sentenceCase)
       while (!this.matchToken('rbrace')) {
         output += this.consumeRule('Text')
       }
-
-      // topLevel meaning that the bracket string is not top level but a direct
-      // child of the top level value.
       const topLevel = sentenceCase && !this.state.sentenceCase
-      // Protect the case of the bracket string if it is a direct child of the top
-      // level, and the string is partly lowercase.
       const protectCase = topLevel && this.state.partlyLowercase
-      // Restore the sentence case of the outside of the brackets.
       this.state.sentenceCase = sentenceCase
-
       this.consumeToken('rbrace')
-
       return protectCase ? applyFormatting(output, 'nocase') : output
     },
-
     MathString() {
       let output = ''
       this.consumeToken('mathShift')
@@ -283,10 +454,8 @@ export const valueGrammar = new util.Grammar(
             const formatName = constants.mathScriptFormatting[script]
             output += constants.formatting[formatName].join(text.join(''))
           }
-
           continue
         }
-
         if (this.matchToken('command')) {
           const command = this.token.value
           if (command in constants.mathScriptFormatting) {
@@ -296,15 +465,12 @@ export const valueGrammar = new util.Grammar(
             continue
           }
         }
-
         output += this.consumeRule('Text')
       }
       this.consumeToken('mathShift')
       return output
     },
-
     Text() {
-      /* eslint-disable padded-blocks */
       if (this.matchToken('lbrace')) {
         return this.consumeRule('BracketString')
       } else if (this.matchToken('mathShift')) {
@@ -316,90 +482,64 @@ export const valueGrammar = new util.Grammar(
       } else if (this.matchToken('command')) {
         return this.consumeRule('Command')
       }
-      /* eslint-enable padded-blocks */
-
       const text = this.consumeToken('text').value.replace(
         constants.ligaturePattern,
         (ligature) => constants.ligatures[ligature]
       )
-
       const afterPunctuation = this.state.afterPunctuation
       this.state.afterPunctuation = /[?!.:]$/.test(text)
-
-      // If the text fragment is not topLevel and has a case, check whether lowercase
       if (!this.state.sentenceCase) {
-        this.state.partlyLowercase ||= text === text.toLowerCase() && text !== text.toUpperCase()
+        var _this$state2
+        ;(_this$state2 = this.state).partlyLowercase ||
+          (_this$state2.partlyLowercase =
+            text === text.toLowerCase() && text !== text.toUpperCase())
         return text
       }
-
-      // Unicode-safe splitting (as in, accounting for surrogate pairs)
       const [first, ...otherCharacters] = text
       const rest = otherCharacters.join('')
       const restLowerCase = rest.toLowerCase()
-
-      // Word case should be preserved for proper nouns (e.g. those with capital
-      // letters in other places than the first letter).
       if (rest !== restLowerCase) {
         return text
       }
-
       if (!afterPunctuation) {
         return text.toLowerCase()
       }
-
       return first + restLowerCase
-      // return first.toUpperCase() + restLowerCase
     },
-
     Command() {
       const commandToken = this.consumeToken('command')
       const command = commandToken.value
-
-      // formatting envs
       if (command in constants.formattingEnvs) {
         const text = this.consumeRule('Env')
         const format = constants.formattingEnvs[command]
         return applyFormatting(text, format)
-
-        // formatting commands
       } else if (command in constants.formattingCommands) {
         const text = this.consumeRule('BracketString')
         const format = constants.formattingCommands[command]
         return applyFormatting(text, format)
-
-        // commands
       } else if (command in constants.commands) {
         return constants.commands[command]
-
-        // diacritics
+      } else if (command in constants.mathCommands) {
+        return constants.mathCommands[command]
       } else if (command in constants.diacritics && !this.matchEndOfFile()) {
         const text = this.consumeRule('Text')
         const diacritic = text[0] + constants.diacritics[command]
         return diacritic.normalize('NFC') + text.slice(1)
-
-        // argument commands
       } else if (command in constants.argumentCommands) {
         const func = constants.argumentCommands[command]
         const args = []
         let arity = func.length
-
         while (arity-- > 0) {
           this.consumeToken('whitespace', true)
           args.push(this.consumeRule('BracketString'))
         }
-
         return func(...args)
-
-        // escapes
       } else if (/^[&%$#_{}]$/.test(command)) {
         return commandToken.text.slice(1)
-
-        // unknown commands
       } else {
         return commandToken.text
       }
     },
-
     Env() {
       let output = ''
       while (!this.matchEndOfFile() && !this.matchToken('rbrace')) {
@@ -407,20 +547,15 @@ export const valueGrammar = new util.Grammar(
       }
       return output
     },
-
     EnclosedEnv() {
       this.consumeToken('commandBegin')
       const beginEnv = this.consumeRule('BracketString')
-
       let output = ''
-
       while (!this.matchToken('commandEnd')) {
         output += this.consumeRule('Text')
       }
-
       const end = this.consumeToken('commandEnd')
       const endEnv = this.consumeRule('BracketString')
-
       if (beginEnv !== endEnv) {
         throw new SyntaxError(
           this.lexer.formatError(
@@ -429,8 +564,12 @@ export const valueGrammar = new util.Grammar(
           )
         )
       }
-
       return applyFormatting(output, constants.formattingEnvs[beginEnv])
+    },
+    _() {
+      while (this.matchToken('whitespace')) {
+        this.consumeToken('whitespace')
+      }
     },
   },
   {
@@ -439,24 +578,19 @@ export const valueGrammar = new util.Grammar(
     afterPunctuation: true,
   }
 )
-
 function singleLanguageIsEnglish(language) {
   return constants.sentenceCaseLanguages.includes(language.toLowerCase())
 }
-
 function isEnglish(languages) {
   if (Array.isArray(languages)) {
     return languages.every(singleLanguageIsEnglish)
   }
   return singleLanguageIsEnglish(languages)
 }
-
 function getMainRule(fieldType, languages) {
   if (fieldType[1] === 'name') {
-    /* istanbul ignore next: does not exist */
     return fieldType[0] === 'list' ? 'StringNames' : 'Name'
   }
-
   if (fieldType[1] === 'title') {
     const option = config.parse.sentenceCase
     if (option === 'always' || (option === 'english' && isEnglish(languages))) {
@@ -465,7 +599,6 @@ function getMainRule(fieldType, languages) {
       return 'String'
     }
   }
-
   switch (fieldType[0] === 'field' ? fieldType[1] : fieldType[0]) {
     case 'list':
       return 'StringList'
@@ -481,12 +614,10 @@ function getMainRule(fieldType, languages) {
       return 'String'
   }
 }
-
 function getLexerState(fieldType) {
   if (fieldType[1] === 'name') {
     return 'namesLiteral'
   }
-
   switch (fieldType[0]) {
     case 'list':
       return 'listLiteral'
@@ -497,7 +628,6 @@ function getLexerState(fieldType) {
       return 'stringLiteral'
   }
 }
-
 export function parse(text, field, languages = []) {
   const fieldType = constants.fieldTypes[field] || []
   return valueGrammar.parse(
@@ -507,5 +637,15 @@ export function parse(text, field, languages = []) {
       col: 0,
     }),
     getMainRule(fieldType, languages)
+  )
+}
+export function parseAnnotation(text) {
+  return valueGrammar.parse(
+    lexer.reset(text, {
+      state: 'annotation',
+      line: 0,
+      col: 0,
+    }),
+    'Annotations'
   )
 }

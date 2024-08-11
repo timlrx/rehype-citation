@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert'
 import { rehype } from 'rehype'
 import dedent from 'dedent'
 import vancouver from '../styles/vancouver.js'
-import zhCN from '../locales/zh-CN'
+import zhCN from '../locales/zh-CN.js'
 import Cite from '../src/cite.js'
 import rehypeCitationGenerator from '../src/generator.js'
 

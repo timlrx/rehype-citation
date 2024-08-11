@@ -1,21 +1,63 @@
-// @ts-nocheck
+function ownKeys(e, r) {
+  var t = Object.keys(e)
+  if (Object.getOwnPropertySymbols) {
+    var o = Object.getOwnPropertySymbols(e)
+    r &&
+      (o = o.filter(function (r) {
+        return Object.getOwnPropertyDescriptor(e, r).enumerable
+      })),
+      t.push.apply(t, o)
+  }
+  return t
+}
+function _objectSpread(e) {
+  for (var r = 1; r < arguments.length; r++) {
+    var t = null != arguments[r] ? arguments[r] : {}
+    r % 2
+      ? ownKeys(Object(t), !0).forEach(function (r) {
+          _defineProperty(e, r, t[r])
+        })
+      : Object.getOwnPropertyDescriptors
+      ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t))
+      : ownKeys(Object(t)).forEach(function (r) {
+          Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r))
+        })
+  }
+  return e
+}
+function _defineProperty(obj, key, value) {
+  key = _toPropertyKey(key)
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    })
+  } else {
+    obj[key] = value
+  }
+  return obj
+}
+function _toPropertyKey(t) {
+  var i = _toPrimitive(t, 'string')
+  return 'symbol' == typeof i ? i : i + ''
+}
+function _toPrimitive(t, r) {
+  if ('object' != typeof t || !t) return t
+  var e = t[Symbol.toPrimitive]
+  if (void 0 !== e) {
+    var i = e.call(t, r || 'default')
+    if ('object' != typeof i) return i
+    throw new TypeError('@@toPrimitive must return a primitive value.')
+  }
+  return ('string' === r ? String : Number)(t)
+}
 import { parse as parseName } from '@citation-js/name'
-
 const NAME = 1
 const NAME_LIST = 2
 const DATE = 3
 const TYPE = 4
-
-/**
- * Data from https://github.com/citation-style-language/schema/blob/master/schemas/input/csl-data.json
- *
- *   - true if a valid type
- *   - string if another type should be used
- *
- * @access private
- * @constant entryTypes
- * @memberof module:@citation-js/core.plugins.input
- */
 const entryTypes = {
   article: true,
   'article-journal': true,
@@ -62,27 +104,12 @@ const entryTypes = {
   thesis: true,
   treaty: true,
   webpage: true,
-
-  // From https://github.com/CrossRef/rest-api-doc/issues/187
   'journal-article': 'article-journal',
   'book-chapter': 'chapter',
   'posted-content': 'manuscript',
   'proceedings-article': 'paper-conference',
+  dissertation: 'thesis',
 }
-
-/**
- * Object containing type info on CSL-JSON fields.
- *
- * * string: primitive value type
- * * array: list of primitive value types
- * * number: special type
- *
- * Data from https://github.com/citation-style-language/schema/blob/master/csl-data.json
- *
- * @access private
- * @constant fieldTypes
- * @memberof module:@citation-js/core.plugins.input
- */
 const fieldTypes = {
   author: NAME_LIST,
   chair: NAME_LIST,
@@ -110,7 +137,6 @@ const fieldTypes = {
   'script-writer': NAME_LIST,
   'series-creator': NAME_LIST,
   translator: NAME_LIST,
-
   accessed: DATE,
   'available-date': DATE,
   container: DATE,
@@ -118,12 +144,9 @@ const fieldTypes = {
   issued: DATE,
   'original-date': DATE,
   submitted: DATE,
-
   type: TYPE,
-
-  categories: 'object', // TODO Array<String>
+  categories: 'object',
   custom: 'object',
-
   id: ['string', 'number'],
   language: 'string',
   journalAbbreviation: 'string',
@@ -148,7 +171,7 @@ const fieldTypes = {
   division: 'string',
   DOI: 'string',
   edition: ['string', 'number'],
-  event: 'string', // deprecated
+  event: 'string',
   'event-title': 'string',
   'event-place': 'string',
   'first-reference-note-number': 'string',
@@ -193,20 +216,19 @@ const fieldTypes = {
   'volume-title-short': 'string',
   'year-suffix': 'string',
 }
-
-/**
- * Correct a name.
- *
- * @access private
- * @memberof module:@citation-js/core.plugins.input
- *
- * @param {*} name - name
- * @param {Boolean} bestGuessConversions - make some best guess conversions on type mismatch
- *
- * @return {Object} returns the (corrected) value if possible, otherwise undefined
- */
 function correctName(name, bestGuessConversions) {
   if (typeof name === 'object' && name !== null && (name.literal || name.given || name.family)) {
+    if (name.ORCID || name.orcid || name._ORCID) {
+      name = _objectSpread(
+        {
+          _orcid: name.ORCID || name.orcid || name._ORCID,
+        },
+        name
+      )
+      delete name.ORCID
+      delete name.orcid
+      delete name._ORCID
+    }
     return name
   } else if (!bestGuessConversions) {
     return undefined
@@ -214,36 +236,12 @@ function correctName(name, bestGuessConversions) {
     return parseName(name)
   }
 }
-
-/**
- * Correct a name field.
- *
- * @access private
- * @memberof module:@citation-js/core.plugins.input
- *
- * @param {*} nameList - name list
- * @param {Boolean} bestGuessConversions - make some best guess conversions on type mismatch
- *
- * @return {Array<Object>|undefined} returns the (corrected) value if possible, otherwise undefined
- */
 function correctNameList(nameList, bestGuessConversions) {
   if (nameList instanceof Array) {
     const names = nameList.map((name) => correctName(name, bestGuessConversions)).filter(Boolean)
     return names.length ? names : undefined
   }
 }
-
-/**
- * Correct date parts
- *
- * @access private
- * @memberof module:@citation-js/core.plugins.input.util
- *
- * @param {Array} dateParts
- * @param {Boolean} bestGuessConversions - make some best guess conversions on type mismatch
- *
- * @return {Array<Number>|undefined}
- */
 function correctDateParts(dateParts, bestGuessConversions) {
   if (dateParts.every((part) => typeof part === 'number')) {
     return dateParts
@@ -253,94 +251,60 @@ function correctDateParts(dateParts, bestGuessConversions) {
     return dateParts.map((part) => parseInt(part))
   }
 }
-
-/**
- * Correct a date field.
- *
- * @access private
- * @memberof module:@citation-js/core.plugins.input.util
- *
- * @param {*} date - date
- * @param {Boolean} bestGuessConversions - make some best guess conversions on type mismatch
- *
- * @return {Array<Object>|undefined} returns the (corrected) value if possible, otherwise undefined
- */
 function correctDate(date, bestGuessConversions) {
   const dp = 'date-parts'
-
   if (typeof date !== 'object' || date === null) {
     return undefined
-
-    // "{'date-parts': [[2000, 1, 1], ...]}"
   } else if (date[dp] instanceof Array && date[dp].every((part) => part instanceof Array)) {
     const range = date[dp]
       .map((dateParts) => correctDateParts(dateParts, bestGuessConversions))
       .filter(Boolean)
-    return range.length ? { ...date, 'date-parts': range } : undefined
-
-    // LEGACY support
-    // "[{'date-parts': [2000, 1, 1]}, ...]"
+    return range.length
+      ? _objectSpread(
+          _objectSpread({}, date),
+          {},
+          {
+            'date-parts': range,
+          }
+        )
+      : undefined
   } else if (date instanceof Array && date.every((part) => part[dp] instanceof Array)) {
     const range = date
       .map((dateParts) => correctDateParts(dateParts[dp], bestGuessConversions))
       .filter(Boolean)
-    return range.length ? { 'date-parts': range } : undefined
-
-    // LEGACY support
-    // "{'date-parts': [2000, 1, 1]}"
+    return range.length
+      ? {
+          'date-parts': range,
+        }
+      : undefined
   } else if (date[dp] instanceof Array) {
     const dateParts = correctDateParts(date[dp], bestGuessConversions)
-    return dateParts && { 'date-parts': [dateParts] }
-
-    // No separate date-parts
+    return (
+      dateParts && {
+        'date-parts': [dateParts],
+      }
+    )
   } else if ('literal' in date || 'raw' in date) {
     return date
   }
 }
-
-/**
- * Correct a type field.
- *
- * @access private
- * @memberof module:@citation-js/core.plugins.input.util
- *
- * @param {String|*} type - type
- * @param {Boolean} bestGuessConversions - make some best guess conversions on type mismatch
- *
- * @return {String|undefined} returns the (corrected) value if possible, otherwise undefined
- */
 function correctType(type, bestGuessConversions) {
-  // Also anything that can be converted to a string. Taking `language` as a field
-  // with similar string constraints, as fields like `title` might take HTML into
-  // account in the future.
   type = correctField('language', type, bestGuessConversions)
-
   if (entryTypes[type] === true) {
     return type
-  } else if (bestGuessConversions && type in entryTypes) {
-    return entryTypes[type]
-  } else {
-    return undefined
   }
+  if (bestGuessConversions) {
+    if (type in entryTypes) {
+      return entryTypes[type]
+    } else if (type.toLowerCase() !== type) {
+      return correctType(type.toLowerCase(), bestGuessConversions)
+    }
+  }
+  return undefined
 }
-
-/**
- * Correct a field.
- *
- * @access private
- * @memberof module:@citation-js/core.plugins.input.util
- *
- * @param {String} fieldName - field name
- * @param {*} value - value
- * @param {Boolean} bestGuessConversions - make some best guess conversions on type mismatch
- *
- * @return {*|undefined} returns the (corrected) value if possible, otherwise undefined
- */
 function correctField(fieldName, value, bestGuessConversions) {
   const fieldType = [].concat(fieldTypes[fieldName])
-
   switch (fieldTypes[fieldName]) {
-    /* istanbul ignore next: no field has this */
     case NAME:
       return correctName(value, bestGuessConversions)
     case NAME_LIST:
@@ -350,7 +314,6 @@ function correctField(fieldName, value, bestGuessConversions) {
     case TYPE:
       return correctType(value, bestGuessConversions)
   }
-
   if (bestGuessConversions) {
     if (
       typeof value === 'string' &&
@@ -369,37 +332,20 @@ function correctField(fieldName, value, bestGuessConversions) {
       return correctField(fieldName, value[0], bestGuessConversions)
     }
   }
-
   if (fieldType.includes(typeof value)) {
     return value
   }
 }
-
-/**
- * Make CSL JSON conform to standards so that plugins don't have to typecheck all the time.
- *
- * @access protected
- * @method clean
- * @memberof module:@citation-js/core.plugins.input.util
- *
- * @param {Array<module:@citation-js/core~CSL>} data - Array of CSL
- * @param {Boolean} [bestGuessConversions=true] - make some best guess conversions on type mismatch
- *
- * @return {Array<module:@citation-js/core~CSL>} Array of clean CSL
- */
 function parseCsl(data, bestGuessConversions = true) {
   return data.map(function (entry) {
     const clean = {}
-
     for (const field in entry) {
       const correction = correctField(field, entry[field], bestGuessConversions)
       if (correction !== undefined) {
         clean[field] = correction
       }
     }
-
     return clean
   })
 }
-
 export { parseCsl as clean }

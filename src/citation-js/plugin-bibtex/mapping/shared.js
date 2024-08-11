@@ -1,10 +1,23 @@
-//@ts-nocheck
+// @ts-nocheck
 import { util } from '../../core/index.js'
 import config from '../config.js'
 const stopWords = new Set(['the', 'a', 'an'])
 const unsafeChars = /(?:<\/?.*?>|[\u0020-\u002F\u003A-\u0040\u005B-\u005E\u0060\u007B-\u007F])+/g
 const unicode = /[^\u0020-\u007F]+/g
-
+function isLabelSafe(text) {
+  return !config.format.checkLabel || !text.match(unsafeChars)
+}
+function formatLabelFromId(id) {
+  if (id === null) {
+    return 'null'
+  } else if (id === undefined) {
+    return 'undefined'
+  } else if (config.format.checkLabel) {
+    return id.toString().replace(unsafeChars, '')
+  } else {
+    return id.toString()
+  }
+}
 function firstWord(text) {
   if (!text) {
     return ''
@@ -16,7 +29,6 @@ function firstWord(text) {
       .find((word) => word.length && !stopWords.has(word.toLowerCase()))
   }
 }
-
 const name = new util.Translator([
   {
     source: 'given',
@@ -108,7 +120,6 @@ export function parseDate(date) {
   const year = +parts[0].replace(/^Y(?=-?\d{4}\d+)/, '').replace(/X/g, '0')
   const month = +parts[1]
   const day = +parts[2]
-
   if (!month || month > 20) {
     return [year]
   } else if (!day) {
@@ -121,21 +132,16 @@ export function parseMonth(value) {
   if (value == null) {
     return []
   }
-
   if (+value) {
     return [parseInt(value, 10)]
   }
-
   value = value.trim().toLowerCase()
-
   if (value in MONTHS) {
     return [MONTHS[value]]
   }
-
   const parts = value.split(/\s+/)
   let month
   let day
-
   if (parts[0] in MONTHS) {
     month = MONTHS[parts[0]]
     day = parseInt(parts[1])
@@ -143,26 +149,21 @@ export function parseMonth(value) {
     month = MONTHS[parts[1]]
     day = parseInt(parts[0])
   }
-
   return day ? [month, day] : month ? [month] : []
 }
 export function formatLabel(author, issued, suffix, title) {
   let label = ''
-
   if (author && author[0]) {
     label += firstWord(author[0].family || author[0].literal)
   }
-
   if (issued && issued['date-parts'] && issued['date-parts'][0]) {
     label += issued['date-parts'][0][0]
   }
-
   if (suffix) {
     label += suffix
   } else if (title) {
     label += firstWord(title)
   }
-
   return label
 }
 export const Converters = {
@@ -170,7 +171,6 @@ export const Converters = {
     toTarget(...args) {
       return args.find(Boolean)
     },
-
     toSource(value) {
       return [value]
     },
@@ -188,7 +188,6 @@ export const Converters = {
             'date-parts': parts,
           }
     },
-
     toSource(date) {
       if ('date-parts' in date) {
         return date['date-parts']
@@ -215,11 +214,12 @@ export const Converters = {
         }
       }
     },
-
     toSource(date) {
       if ('date-parts' in date) {
         const [year, month, day] = date['date-parts'][0]
         return [year.toString(), month ? (day ? `${months[month - 1]} ${day}` : month) : undefined]
+      } else {
+        return []
       }
     },
   },
@@ -229,9 +229,19 @@ export const Converters = {
         return id
       }
     },
-
     toSource(id) {
       return [id, 'pubmed']
+    },
+  },
+  EVENT_TITLE: {
+    toTarget(title, addon) {
+      if (addon) {
+        title += ' (' + addon + ')'
+      }
+      return title
+    },
+    toSource(title) {
+      return title.match(/^(.+)(?: \((.+)\))?$/).slice(1, 3)
     },
   },
   HOW_PUBLISHED: {
@@ -245,7 +255,6 @@ export const Converters = {
     toTarget(list) {
       return list.join(',')
     },
-
     toSource(list) {
       return list.split(',')
     },
@@ -254,26 +263,13 @@ export const Converters = {
     toTarget(label) {
       return [label, label]
     },
-
     toSource(id, label, author, issued, suffix, title) {
-      let safeId
-
-      if (id === null) {
-        safeId = 'null'
-      } else if (id === undefined) {
-        safeId = 'undefined'
-      } else {
-        safeId = id.toString().replace(unsafeChars, '')
-      }
-
-      if (config.format.useIdAsLabel) {
-        return safeId
-      }
-
-      if (label && !unsafeChars.test(label)) {
+      if (label && isLabelSafe(label)) {
         return label
+      } else if (config.format.useIdAsLabel) {
+        return formatLabelFromId(id)
       } else {
-        return formatLabel(author, issued, suffix, title) || safeId
+        return formatLabel(author, issued, suffix, title) || formatLabelFromId(id)
       }
     },
   },
@@ -281,16 +277,59 @@ export const Converters = {
     toTarget(list) {
       return list.map(name.convertToTarget)
     },
-
     toSource(list) {
       return list.map(name.convertToSource)
+    },
+  },
+  NAMES_ORCID: {
+    toTarget(list, orcid) {
+      return list.map((inputName, i) => {
+        var _orcid$item
+        const outputName = name.convertToTarget(inputName)
+        if (
+          typeof (orcid === null ||
+          orcid === void 0 ||
+          (_orcid$item = orcid.item) === null ||
+          _orcid$item === void 0
+            ? void 0
+            : _orcid$item[i]) === 'string'
+        ) {
+          outputName._orcid = orcid.item[i]
+        }
+        return outputName
+      })
+    },
+    toSource(list) {
+      const names = []
+      const orcid = []
+      for (let i = 0; i < list.length; i++) {
+        names.push(name.convertToSource(list[i]))
+        if (list[i]._orcid) {
+          orcid[i] = list[i]._orcid
+        }
+      }
+      return [
+        names,
+        orcid.length
+          ? {
+              item: orcid,
+            }
+          : undefined,
+      ]
+    },
+  },
+  PAGES: {
+    toTarget(pages) {
+      return pages.replace(/[–—]/, '-')
+    },
+    toSource(pages) {
+      return pages.replace('-', '--')
     },
   },
   STANDARD_NUMBERS: {
     toTarget(...args) {
       return args.find(Boolean)
     },
-
     toSource(number) {
       const match = number.toString().match(STANDARD_NUMBERS_PATTERN)
       return match ? match.slice(1, 5) : []
@@ -308,10 +347,8 @@ export const Converters = {
       if (subtitle) {
         title += ': ' + subtitle
       }
-
       return title
     },
-
     toSource(title) {
       return [title]
     },

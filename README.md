@@ -121,7 +121,7 @@ Required, path to file. Will be joined with `options.bibliography` and `options.
 Type: `'apa'|'vancouver'|'harvard1'|'chicago'|'mla'|string`.
 Default: `apa`.
 
-For the main `rehypeCitation` plugin, one of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla'. A local file path or URL to a valid CSL file is also accepted.
+For the main `rehypeCitation` plugin, one of 'apa', 'vancouver', 'harvard1', 'chicago', 'mla'. A local file path or URL to a valid CSL file is also accepted. Can also be specified as a frontmatter option in the markdown file to override the default.
 
 #### options.lang
 
@@ -141,7 +141,7 @@ Suppress bibliography? By default, biliography is inserted after the entire mark
 
 Type: `string[]`.
 
-Citation IDs (@item1) to include in the bibliography even if they are not cited in the document.
+Citation IDs (@item1) to include in the bibliography even if they are not cited in the document. Can also be specified as a frontmatter option in the markdown file.
 
 #### options.inlineClass
 

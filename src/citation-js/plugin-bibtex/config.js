@@ -14,5 +14,11 @@ export default {
   },
   format: {
     useIdAsLabel: false,
+    checkLabel: true,
+    asciiOnly: true,
+  },
+  biber: {
+    annotationMarker: '+an',
+    namedAnnotationMarker: ':',
   },
 }

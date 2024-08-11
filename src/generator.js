@@ -47,6 +47,8 @@ const rehypeCitationGenerator = (Cite) => {
       let bibtexFile = []
       /** @type {string} */ // @ts-ignore
       const inputCiteformat = options.csl || file?.data?.frontmatter?.csl || defaultCiteFormat
+      /**  @type {string[] | false} */ // @ts-ignore
+      const noCite = options.noCite || file?.data?.frontmatter?.csl || false
       const inputLang = options.lang || 'en-US'
       const config = Cite.plugins.config.get('@csl')
       const citeFormat = await loadCSL(Cite, inputCiteformat, options.path)
@@ -142,8 +144,12 @@ const rehypeCitationGenerator = (Cite) => {
         ]
       })
 
-      if (options.noCite) {
-        citeproc.updateItems(options.noCite.map((x) => x.replace('@', '')))
+      if (noCite) {
+        if (noCite.length === 1 && noCite[0] === '@*') {
+          citeproc.updateItems(citationIds)
+        } else {
+          citeproc.updateItems(noCite.map((x) => x.replace('@', '')))
+        }
       }
 
       if (

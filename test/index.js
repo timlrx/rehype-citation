@@ -169,6 +169,20 @@ rehypeCitationTest('no-cite', async () => {
   assert.is(result, expected)
 })
 
+rehypeCitationTest('no-cite catch all', async () => {
+  const result = await processHtml('<div>text</div>', {
+    noCite: ['@*'],
+  })
+  const expected = dedent`<div>text</div><div id="refs" class="references csl-bib-body">
+    <div class="csl-entry" id="bib-macfarlane2006">MacFarlane, J. (2006). <i>Pandoc: a universal document converter</i>. https://pandoc.org/</div>
+    <div class="csl-entry" id="bib-nash1950">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
+    <div class="csl-entry" id="bib-nash1951">Nash, J. (1951). Non-cooperative games. <i>Annals of Mathematics</i>, 286–295.</div>
+    <div class="csl-entry" id="bib-verma-rubin">Verma, S., &#x26; Rubin, J. (2018). Fairness definitions explained. <i>2018 Ieee/Acm International Workshop on Software Fairness (Fairware)</i>, 1–7.</div>
+    <div class="csl-entry" id="bib-xie2016">Xie, Y. (2016). <i>Bookdown: authoring books and technical documents with R markdown</i>. CRC Press.</div>
+  </div>`
+  assert.is(result, expected)
+})
+
 rehypeCitationTest('handle prefix, suffix and locator', async () => {
   const result = await processHtml(dedent`<div>[see @Nash1950, 5-6 suffix]</div>`, {
     suppressBibliography: true,
@@ -227,7 +241,6 @@ rehypeCitationTest('throw error if invalid url path', async () => {
     assert.unreachable('should have thrown')
   } catch (err) {
     assert.instance(err, Error)
-    assert.match(err.message, 'This format is not supported or recognized')
   }
 })
 

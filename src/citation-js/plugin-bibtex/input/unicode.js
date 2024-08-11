@@ -155,6 +155,8 @@ const unicode = {
     textinterrobangdown: '⸘',
     textcommabelow: null,
     copyright: '©',
+  },
+  mathCommands: {
     Gamma: 'Γ',
     Delta: 'Δ',
     Theta: 'Θ',
