@@ -45,11 +45,11 @@ const rehypeCitationGenerator = (Cite) => {
     return async (tree, file) => {
       /** @type {string[]} */
       let bibtexFile = []
-      /** @type {string} */ // @ts-ignore
       const inputCiteformat =
+        /** @type {string} */ // @ts-ignore
         options.csl || file?.data?.matter?.csl || file?.data?.frontmatter?.csl || defaultCiteFormat
-      /**  @type {string[] | false} */ // @ts-ignore
       const noCite =
+        /**  @type {string[] | false} */ // @ts-ignore
         options.noCite || file?.data?.matter?.noCite || file?.data?.frontmatter?.noCite || false
       const inputLang = options.lang || 'en-US'
       const config = Cite.plugins.config.get('@csl')
