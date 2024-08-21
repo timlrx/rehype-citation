@@ -13,8 +13,14 @@
   "type": "module",
   "exports": {
     ".": {
-      "node": "./dist/node/rehype-citation.mjs",
-      "default": "./dist/browser/rehype-citation.mjs"
+      "node": [
+        "./dist/node/rehype-citation.mjs",
+        "./dist/node/index.d.ts"
+      ],
+      "default": [
+        "./dist/browser/rehype-citation.mjs",
+        "./dist/node/index.d.ts"
+      ]
     },
     "./browser/": {
       "default": "./dist/browser/"
