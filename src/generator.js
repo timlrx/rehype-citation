@@ -73,7 +73,7 @@ const rehypeCitationGenerator = (Cite) => {
           }
         }
       }
-      const citations = new Cite(bibtexFile)
+      const citations = new Cite(bibtexFile, {generateGraph: false});
       const citationIds = citations.data.map((x) => x.id)
       const citationPre = []
       const citationDict = {}
