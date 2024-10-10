@@ -54,19 +54,20 @@ export const getBibliography = async (options, file) => {
       typeof file.data.frontmatter.bibliography === 'string'
         ? [file.data.frontmatter.bibliography]
         : file.data.frontmatter.bibliography
-    // If local path, get absolute path
-    for (let i = 0; i < bibliography.length; i++) {
-      if (!isValidHttpUrl(bibliography[i])) {
-        if (isNode) {
-          bibliography[i] = await import('path').then((path) =>
-            path.join(options.path || file.cwd, bibliography[i])
-          )
-        } else {
-          throw new Error(`Cannot read non valid bibliography URL in node env.`)
-        }
+  }   
+  // If local path, get absolute path
+  for (let i = 0; i < bibliography.length; i++) {
+    if (!isValidHttpUrl(bibliography[i])) {
+      if (isNode) {
+        bibliography[i] = await import('path').then((path) =>
+          path.join(options.path || file.cwd, bibliography[i])
+        )
+      } else {
+        throw new Error(`Cannot read non valid bibliography URL in node env.`)
       }
     }
   }
+  
 
   return bibliography
 }
