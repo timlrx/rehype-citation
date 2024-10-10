@@ -169,6 +169,18 @@ rehypeCitationTest('no-cite', async () => {
   assert.is(result, expected)
 })
 
+rehypeCitationTest('no-cite citations must be added to template citations', async () => {
+  const result = await processHtml('<div>@Nash1950</div>', {
+    noCite: ['@Nash1951'],
+  })
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950)</span></div><div id="refs" class="references csl-bib-body">
+          <div class="csl-entry" id="bib-nash1950">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
+          <div class="csl-entry" id="bib-nash1951">Nash, J. (1951). Non-cooperative games. <i>Annals of Mathematics</i>, 286–295.</div>
+        </div>`
+  assert.is(result, expected)
+})
+
+
 rehypeCitationTest('no-cite catch all', async () => {
   const result = await processHtml('<div>text</div>', {
     noCite: ['@*'],

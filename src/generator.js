@@ -73,7 +73,7 @@ const rehypeCitationGenerator = (Cite) => {
           }
         }
       }
-      const citations = new Cite(bibtexFile, {generateGraph: false});
+      const citations = new Cite(bibtexFile, {generateGraph: false})
       const citationIds = citations.data.map((x) => x.id)
       const citationPre = []
       const citationDict = {}
@@ -150,7 +150,11 @@ const rehypeCitationGenerator = (Cite) => {
         if (noCite.length === 1 && noCite[0] === '@*') {
           citeproc.updateItems(citationIds)
         } else {
-          citeproc.updateItems(noCite.map((x) => x.replace('@', '')))
+          citeproc.updateUncitedItems(
+            citations.data
+              .filter((x) => noCite.map((x) => x.replace('@', '')).includes(x['citation-key']))
+              .map((x) => x.id)
+          )
         }
       }
 
