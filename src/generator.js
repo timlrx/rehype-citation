@@ -73,7 +73,7 @@ const rehypeCitationGenerator = (Cite) => {
           }
         }
       }
-      const citations = new Cite(bibtexFile, {generateGraph: false});
+      const citations = new Cite(bibtexFile, {generateGraph: false})
       const citationIds = citations.data.map((x) => x.id)
       const citationPre = []
       const citationDict = {}
@@ -82,7 +82,7 @@ const rehypeCitationGenerator = (Cite) => {
       /** @type {Mode} */
       const mode = citeproc.opt.xclass
       const citationFormat = getCitationFormat(citeproc)
-
+      let parsedEntries = []
       visit(tree, 'text', (node, idx, parent) => {
         const match = node.value.match(citationRE)
         if (!match || ('tagName' in parent && !permittedTags.includes(parent.tagName))) return
@@ -105,6 +105,7 @@ const rehypeCitationGenerator = (Cite) => {
         }
 
         const [entries, isComposite] = parseCitation(match)
+        parsedEntries = entries
 
         // If id is not in citation file (e.g. route alias or js package), abort process
         for (const citeItem of entries) {
@@ -146,11 +147,17 @@ const rehypeCitationGenerator = (Cite) => {
         ]
       })
 
+
       if (noCite) {
         if (noCite.length === 1 && noCite[0] === '@*') {
           citeproc.updateItems(citationIds)
         } else {
-          citeproc.updateItems(noCite.map((x) => x.replace('@', '')))
+          const mergedIds = citations.data
+            .filter((x) => noCite.map((x) => x.replace('@', '')).includes(x['citation-key']))
+            .map((x) => x.id)
+            .concat(parsedEntries.map((x) => x.id))
+
+          citeproc.updateItems(mergedIds)
         }
       }
 
