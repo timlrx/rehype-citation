@@ -24,6 +24,7 @@ import {
   loadCSL,
   loadLocale,
   getCitationFormat,
+  getFrontmatterField,
 } from './utils.js'
 
 const defaultCiteFormat = 'apa'
@@ -46,11 +47,11 @@ const rehypeCitationGenerator = (Cite) => {
       /** @type {string[]} */
       let bibtexFile = []
       const inputCiteformat =
-        /** @type {string} */ // @ts-ignore
-        options.csl || file?.data?.matter?.csl || file?.data?.frontmatter?.csl || defaultCiteFormat
+        /** @type {string} */
+        options.csl || getFrontmatterField(file, 'csl') || defaultCiteFormat
       const noCite =
-        /**  @type {string[] | false} */ // @ts-ignore
-        options.noCite || file?.data?.matter?.noCite || file?.data?.frontmatter?.noCite || false
+        /**  @type {string[] | false} */
+        options.noCite || getFrontmatterField(file, 'noCite') || false
       const inputLang = options.lang || 'en-US'
       const config = Cite.plugins.config.get('@csl')
       const citeFormat = await loadCSL(Cite, inputCiteformat, options.path)
@@ -73,7 +74,7 @@ const rehypeCitationGenerator = (Cite) => {
           }
         }
       }
-      const citations = new Cite(bibtexFile, {generateGraph: false})
+      const citations = new Cite(bibtexFile, { generateGraph: false })
       const citationIds = citations.data.map((x) => x.id)
       const citationPre = []
       const citationDict = {}
@@ -146,7 +147,6 @@ const rehypeCitationGenerator = (Cite) => {
           ...parent.children.slice(idx + 1),
         ]
       })
-
 
       if (noCite) {
         if (noCite.length === 1 && noCite[0] === '@*') {
