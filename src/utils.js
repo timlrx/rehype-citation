@@ -44,17 +44,16 @@ export const isValidHttpUrl = (str) => {
 export const getBibliography = async (options, file) => {
   /** @type {string[]} */
   let bibliography = []
+  const frontmatterBibliography = getFrontmatterField(file, 'bibliography')
   if (options.bibliography) {
     bibliography =
       typeof options.bibliography === 'string' ? [options.bibliography] : options.bibliography
-    // @ts-ignore
-  } else if (file?.data?.frontmatter?.bibliography) {
+  } else if (frontmatterBibliography) {
     bibliography =
-      // @ts-ignore
-      typeof file.data.frontmatter.bibliography === 'string'
-        ? [file.data.frontmatter.bibliography]
-        : file.data.frontmatter.bibliography
-  }   
+      typeof frontmatterBibliography === 'string'
+        ? [frontmatterBibliography]
+        : frontmatterBibliography
+  }
   // If local path, get absolute path
   for (let i = 0; i < bibliography.length; i++) {
     if (!isValidHttpUrl(bibliography[i])) {
@@ -67,7 +66,6 @@ export const getBibliography = async (options, file) => {
       }
     }
   }
-  
 
   return bibliography
 }
@@ -196,4 +194,32 @@ export const isSameAuthor = (item, item2) => {
     if (authorList[i].family !== authorList2[i].family) return false
   }
   return true
+}
+
+/**
+ * @typedef {Object} FrontmatterSource
+ * @property {Record<string, any>} [matter]
+ * @property {Record<string, any>} [frontmatter]
+ * @property {{ frontmatter?: Record<string, any> }} [astro]
+ */
+
+/**
+ * @param {{ data?: FrontmatterSource }} file
+ * @param {string} fieldName
+ * @returns {any}
+ */
+export const getFrontmatterField = (file, fieldName) => {
+  if (!file || !file.data) {
+    return undefined
+  }
+
+  const sources = [file.data.matter, file.data.frontmatter, file.data.astro?.frontmatter]
+
+  for (const source of sources) {
+    if (source && fieldName in source) {
+      return source[fieldName]
+    }
+  }
+
+  return undefined
 }
