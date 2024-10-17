@@ -4,14 +4,19 @@ export const isNode = typeof window === 'undefined'
 
 export const readFile = async (path) => {
   if (isValidHttpUrl(path)) {
-    return fetch(path)
-      .then((response) => response.text())
-      .then((data) => data)
+    try {
+      const response = await fetch(path)
+      return await response.text()
+    } catch (error) {
+      throw new Error(`Cannot fetch bibliography URL: ${error}.`)
+    }
   } else {
     if (isNode) {
-      return import('fs').then((fs) => fs.readFileSync(path, 'utf8'))
-    } else {
-      throw new Error(`Cannot read non valid URL in node env.`)
+      try {
+        return import('fs').then((fs) => fs.readFileSync(path, 'utf8'))
+      } catch (error) {
+        throw new Error(`Cannot read non valid URL in node env.`)
+      }
     }
   }
 }
@@ -23,11 +28,11 @@ export const readFile = async (path) => {
  * @param {string} str
  * @return {boolean}
  */
-export const isValidHttpUrl = (str) => {
+export const isValidHttpUrl = (str, base = "") => {
   let url
 
   try {
-    url = new URL(str)
+    url = base ? new URL(str, base): new URL(str)
   } catch (_) {
     return false
   }
@@ -56,15 +61,18 @@ export const getBibliography = async (options, file) => {
   }
   // If local path, get absolute path
   for (let i = 0; i < bibliography.length; i++) {
-    if (!isValidHttpUrl(bibliography[i])) {
+    if (!isValidHttpUrl(bibliography[i], options.path)) {
+      if (options.path){
+        throw new Error(`Cannot read non valid bibliography URL.`)
+      }
       if (isNode) {
         bibliography[i] = await import('path').then((path) =>
-          path.join(options.path || file.cwd, bibliography[i])
+          path.join(file.cwd, bibliography[i])
         )
       } else {
-        throw new Error(`Cannot read non valid bibliography URL in node env.`)
+        throw new Error(`Non valid bibliography URL: Provide a full valid path for biblio ${bibliography[i]} or set an appropriate "options.path"`)
       }
-    }
+    }  
   }
 
   return bibliography

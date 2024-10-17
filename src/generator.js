@@ -64,13 +64,23 @@ const rehypeCitationGenerator = (Cite) => {
 
       for (let i = 0; i < bibliography.length; i++) {
         if (isValidHttpUrl(bibliography[i])) {
-          const response = await fetch(bibliography[i])
-          bibtexFile.push(await response.text())
+          try {
+            const response = await fetch(bibliography[i])
+            bibtexFile.push(await response.text())
+          } catch (error) {
+            throw new Error(`Cannot fetch bibliography URL: ${error}.`)
+          }
         } else {
           if (isNode) {
             bibtexFile.push(await readFile(bibliography[i]))
           } else {
-            throw new Error(`Cannot read non valid bibliography URL in node env.`)
+            if (isNode) {
+              try {
+                bibtexFile.push(await readFile(bibliography[i]))
+              } catch (error) {
+                throw new Error(`Cannot read non valid bibliography URL in node env.`)
+              }
+            }
           }
         }
       }
