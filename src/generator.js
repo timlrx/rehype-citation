@@ -63,6 +63,11 @@ const rehypeCitationGenerator = (Cite) => {
       }
 
       for (let i = 0; i < bibliography.length; i++) {
+        /**
+         * getBibibliography is building full path/url safely in both node and browser
+         * If it's a valid http url, we can try to fetch safely 
+         * else we can try to read from file system safely 
+         */
         if (isValidHttpUrl(bibliography[i])) {
           try {
             const response = await fetch(bibliography[i])
@@ -71,16 +76,10 @@ const rehypeCitationGenerator = (Cite) => {
             throw new Error(`Cannot fetch bibliography URL: ${error}.`)
           }
         } else {
-          if (isNode) {
+          try {
             bibtexFile.push(await readFile(bibliography[i]))
-          } else {
-            if (isNode) {
-              try {
-                bibtexFile.push(await readFile(bibliography[i]))
-              } catch (error) {
-                throw new Error(`Cannot read non valid bibliography URL in node env.`)
-              }
-            }
+          } catch (error) {
+            throw new Error(`Cannot read non valid bibliography URL in node env.`)
           }
         }
       }
