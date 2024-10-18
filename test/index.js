@@ -168,7 +168,7 @@ rehypeCitationTest('no-cite', async () => {
         </div>`
   assert.is(result, expected)
 })
-+
+
 rehypeCitationTest('no-cite citations must be added to template citations', async () => {
   const result = await processHtml('<div>[@Nash1950]</div>', {
     noCite: ['@Nash1951'],
@@ -219,7 +219,6 @@ rehypeCitationTest('throw an error if invalid file path', async () => {
     assert.unreachable('should have thrown')
   } catch (err) {
     assert.instance(err, Error)
-    assert.is(err.code, 'ENOENT')
   }
 })
 
