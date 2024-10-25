@@ -4,14 +4,19 @@ export const isNode = typeof window === 'undefined'
 
 export const readFile = async (path) => {
   if (isValidHttpUrl(path)) {
-    return fetch(path)
-      .then((response) => response.text())
-      .then((data) => data)
+    try {
+      const response = await fetch(path)
+      return await response.text()
+    } catch (error) {
+      throw new Error(`Cannot fetch bibliography URL: ${error}.`)
+    }
   } else {
     if (isNode) {
-      return import('fs').then((fs) => fs.readFileSync(path, 'utf8'))
-    } else {
-      throw new Error(`Cannot read non valid URL in node env.`)
+      try {
+        return import('fs').then((fs) => fs.readFileSync(path, 'utf8'))
+      } catch (error) {
+        throw new Error(`Cannot read non valid URL in node env.`)
+      }
     }
   }
 }
@@ -23,11 +28,11 @@ export const readFile = async (path) => {
  * @param {string} str
  * @return {boolean}
  */
-export const isValidHttpUrl = (str) => {
+export const isValidHttpUrl = (str, base = "") => {
   let url
 
   try {
-    url = new URL(str)
+    url = base ? new URL(str, base): new URL(str)
   } catch (_) {
     return false
   }
@@ -56,15 +61,33 @@ export const getBibliography = async (options, file) => {
   }
   // If local path, get absolute path
   for (let i = 0; i < bibliography.length; i++) {
-    if (!isValidHttpUrl(bibliography[i])) {
-      if (isNode) {
-        bibliography[i] = await import('path').then((path) =>
-          path.join(options.path || file.cwd, bibliography[i])
-        )
+    if (!isValidHttpUrl(bibliography[i], options.path)) {
+      // Case options.path is provided and non empty
+      if (options.path){
+        // if node env we construct the full path using options.path
+        if (isNode) {
+          bibliography[i] = await import('path').then((path) =>
+            path.join(options.path, bibliography[i])
+          )
+        // else we throw as it's non valid http url  
+        } else {
+          throw new Error(`Cannot read non valid bibliography URL.`) 
+        }
+      // Case options.path is empt
       } else {
-        throw new Error(`Cannot read non valid bibliography URL in node env.`)
+        // if node env we construct the full path using default `process.cwd`
+        if (isNode) {
+          bibliography[i] = await import('path').then((path) =>
+            path.join(file.cwd, bibliography[i])
+          )
+        // else as it's a non valid http url we throw as a base url must be provided using options.path
+        } else {
+          throw new Error(`Non valid bibliography URL: Provide a full valid path for biblio ${bibliography[i]} or set an appropriate "options.path"`)
+        }
       }
-    }
+
+    }  
+    console.log("bibliography[i]", bibliography[i])
   }
 
   return bibliography
