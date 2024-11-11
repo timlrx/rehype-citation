@@ -86,8 +86,7 @@ export const getBibliography = async (options, file) => {
         }
       }
 
-    }  
-    console.log("bibliography[i]", bibliography[i])
+    }
   }
 
   return bibliography
