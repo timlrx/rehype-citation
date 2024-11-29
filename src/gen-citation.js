@@ -56,9 +56,9 @@ export const genCitation = (
     return [
       citationText,
       htmlToHast(
-        `<span class="${(inlineClass ?? []).join(
+        `<cite class="${(inlineClass ?? []).join(
           ' '
-        )}" id=${ids}><sup><a href="#cite-fn-${citationId}" id="cite-fnref-${citationId}" data-footnote-ref aria-describedby="footnote-label">${citationId}</a></sup></span>`
+        )}" id=${ids}><sup><a href="#cite-fn-${citationId}" id="cite-fnref-${citationId}" data-footnote-ref aria-describedby="footnote-label">${citationId}</a></sup></cite>`
       ),
     ]
   } else if (linkCitations && citationFormat === 'numeric') {
@@ -73,7 +73,7 @@ export const genCitation = (
 
     return [
       citationText,
-      htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output}</span>`),
+      htmlToHast(`<cite class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output}</cite>`),
     ]
   } else if (linkCitations && citationFormat === 'author-date') {
     // E.g. (see Nash, 1950, pp. 12–13, 1951); (Nash, 1950; Xie, 2016)
@@ -90,7 +90,7 @@ export const genCitation = (
           )}</a>${citationText.slice(-1)}`
       return [
         citationText,
-        htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output}</span>`),
+        htmlToHast(`<cite class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output}</cite>`),
       ]
     } else {
       // Retrieve the items in the correct order and attach link each of them
@@ -119,14 +119,14 @@ export const genCitation = (
       return [
         citationText,
         htmlToHast(
-          `<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output.join('')}</span>`
+          `<cite class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output.join('')}</cite>`
         ),
       ]
     }
   } else {
     return [
       citationText,
-      htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</span>`),
+      htmlToHast(`<cite class="${(inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</cite>`),
     ]
   }
 }
