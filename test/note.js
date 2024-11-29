@@ -37,7 +37,7 @@ rehypeCitationTest('supports footnote style csl', async () => {
     suppressBibliography: true,
     csl: 'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl',
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></span></div><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></cite></div><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
 <ol>
 <li id="user-content-fn-1"><p><span>John Nash, “Equilibrium Points in N-Person Games,” <i>Proceedings of the National Academy of Sciences</i> 36, no. 1 (1950): 48–49.</span><a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
 </li></ol></section>`
@@ -49,7 +49,7 @@ rehypeCitationTest('handles multiple footnote', async () => {
     suppressBibliography: true,
     csl: 'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl',
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></span> text <span class="" id="citation--nash1951--2"><sup><a href="#user-content-fn-2" id="user-content-fnref-2" data-footnote-ref="" aria-describedby="footnote-label">2</a></sup></span></div><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></cite> text <cite class="" id="citation--nash1951--2"><sup><a href="#user-content-fn-2" id="user-content-fnref-2" data-footnote-ref="" aria-describedby="footnote-label">2</a></sup></cite></div><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
 <ol>
 <li id="user-content-fn-1"><p><span>John Nash, “Equilibrium Points in N-Person Games,” <i>Proceedings of the National Academy of Sciences</i> 36, no. 1 (1950): 48–49.</span><a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
 </li><li id="user-content-fn-2"><p><span>John Nash, “Non-Cooperative Games,” <i>Annals of Mathematics</i>, 1951, 286–95.</span><a href="#user-content-fnref-2" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
@@ -62,7 +62,7 @@ rehypeCitationTest('integrates with github markdown', async () => {
     suppressBibliography: true,
     csl: 'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl',
   })
-  const expected = dedent`<p>Hello world <span class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></span></p><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
+  const expected = dedent`<p>Hello world <cite class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></cite></p><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
 <ol>
 <li id="user-content-fn-1"><p><span>John Nash, “Equilibrium Points in N-Person Games,” <i>Proceedings of the National Academy of Sciences</i> 36, no. 1 (1950): 48–49.</span><a href="#user-content-fnref-1" data-footnote-backref class="data-footnote-backref" aria-label="Back to content">↩</a></p>
 </li></ol></section>`
@@ -81,7 +81,7 @@ rehypeCitationTest('integrates with existing gfm footnote and re-numbers correct
       csl: 'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl',
     }
   )
-  const expected = dedent`<p>Hello world <sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref aria-describedby="footnote-label">1</a></sup> some <span class="" id="citation--nash1951--1"><sup><a href="#user-content-fn-2" id="user-content-fnref-2" data-footnote-ref="" aria-describedby="footnote-label">2</a></sup></span> text <sup><a href="#user-content-fn-3" id="user-content-fnref-3" data-footnote-ref aria-describedby="footnote-label">3</a></sup> here</p>
+  const expected = dedent`<p>Hello world <sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref aria-describedby="footnote-label">1</a></sup> some <cite class="" id="citation--nash1951--1"><sup><a href="#user-content-fn-2" id="user-content-fnref-2" data-footnote-ref="" aria-describedby="footnote-label">2</a></sup></cite> text <sup><a href="#user-content-fn-3" id="user-content-fnref-3" data-footnote-ref aria-describedby="footnote-label">3</a></sup> here</p>
 <section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
 <ol>
 <li id="user-content-fn-1">

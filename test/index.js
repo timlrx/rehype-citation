@@ -21,13 +21,13 @@ const rehypeCitationTest = suite('rehype-citation')
 
 rehypeCitationTest('parse citation correctly', async () => {
   const result = await processHtml(dedent`<div>[@Nash1950]</div>`, { suppressBibliography: true })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1">(Nash, 1950)</cite></div>`
   assert.is(result, expected)
 })
 
 rehypeCitationTest('parse in-text citation correctly', async () => {
   const result = await processHtml('<div>@Nash1950</div>', { suppressBibliography: true })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1">Nash (1950)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1">Nash (1950)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -42,7 +42,7 @@ rehypeCitationTest('properly account for previous citation', async () => {
     suppressBibliography: true,
     csl: 'vancouver',
   })
-  const expected = dedent`<div><span class="" id="citation--nash1951--1">(1)</span> text <span class="" id="citation--nash1950--2">(2)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1951--1">(1)</cite> text <cite class="" id="citation--nash1950--2">(2)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -54,7 +54,7 @@ rehypeCitationTest('parses citation in tables', async () => {
       csl: 'vancouver',
     }
   )
-  const expected = dedent`<div><table><tbody><tr><th>Header <span class="" id="citation--nash1951--1">(1)</span></th></tr><tr><td>Content <span class="" id="citation--nash1950--2">(2)</span></td></tr></tbody></table></div>`
+  const expected = dedent`<div><table><tbody><tr><th>Header <cite class="" id="citation--nash1951--1">(1)</cite></th></tr><tr><td>Content <cite class="" id="citation--nash1950--2">(2)</cite></td></tr></tbody></table></div>`
   assert.is(result, expected)
 })
 
@@ -63,13 +63,13 @@ rehypeCitationTest('parse multiple citations correctly', async () => {
     '<div>First citation @Nash1950 and second citation [@Nash1951]</div>',
     { suppressBibliography: true }
   )
-  const expected = dedent`<div>First citation <span class="" id="citation--nash1950--1">Nash (1950)</span> and second citation <span class="" id="citation--nash1951--2">(Nash, 1951)</span></div>`
+  const expected = dedent`<div>First citation <cite class="" id="citation--nash1950--1">Nash (1950)</cite> and second citation <cite class="" id="citation--nash1951--2">(Nash, 1951)</cite></div>`
   assert.is(result, expected)
 })
 
 rehypeCitationTest('inserts biliography at the end of the file', async () => {
   const result = await processHtml('<div>[@Nash1950]</div>')
-  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950)</span></div><div id="refs" class="references csl-bib-body">
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1">(Nash, 1950)</cite></div><div id="refs" class="references csl-bib-body">
           <div class="csl-entry" id="bib-nash1950">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
         </div>`
   assert.is(result, expected)
@@ -79,7 +79,7 @@ rehypeCitationTest('inserts biliography at [^ref] div tag', async () => {
   const result = await processHtml('<div>[^ref]</div><div>[@Nash1950]</div>')
   const expected = dedent`<div id="refs" class="references csl-bib-body">
           <div class="csl-entry" id="bib-nash1950">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
-        </div><div><span class="" id="citation--nash1950--1">(Nash, 1950)</span></div>`
+        </div><div><cite class="" id="citation--nash1950--1">(Nash, 1950)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -88,7 +88,7 @@ rehypeCitationTest('supports other specified csl', async () => {
     suppressBibliography: true,
     csl: 'chicago',
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1">Nash (1950)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1">Nash (1950)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -96,7 +96,7 @@ rehypeCitationTest('process HTML code', async () => {
   const result = await processHtml('<div>@verma-rubin</div>', {
     suppressBibliography: true,
   })
-  const expected = dedent`<div><span class="" id="citation--verma-rubin--1">Verma &#x26; Rubin (2018)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--verma-rubin--1">Verma &#x26; Rubin (2018)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -105,7 +105,7 @@ rehypeCitationTest('supports csl from local path', async () => {
     suppressBibliography: true,
     csl: './test/nature.csl',
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1"><sup>1</sup></span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1"><sup>1</sup></cite></div>`
   assert.is(result, expected)
 })
 
@@ -127,7 +127,7 @@ rehypeCitationTest('supports locale from local path', async () => {
     suppressBibliography: true,
     lang: './test/bg-BG.xml',
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1">(Nash, 1950)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -136,7 +136,7 @@ rehypeCitationTest('supports locale from url', async () => {
     suppressBibliography: true,
     lang: 'https://raw.githubusercontent.com/citation-style-language/locales/master/locales-zh-TW.xml',
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1">(Nash, 1950)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -155,7 +155,7 @@ rehypeCitationTest('throw error if invalid locale', async () => {
 
 rehypeCitationTest('parse li', async () => {
   const result = await processHtml('<ul><li>@Nash1950</li></ul>', { suppressBibliography: true })
-  const expected = dedent`<ul><li><span class="" id="citation--nash1950--1">Nash (1950)</span></li></ul>`
+  const expected = dedent`<ul><li><cite class="" id="citation--nash1950--1">Nash (1950)</cite></li></ul>`
   assert.is(result, expected)
 })
 
@@ -173,13 +173,12 @@ rehypeCitationTest('no-cite citations must be added to template citations', asyn
   const result = await processHtml('<div>[@Nash1950]</div>', {
     noCite: ['@Nash1951'],
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950)</span></div><div id="refs" class="references csl-bib-body">
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1">(Nash, 1950)</cite></div><div id="refs" class="references csl-bib-body">
           <div class="csl-entry" id="bib-nash1950">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
           <div class="csl-entry" id="bib-nash1951">Nash, J. (1951). Non-cooperative games. <i>Annals of Mathematics</i>, 286–295.</div>
         </div>`
   assert.is(result, expected)
 })
-
 
 rehypeCitationTest('no-cite catch all', async () => {
   const result = await processHtml('<div>text</div>', {
@@ -199,13 +198,13 @@ rehypeCitationTest('handle prefix, suffix and locator', async () => {
   const result = await processHtml(dedent`<div>[see @Nash1950, 5-6 suffix]</div>`, {
     suppressBibliography: true,
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1">(see Nash, 1950, pp. 5–6 suffix)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1">(see Nash, 1950, pp. 5–6 suffix)</cite></div>`
   assert.is(result, expected)
 })
 
 rehypeCitationTest('suppress author', async () => {
   const result = await processHtml(dedent`<div>[-@Nash1950]</div>`, { suppressBibliography: true })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1">(1950)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1">(1950)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -228,7 +227,7 @@ rehypeCitationTest('works with csl-json', async () => {
     { suppressBibliography: true },
     cslJSON
   )
-  const expected = dedent`<div><span class="" id="citation--q23571040--1">(Hall, 1957)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--q23571040--1">(Hall, 1957)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -238,7 +237,7 @@ rehypeCitationTest('works with url bibliography path', async () => {
     { suppressBibliography: true },
     'https://raw.githubusercontent.com/retorquere/zotero-better-bibtex/v6.0.0/test/fixtures/import/Author%20splitter%20failure.bib'
   )
-  const expected = dedent`<div><span class="" id="citation--abu-zeid_1986--1">(Abu-Zeid et al., 1986)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--abu-zeid_1986--1">(Abu-Zeid et al., 1986)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -260,7 +259,7 @@ rehypeCitationTest('works with an inline class', async () => {
     suppressBibliography: true,
     inlineClass: ['testClass'],
   })
-  const expected = dedent`<div><span class="testClass" id="citation--nash1950--1">(Nash, 1950)</span></div>`
+  const expected = dedent`<div><cite class="testClass" id="citation--nash1950--1">(Nash, 1950)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -269,7 +268,7 @@ rehypeCitationTest('works with multiple inline classes', async () => {
     suppressBibliography: true,
     inlineClass: ['testClass', 'testClass2'],
   })
-  const expected = dedent`<div><span class="testClass testClass2" id="citation--nash1950--1">(Nash, 1950)</span></div>`
+  const expected = dedent`<div><cite class="testClass testClass2" id="citation--nash1950--1">(Nash, 1950)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -279,7 +278,7 @@ rehypeCitationTest('generates inline bib', async () => {
     inlineBibClass: ['testBibClass', 'testBibClass2'],
   })
   const expected = dedent`<div>
-    <span class="" id="citation--nash1950--1">(Nash, 1950)</span>
+    <cite class="" id="citation--nash1950--1">(Nash, 1950)</cite>
     <div class="testBibClass testBibClass2" id="inlineBib--nash1950--1">
     <div class="inline-entry" id="inline--nash1950--1">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
     </div>
@@ -293,7 +292,7 @@ rehypeCitationTest('generates multiple inline bibs', async () => {
     inlineBibClass: ['testBibClass', 'testBibClass2'],
   })
   const expected = dedent`<div>
-    <span class="" id="citation--nash1950--nash1951--1">(Nash, 1950, 1951)</span>
+    <cite class="" id="citation--nash1950--nash1951--1">(Nash, 1950, 1951)</cite>
     <div class="testBibClass testBibClass2" id="inlineBib--nash1950--nash1951--1">
     <div class="inline-entry" id="inline--nash1950--1">Nash, J. (1950). Equilibrium points in n-person games. <i>Proceedings of the National Academy of Sciences</i>, <i>36</i>(1), 48–49.</div>
     <div class="inline-entry" id="inline--nash1951--1">Nash, J. (1951). Non-cooperative games. <i>Annals of Mathematics</i>, 286–295.</div>
@@ -308,7 +307,7 @@ rehypeCitationTest('works with cff file and add doi as id', async () => {
     { suppressBibliography: true },
     cff
   )
-  const expected = dedent`<div><span class="" id="citation--10.5281/zenodo.1234--1">(Lisa &#x26; Bot, 2017)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--10.5281/zenodo.1234--1">(Lisa &#x26; Bot, 2017)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -318,7 +317,7 @@ rehypeCitationTest('adds url as id for preferred citation', async () => {
     { suppressBibliography: true },
     urlCff
   )
-  const expected = dedent`<div><span class="" id="citation--papers.neurips.cc/paper/9015-pytorch-an-imperative-style-high-performance-deep-learning-library.pdf--1">(Paszke et al., 2019)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--papers.neurips.cc/paper/9015-pytorch-an-imperative-style-high-performance-deep-learning-library.pdf--1">(Paszke et al., 2019)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -328,7 +327,7 @@ rehypeCitationTest('parses multiple bibliography files', async () => {
     { suppressBibliography: true },
     [bibliography, cff]
   )
-  const expected = dedent`<div><span class="" id="citation--10.5281/zenodo.1234--1">(Lisa &#x26; Bot, 2017)</span> and <span class="" id="citation--nash1950--2">(Nash, 1950)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--10.5281/zenodo.1234--1">(Lisa &#x26; Bot, 2017)</cite> and <cite class="" id="citation--nash1950--2">(Nash, 1950)</cite></div>`
   assert.is(result, expected)
 })
 
