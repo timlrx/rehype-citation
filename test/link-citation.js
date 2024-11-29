@@ -22,7 +22,7 @@ rehypeCitationTest('supports link citation for numeric citation format', async (
     suppressBibliography: true,
     linkCitations: true,
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1">(<a href="#bib-nash1950">1</a>)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1">(<a href="#bib-nash1950">1</a>)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -32,7 +32,7 @@ rehypeCitationTest('multiple citations for numeric citation format', async () =>
     suppressBibliography: true,
     linkCitations: true,
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--nash1950--1">(<a href="#bib-nash1950">1</a>,<a href="#bib-nash1950">1</a>)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--nash1950--1">(<a href="#bib-nash1950">1</a>,<a href="#bib-nash1950">1</a>)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -54,7 +54,7 @@ rehypeCitationTest('supports link citation for author-date style', async () => {
     suppressBibliography: true,
     linkCitations: true,
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--1">(<a href="#bib-nash1950">Nash, 1950</a>)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--1">(<a href="#bib-nash1950">Nash, 1950</a>)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -64,7 +64,7 @@ rehypeCitationTest('multiple citations for author-date style which collapses aut
     suppressBibliography: true,
     linkCitations: true,
   })
-  const expected = dedent`<div><span class="" id="citation--nash1950--nash1951--1">(<a href="#bib-nash1950">Nash, 1950</a>, <a href="#bib-nash1951">1951</a>)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--nash1950--nash1951--1">(<a href="#bib-nash1950">Nash, 1950</a>, <a href="#bib-nash1951">1951</a>)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -76,7 +76,7 @@ rehypeCitationTest(
       suppressBibliography: true,
       linkCitations: true,
     })
-    const expected = dedent`<div><span class="" id="citation--nash1950--nash1951--1">(<a href="#bib-nash1950">Nash 1950</a>; <a href="#bib-nash1951">Nash 1951</a>)</span></div>`
+    const expected = dedent`<div><cite class="" id="citation--nash1950--nash1951--1">(<a href="#bib-nash1950">Nash 1950</a>; <a href="#bib-nash1951">Nash 1951</a>)</cite></div>`
     assert.is(result, expected)
   }
 )
@@ -87,7 +87,7 @@ rehypeCitationTest('multiple citations for author-date style which sorts', async
     suppressBibliography: true,
     linkCitations: true,
   })
-  const expected = dedent`<div><span class="" id="citation--xie2016--nash1950--1">(<a href="#bib-nash1950">Nash, 1950</a>; <a href="#bib-xie2016">Xie, 2016</a>)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--xie2016--nash1950--1">(<a href="#bib-nash1950">Nash, 1950</a>; <a href="#bib-xie2016">Xie, 2016</a>)</cite></div>`
   assert.is(result, expected)
 })
 
@@ -97,7 +97,7 @@ rehypeCitationTest('multiple citations for author-date style which does not sort
     suppressBibliography: true,
     linkCitations: true,
   })
-  const expected = dedent`<div><span class="" id="citation--xie2016--nash1950--1">(<a href="#bib-xie2016">Xie 2016</a>; <a href="#bib-nash1950">Nash 1950</a>)</span></div>`
+  const expected = dedent`<div><cite class="" id="citation--xie2016--nash1950--1">(<a href="#bib-xie2016">Xie 2016</a>; <a href="#bib-nash1950">Nash 1950</a>)</cite></div>`
   assert.is(result, expected)
 })
 
