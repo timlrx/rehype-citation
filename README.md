@@ -23,6 +23,7 @@ API and options follows very closely to [Rmarkdown](https://bookdown.org/yihui/r
 - [Custom CSL](https://rehype-citation.netlify.app/custom-csl)
 - [Footnote style](https://rehype-citation.netlify.app/footnote-style)
 - [Link Citations](https://rehype-citation.netlify.app/link-citations)
+- [Tooltips](https://rehype-citation.netlify.app/tooltips)
 
 ## Installation
 

@@ -94,3 +94,21 @@ To cite, use the DOI reference directly or use the URL without the protocol (htt
 
 ### Bibliography
 `
+
+export const TooltipExample = `## Welcome
+
+Rehype plugin to nicely format citations in markdown
+documents and insert bibliography in html format.
+
+- Supports standard citations [@Nash1950{pp. iv, vi-xi, (xv)-(xvii)}];
+- in-text citations, @Nash1951 [p. 33] says blah;
+- and multiple citations [see @Nash1950 pp 12-13; @Nash1951]
+
+The _showTooltips_ option can be used to show the full bibliography entry as a tooltip on hover. 
+
+The formatting of the tooltip depends on the underlying citation style.
+
+By default, the standard HTML _title_ attribute is used, but you can specify an alternative attribute (e.g., _data-tooltip_) and style it with custom CSS.
+
+### Bibliography
+`

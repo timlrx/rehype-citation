@@ -8,6 +8,7 @@ import {
   FootnotesExample,
   LinkCitationsExample,
   CFFExample,
+  TooltipExample,
 } from './md-examples'
 
 const bibliography =
@@ -30,6 +31,7 @@ const examples = [
   'Footnote Style',
   'Link Citations',
   'Citation File Format',
+  'Tooltips',
 ]
 const pathList = examples.map((e) => e.toLocaleLowerCase().replace(' ', '-'))
 
@@ -105,6 +107,17 @@ function App() {
             markdown={CFFExample}
             rehypeCitationOptions={{
               bibliography: [cff, cff2, cff3],
+            }}
+          />
+        )}
+        {selected === examples[6] && (
+          <Example
+            markdown={TooltipExample}
+            rehypeCitationOptions={{
+              bibliography,
+              linkCitations: true,
+              showTooltips: true,
+              tooltipAttribute: 'data-tooltip',
             }}
           />
         )}
