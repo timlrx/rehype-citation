@@ -255,10 +255,28 @@ export const getFrontmatterField = (file, fieldName) => {
  * @return {string} formatted bibliography entry without HTML tags
  */
 export const getBibliographyEntryText = (citeproc, id) => {
-  const [params, bibBody] = citeproc.makeBibliography([id])
-  if (!bibBody || bibBody.length === 0) return ''
-  let entryText = bibBody[0].replace(/<[^>]*>/g, '')
-  entryText = entryText.replace(/\s+/g, ' ').trim()
+  try {
+    // Save the current state
+    const originalItemIds = [...citeproc.registry.mylist]
 
-  return entryText
+    // Since creating bibliography affects the state we need to save the current state and restore it
+    citeproc.updateItems([id])
+    const bibOutput = citeproc.makeBibliography([id])
+    if (!bibOutput || !bibOutput[1] || bibOutput[1].length === 0) {
+      citeproc.updateItems(originalItemIds)
+      return ''
+    }
+
+    // Get the text
+    let entryText = bibOutput[1][0].replace(/<[^>]*>/g, '')
+    entryText = entryText.replace(/\s+/g, ' ').trim()
+
+    // Restore the original state
+    citeproc.updateItems(originalItemIds)
+
+    return entryText
+  } catch (error) {
+    console.error('Error getting bibliography entry text:', error)
+    return ''
+  }
 }
