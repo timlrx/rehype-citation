@@ -23,6 +23,7 @@ API and options follows very closely to [Rmarkdown](https://bookdown.org/yihui/r
 - [Custom CSL](https://rehype-citation.netlify.app/custom-csl)
 - [Footnote style](https://rehype-citation.netlify.app/footnote-style)
 - [Link Citations](https://rehype-citation.netlify.app/link-citations)
+- [Tooltips](https://rehype-citation.netlify.app/tooltips)
 
 ## Installation
 
@@ -161,3 +162,17 @@ Type: `boolean`.
 Default: `false`.
 
 If true, citations will be hyperlinked to the corresponding bibliography entries (for author-date and numeric styles only).
+
+#### options.showTooltips
+
+Type: `boolean`.
+Default: `false`.
+
+If true, citations will display tooltips containing the full bibliography entry when hovered. For multiple citations, each reference will have its own tooltip. When used with `linkCitations: true`, tooltips are added to each individual link.
+
+#### options.tooltipAttribute
+
+Type: `string`.
+Default: `title`.
+
+The HTML attribute to use for tooltips. By default, the standard HTML `title` attribute is used, but you can specify an alternative attribute (e.g., `data-tooltip`) for custom tooltip implementations or to work with specific tooltip libraries.
