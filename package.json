@@ -90,7 +90,7 @@
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
-    "@playwright/test": "^1.39.0",
+    "@playwright/test": "^1.51.1",
     "@tailwindcss/typography": "^0.5.9",
     "@types/node": "^20.8.4",
     "@vitejs/plugin-react": "^4.1.0",
