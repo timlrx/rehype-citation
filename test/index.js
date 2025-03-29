@@ -180,7 +180,6 @@ rehypeCitationTest('no-cite citations must be added to template citations', asyn
   assert.is(result, expected)
 })
 
-
 rehypeCitationTest('no-cite catch all', async () => {
   const result = await processHtml('<div>text</div>', {
     noCite: ['@*'],
@@ -330,6 +329,65 @@ rehypeCitationTest('parses multiple bibliography files', async () => {
   )
   const expected = dedent`<div><span class="" id="citation--10.5281/zenodo.1234--1">(Lisa &#x26; Bot, 2017)</span> and <span class="" id="citation--nash1950--2">(Nash, 1950)</span></div>`
   assert.is(result, expected)
+})
+
+rehypeCitationTest('adds tooltips to citations when showTooltips is true', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950]</div>`, {
+    suppressBibliography: true,
+    showTooltips: true,
+  })
+  assert.match(result, /title="Nash, J\. \(1950\)\. Equilibrium points in n-person games\./)
+  assert.match(result, /<span class="" id="citation--nash1950--1" title="[^"]+">/)
+})
+
+rehypeCitationTest('uses custom tooltipAttribute when specified', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950]</div>`, {
+    suppressBibliography: true,
+    showTooltips: true,
+    tooltipAttribute: 'data-tooltip',
+  })
+  assert.match(result, /data-tooltip="Nash, J\. \(1950\)\. Equilibrium points in n-person games\./)
+  assert.not.match(result, /title="/)
+})
+
+rehypeCitationTest('adds individual tooltips to each link in numeric citations', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950; @Nash1951]</div>`, {
+    suppressBibliography: true,
+    csl: 'vancouver',
+    linkCitations: true,
+    showTooltips: true,
+  })
+  assert.match(result, /<a href="#bib-nash1950" title=/)
+  assert.match(result, /<a href="#bib-nash1951" title=/)
+})
+
+rehypeCitationTest('adds individual tooltips to each link in author-date citations', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950; @Nash1951]</div>`, {
+    suppressBibliography: true,
+    linkCitations: true,
+    showTooltips: true,
+  })
+  assert.match(result, /<a href="#bib-nash1950" title=/)
+  assert.match(result, /<a href="#bib-nash1951" title=/)
+  assert.not.match(result, /<span class="" id="citation--nash1950--nash1951--1" title=/)
+})
+
+rehypeCitationTest('adds tooltips when linkCitations is false', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950; @Nash1951]</div>`, {
+    suppressBibliography: true,
+    showTooltips: true,
+    linkCitations: false,
+  })
+  assert.match(result, /<span class="" id="citation--nash1950--nash1951--1" title=/)
+})
+
+rehypeCitationTest('adds tooltips to note-style citations', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950]</div>`, {
+    suppressBibliography: true,
+    csl: './test/nature.csl',
+    showTooltips: true,
+  })
+  assert.match(result, /<span class="" id="citation--nash1950--1" title=/)
 })
 
 rehypeCitationTest.run()

@@ -28,11 +28,11 @@ export const readFile = async (path) => {
  * @param {string} str
  * @return {boolean}
  */
-export const isValidHttpUrl = (str, base = "") => {
+export const isValidHttpUrl = (str, base = '') => {
   let url
 
   try {
-    url = base ? new URL(str, base): new URL(str)
+    url = base ? new URL(str, base) : new URL(str)
   } catch (_) {
     return false
   }
@@ -63,29 +63,30 @@ export const getBibliography = async (options, file) => {
   for (let i = 0; i < bibliography.length; i++) {
     if (!isValidHttpUrl(bibliography[i], options.path)) {
       // Case options.path is provided and non empty
-      if (options.path){
+      if (options.path) {
         // if node env we construct the full path using options.path
         if (isNode) {
           bibliography[i] = await import('path').then((path) =>
             path.join(options.path, bibliography[i])
           )
-        // else we throw as it's non valid http url  
+          // else we throw as it's non valid http url
         } else {
-          throw new Error(`Cannot read non valid bibliography URL.`) 
+          throw new Error(`Cannot read non valid bibliography URL.`)
         }
-      // Case options.path is empt
+        // Case options.path is empt
       } else {
         // if node env we construct the full path using default `process.cwd`
         if (isNode) {
           bibliography[i] = await import('path').then((path) =>
             path.join(file.cwd, bibliography[i])
           )
-        // else as it's a non valid http url we throw as a base url must be provided using options.path
+          // else as it's a non valid http url we throw as a base url must be provided using options.path
         } else {
-          throw new Error(`Non valid bibliography URL: Provide a full valid path for biblio ${bibliography[i]} or set an appropriate "options.path"`)
+          throw new Error(
+            `Non valid bibliography URL: Provide a full valid path for biblio ${bibliography[i]} or set an appropriate "options.path"`
+          )
         }
       }
-
     }
   }
 
@@ -244,4 +245,20 @@ export const getFrontmatterField = (file, fieldName) => {
   }
 
   return undefined
+}
+
+/**
+ * Get bibliography entry text for a citation ID
+ *
+ * @param {*} citeproc citeproc engine
+ * @param {string} id citation ID
+ * @return {string} formatted bibliography entry without HTML tags
+ */
+export const getBibliographyEntryText = (citeproc, id) => {
+  const [params, bibBody] = citeproc.makeBibliography([id])
+  if (!bibBody || bibBody.length === 0) return ''
+  let entryText = bibBody[0].replace(/<[^>]*>/g, '')
+  entryText = entryText.replace(/\s+/g, ' ').trim()
+
+  return entryText
 }

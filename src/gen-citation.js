@@ -4,7 +4,12 @@
  * @typedef {import('./types').Options} Options
  */
 
-import { getSortedRelevantRegistryItems, split, isSameAuthor } from './utils.js'
+import {
+  getSortedRelevantRegistryItems,
+  split,
+  isSameAuthor,
+  getBibliographyEntryText,
+} from './utils.js'
 import { htmlToHast } from './html-transform-node.js'
 
 /**
@@ -33,7 +38,7 @@ export const genCitation = (
   isComposite,
   citationFormat
 ) => {
-  const { inlineClass, linkCitations } = options
+  const { inlineClass, linkCitations, showTooltips = false, tooltipAttribute = 'title' } = options
   const key = `${citationIdRoot}-${citationId}`
   const c = citeproc.processCitationCluster(
     {
@@ -47,18 +52,32 @@ export const genCitation = (
     citationPre.length > 0 ? citationPre : [],
     []
   )
-  // c = [ { bibchange: true, citation_errors: [] }, [ [ 0, '(1)', 'CITATION-1' ] ]]
 
   const citationText = c[1].find((x) => x[2] === key)[1]
   const ids = `citation--${entries.map((x) => x.id.toLowerCase()).join('--')}--${citationId}`
+
+  // Generate tooltip map for each entry if enabled
+  const tooltipMap = {}
+  if (showTooltips) {
+    entries.forEach((entry) => {
+      const entryText = getBibliographyEntryText(citeproc, entry.id)
+      // Escape quotes and HTML entities for attribute value
+      tooltipMap[entry.id.toLowerCase()] = entryText.replace(/"/g, '&quot;').replace(/&/g, '&amp;')
+    })
+  }
+
+  // Wrapper tooltip for the span element (combined tooltip for all entries)
+  const wrapperTooltipAttr = showTooltips
+    ? ` ${tooltipAttribute}="${entries.map((e) => tooltipMap[e.id.toLowerCase()]).join('; ')}"`
+    : ''
+
   if (mode === 'note') {
-    // Use cite-fn-{id} to denote footnote from citation, will clean it up later to follow gfm "user-content" format
     return [
       citationText,
       htmlToHast(
         `<span class="${(inlineClass ?? []).join(
           ' '
-        )}" id=${ids}><sup><a href="#cite-fn-${citationId}" id="cite-fnref-${citationId}" data-footnote-ref aria-describedby="footnote-label">${citationId}</a></sup></span>`
+        )}" id=${ids}${wrapperTooltipAttr}><sup><a href="#cite-fn-${citationId}" id="cite-fnref-${citationId}" data-footnote-ref aria-describedby="footnote-label">${citationId}</a></sup></span>`
       ),
     ]
   } else if (linkCitations && citationFormat === 'numeric') {
@@ -66,7 +85,9 @@ export const genCitation = (
     let i = 0
     const refIds = entries.map((e) => e.id)
     const output = citationText.replace(/\d+/g, function (d) {
-      const url = `<a href="#bib-${refIds[i].toLowerCase()}">${d}</a>`
+      const refId = refIds[i].toLowerCase()
+      const tooltipAttr = showTooltips ? ` ${tooltipAttribute}="${tooltipMap[refId]}"` : ''
+      const url = `<a href="#bib-${refId}"${tooltipAttr}>${d}</a>`
       i++
       return url
     })
@@ -79,15 +100,16 @@ export const genCitation = (
     // E.g. (see Nash, 1950, pp. 12–13, 1951); (Nash, 1950; Xie, 2016)
     if (entries.length === 1) {
       // Do not link bracket
+      const refId = entries[0].id.toLowerCase()
+      const tooltipAttr = showTooltips ? ` ${tooltipAttribute}="${tooltipMap[refId]}"` : ''
+
       const output = isComposite
-        ? `<a href="#bib-${entries[0].id.toLowerCase()}">${citationText}</a>`
-        : `${citationText.slice(
-            0,
-            1
-          )}<a href="#bib-${entries[0].id.toLowerCase()}">${citationText.slice(
+        ? `<a href="#bib-${refId}"${tooltipAttr}>${citationText}</a>`
+        : `${citationText.slice(0, 1)}<a href="#bib-${refId}"${tooltipAttr}>${citationText.slice(
             1,
             -1
           )}</a>${citationText.slice(-1)}`
+
       return [
         citationText,
         htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${output}</span>`),
@@ -111,9 +133,16 @@ export const genCitation = (
         const startPos = str.indexOf(citeMatch)
         const [start, rest] = split(str, startPos)
         output.push(start) // Irrelevant parts
-        const url = `<a href="#bib-${id.toLowerCase()}">${rest.substring(0, citeMatch.length)}</a>`
+
+        const refId = id.toLowerCase()
+        const tooltipAttr = showTooltips ? ` ${tooltipAttribute}="${tooltipMap[refId]}"` : ''
+        const url = `<a href="#bib-${refId}"${tooltipAttr}>${rest.substring(
+          0,
+          citeMatch.length
+        )}</a>`
+
         output.push(url)
-        str = rest.substr(citeMatch.length)
+        str = rest.substring(citeMatch.length)
       }
       output.push(str)
       return [
@@ -126,7 +155,11 @@ export const genCitation = (
   } else {
     return [
       citationText,
-      htmlToHast(`<span class="${(inlineClass ?? []).join(' ')}" id=${ids}>${citationText}</span>`),
+      htmlToHast(
+        `<span class="${(inlineClass ?? []).join(
+          ' '
+        )}" id=${ids}${wrapperTooltipAttr}>${citationText}</span>`
+      ),
     ]
   }
 }

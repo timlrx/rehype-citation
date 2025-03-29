@@ -21,6 +21,11 @@
  *   Class(es) to add to the inline citation.
  * @property {string[]} [inlineBibClass]
  *   Class(es) to add to the inline bibliography. Leave empty for no inline bibliography.
+ *  @property {boolean} [showTooltips]
+ *   If true, citations will show the full bibliography entry as a tooltip on hover.
+ *   @property {string} [tooltipAttribute]
+ *   The HTML attribute to use for tooltips. Can be 'title' or any custom data attribute
+ *   (e.g., 'data-citation-text'). Defaults to 'title'.
  */
 
 /**
