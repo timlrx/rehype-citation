@@ -28,11 +28,11 @@ export const readFile = async (path) => {
  * @param {string} str
  * @return {boolean}
  */
-export const isValidHttpUrl = (str, base = '') => {
+export const isValidHttpUrl = (str) => {
   let url
 
   try {
-    url = base ? new URL(str, base) : new URL(str)
+    url = new URL(str)
   } catch (_) {
     return false
   }
@@ -61,7 +61,7 @@ export const getBibliography = async (options, file) => {
   }
   // If local path, get absolute path
   for (let i = 0; i < bibliography.length; i++) {
-    if (!isValidHttpUrl(bibliography[i], options.path)) {
+    if (!isValidHttpUrl(bibliography[i])) {
       // Case options.path is provided and non empty
       if (options.path) {
         // if node env we construct the full path using options.path
