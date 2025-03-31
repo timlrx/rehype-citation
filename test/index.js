@@ -241,6 +241,16 @@ rehypeCitationTest('works with url bibliography path', async () => {
   assert.is(result, expected)
 })
 
+rehypeCitationTest('url should not be affected by path', async () => {
+  const result = await processHtml(
+    dedent`<div>[@Abu-Zeid_1986]</div>`,
+    { suppressBibliography: true, path: process.cwd() },
+    'https://raw.githubusercontent.com/retorquere/zotero-better-bibtex/v6.0.0/test/fixtures/import/Author%20splitter%20failure.bib'
+  )
+  const expected = dedent`<div><span class="" id="citation--abu-zeid_1986--1">(Abu-Zeid et al., 1986)</span></div>`
+  assert.is(result, expected)
+})
+
 rehypeCitationTest('throw error if invalid url path', async () => {
   try {
     await processHtml(
