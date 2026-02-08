@@ -18,7 +18,7 @@ const acmCSL =
   'https://raw.githubusercontent.com/citation-style-language/styles/master/acm-sig-proceedings.csl'
 
 const chicagofullnoteCSL =
-  'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl'
+  'https://raw.githubusercontent.com/citation-style-language/styles/refs/heads/master/chicago-notes-bibliography-17th-edition.csl'
 
 const cff = 'https://raw.githubusercontent.com/timlrx/rehype-citation/main/test/CITATION.cff'
 const cff2 = 'https://raw.githubusercontent.com/tensorflow/tensorflow/master/CITATION.cff'

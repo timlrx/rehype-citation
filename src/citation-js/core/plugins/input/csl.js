@@ -2,11 +2,11 @@ function ownKeys(e, r) {
   var t = Object.keys(e)
   if (Object.getOwnPropertySymbols) {
     var o = Object.getOwnPropertySymbols(e)
-    r &&
+    ;(r &&
       (o = o.filter(function (r) {
         return Object.getOwnPropertyDescriptor(e, r).enumerable
       })),
-      t.push.apply(t, o)
+      t.push.apply(t, o))
   }
   return t
 }
@@ -18,10 +18,10 @@ function _objectSpread(e) {
           _defineProperty(e, r, t[r])
         })
       : Object.getOwnPropertyDescriptors
-      ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t))
-      : ownKeys(Object(t)).forEach(function (r) {
-          Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r))
-        })
+        ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t))
+        : ownKeys(Object(t)).forEach(function (r) {
+            Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r))
+          })
   }
   return e
 }
@@ -296,7 +296,7 @@ function correctType(type, bestGuessConversions) {
   if (bestGuessConversions) {
     if (type in entryTypes) {
       return entryTypes[type]
-    } else if (type.toLowerCase() !== type) {
+    } else if (typeof type === 'string' && type.toLowerCase() !== type) {
       return correctType(type.toLowerCase(), bestGuessConversions)
     }
   }

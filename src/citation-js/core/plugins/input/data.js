@@ -1,16 +1,28 @@
-import { chain, chainAsync } from './chain.js'
+import { type as parseType } from './type.js'
 const parsers = {}
 const asyncParsers = {}
 const nativeParsers = {
   '@csl/object': (input) => [input],
   '@csl/list+object': (input) => input,
-  '@else/list+object': (input) => input.map(chain).flat(),
+  '@else/list+object': (input) =>
+    input
+      .map((item) => {
+        const type = parseType(item)
+        return data(item, type)
+      })
+      .flat(),
   '@invalid': () => {
     throw new Error('This format is not supported or recognized')
   },
 }
 const nativeAsyncParsers = {
-  '@else/list+object': async (input) => (await Promise.all(input.map(chainAsync))).flat(),
+  '@else/list+object': (input) =>
+    Promise.all(
+      input.map((item) => {
+        const type = parseType(item)
+        return dataAsync(item, type)
+      })
+    ).then((input) => input.flat()),
 }
 export function data(input, type) {
   if (typeof parsers[type] === 'function') {
