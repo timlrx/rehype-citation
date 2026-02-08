@@ -35,7 +35,7 @@ const rehypeCitationTest = suite('note-style')
 rehypeCitationTest('supports footnote style csl', async () => {
   const result = await processHtml('<div>[@Nash1950]</div>', {
     suppressBibliography: true,
-    csl: 'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl',
+    csl: 'https://raw.githubusercontent.com/citation-style-language/styles/refs/heads/master/chicago-notes-bibliography-17th-edition.csl',
   })
   const expected = dedent`<div><span class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></span></div><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
 <ol>
@@ -47,7 +47,7 @@ rehypeCitationTest('supports footnote style csl', async () => {
 rehypeCitationTest('handles multiple footnote', async () => {
   const result = await processHtml('<div>[@Nash1950] text [@Nash1951]</div>', {
     suppressBibliography: true,
-    csl: 'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl',
+    csl: 'https://raw.githubusercontent.com/citation-style-language/styles/refs/heads/master/chicago-notes-bibliography-17th-edition.csl',
   })
   const expected = dedent`<div><span class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></span> text <span class="" id="citation--nash1951--2"><sup><a href="#user-content-fn-2" id="user-content-fnref-2" data-footnote-ref="" aria-describedby="footnote-label">2</a></sup></span></div><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
 <ol>
@@ -60,7 +60,7 @@ rehypeCitationTest('handles multiple footnote', async () => {
 rehypeCitationTest('integrates with github markdown', async () => {
   const result = await processHtmlGfm(`Hello world [@Nash1950]`, {
     suppressBibliography: true,
-    csl: 'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl',
+    csl: 'https://raw.githubusercontent.com/citation-style-language/styles/refs/heads/master/chicago-notes-bibliography-17th-edition.csl',
   })
   const expected = dedent`<p>Hello world <span class="" id="citation--nash1950--1"><sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></span></p><section data-footnotes class="footnotes"><h2 class="sr-only" id="footnote-label">Footnotes</h2>
 <ol>
@@ -78,7 +78,7 @@ rehypeCitationTest('integrates with existing gfm footnote and re-numbers correct
   `,
     {
       suppressBibliography: true,
-      csl: 'https://raw.githubusercontent.com/citation-style-language/styles/master/chicago-fullnote-bibliography.csl',
+      csl: 'https://raw.githubusercontent.com/citation-style-language/styles/refs/heads/master/chicago-notes-bibliography-17th-edition.csl',
     }
   )
   const expected = dedent`<p>Hello world <sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref aria-describedby="footnote-label">1</a></sup> some <span class="" id="citation--nash1951--1"><sup><a href="#user-content-fn-2" id="user-content-fnref-2" data-footnote-ref="" aria-describedby="footnote-label">2</a></sup></span> text <sup><a href="#user-content-fn-3" id="user-content-fnref-3" data-footnote-ref aria-describedby="footnote-label">3</a></sup> here</p>
