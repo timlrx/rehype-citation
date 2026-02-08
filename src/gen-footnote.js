@@ -24,7 +24,9 @@ export const genFootnoteSection = (citationDict, footnoteArray, footnoteSection)
   let oldFootnoteList
   if (footnoteSection) {
     /** @type {Element} */ // @ts-ignore - for some reason, the type does not narrow even after filtering
-    oldFootnoteList = footnoteSection.children.filter(n => (n.type == "element")).find((n) => (n.tagName === 'ol'))
+    oldFootnoteList = footnoteSection.children
+      .filter((n) => n.type == 'element')
+      .find((n) => n.tagName === 'ol')
   }
   for (const [idx, item] of footnoteArray.entries()) {
     const { type, oldId } = item
@@ -57,12 +59,19 @@ export const genFootnoteSection = (citationDict, footnoteArray, footnoteSection)
         ],
       })
     } else if (type === 'existing') {
-      // @ts-ignore
+      /** @type {Element} */
+      // @ts-ignore - Type narrowing works at runtime
       const liNode = oldFootnoteList.children.find(
-        (n) => n.tagName === 'li' && n.properties.id === `user-content-fn-${oldId}`
+        (n) =>
+          n.type === 'element' &&
+          n.tagName === 'li' &&
+          n.properties.id === `user-content-fn-${oldId}`
       )
       liNode.properties.id = `user-content-fn-${idx + 1}`
-      const aNode = liNode.children[1].children.find((n) => n.tagName === 'a')
+      const pNode = liNode.children.find((n) => n.type === 'element')
+      /** @type {Element} */
+      // @ts-ignore - Type narrowing works at runtime
+      const aNode = pNode.children.find((n) => n.type === 'element' && n.tagName === 'a')
       aNode.properties.href = `#user-content-fnref-${idx + 1}`
       list.children.push(liNode)
     }
