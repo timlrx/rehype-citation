@@ -621,7 +621,7 @@ export default new util.Translator([
         publisher: false,
       },
       target: {
-        type: 'webpage',
+        type: ['paper-conference', 'webpage'],
       },
     },
   },
