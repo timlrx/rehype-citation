@@ -17,11 +17,12 @@
       "node": "./dist/node/rehype-citation.mjs",
       "default": "./dist/browser/rehype-citation.mjs"
     },
-    "./browser/": {
-      "default": "./dist/browser/"
+    "./browser": {
+      "default": "./dist/browser/rehype-citation.mjs"
     },
-    "./node/": {
-      "default": "./dist/node/"
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "default": "./dist/node/rehype-citation.mjs"
     }
   },
   "typesVersions": {
@@ -137,5 +138,8 @@
     "*.+(js|jsx|ts|tsx|json|css|md|mdx)": [
       "prettier --write"
     ]
+  },
+  "directories": {
+    "test": "test"
   }
 }
