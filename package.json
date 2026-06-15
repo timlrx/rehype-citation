@@ -42,7 +42,7 @@
     "bootstrap": "node bootstrap.js",
     "build": "npm run build:node && npm run build:browser",
     "build:browser": "microbundle index.js src/cite.js src/generator.js --output dist/browser --format modern --define isNode=false --alias ./html-transform-node.js=./html-transform-browser.js",
-    "build:node": "tsc -b && microbundle index.js src/cite.js src/generator.js --target node --output dist/node --format modern --define isNode=true",
+    "build:node": "tsc -b && microbundle index.js src/cite.js src/generator.js --target node --output dist/node --format modern --define isNode=true --alias punycode=punycode/punycode.js",
     "tsc": "tsc --watch",
     "lint": "eslint .",
     "prettier": "prettier --write '*.js'",
@@ -84,6 +84,7 @@
     "hast-util-from-parse5": "^8.0.3",
     "js-yaml": "^4.1.1",
     "parse5": "^8.0.0",
+    "punycode": "^2.3.1",
     "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0"
   },
