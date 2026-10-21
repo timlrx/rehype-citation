@@ -68,6 +68,17 @@ const locatorLabels = {
 }
 
 /**
+ * Joins a suffix to a citation, with a separator if the suffix does not start with punctuation.
+ *
+ * @param {string} text
+ * @param {string} suffix
+ * @param {string} separator
+ * @return {string}
+ */
+const joinSuffix = (text, suffix, separator) =>
+  /^[,;:.]/.test(suffix) ? text + suffix : text + separator + suffix
+
+/**
  * Parses a given citation string and return entries and isComposite flag required for cite-proc.
  * Adapted from https://github.com/Zettlr/Zettlr/blob/develop/source/common/util/extract-citations.ts
  *
@@ -145,7 +156,10 @@ export const parseCitation = (regexMatch) => {
       }
 
       if (explicitLocator === undefined && explicitLocatorInSuffix === undefined) {
-        thisCitation.suffix = suffix
+        // Like in Pandoc, a suffix without a locator is separated from the citation with a
+        // comma, e.g. "(Nash, 1950, Theorem 1)".
+        thisCitation.suffix =
+          locator === undefined && suffix !== undefined ? joinSuffix('', suffix, ', ') : suffix
       } else if (suffix !== undefined && thisCitation.locator !== undefined) {
         // If we're here, we should not change the suffix, but parseSuffix may
         // have put something into the suffix return. If we're here, that will
@@ -158,11 +172,26 @@ export const parseCitation = (regexMatch) => {
   } else {
     // We have an in-text citation, so we can take a shortcut
     isComposite = true
+    let { locator, label, suffix } = parseSuffix(optionalSuffix, false)
+    // In composite mode, citeproc-js renders the suffix after both the author and the locator, e.g.
+    // "Nash, Theorem 1 (1950, Theorem 1)", but renders the locator only once. We move the suffix
+    // into the locator to avoid duplication. If there is no locator, we set its label to "none", 
+    // which is not a CSL term, so citeproc-js omits the label.
+    if (suffix) {
+      if (locator === undefined) {
+        locator = suffix.replace(/^,\s*/, '')
+        label = 'none'
+      } else {
+        locator = joinSuffix(locator, suffix, ' ')
+      }
+    }
     entries.push({
       prefix: undefined,
       id: inTextCitation.replace(/{(.+)}/, '$1'),
       'suppress-author': inTextSuppressAuthor !== undefined,
-      ...parseSuffix(optionalSuffix, false), // Populate more depending on the suffix
+      locator,
+      label,
+      suffix: undefined,
     })
   }
   return [entries, isComposite]
@@ -198,20 +227,31 @@ function parseSuffix(suffix, containsLocator) {
   for (const label in locatorLabels) {
     for (const natural of locatorLabels[label]) {
       if (suffix.toLowerCase().startsWith(natural.toLowerCase())) {
+        const naturalIsAWord =
+          !/\p{L}$/u.test(natural) || !/^\p{L}/u.test(suffix.substr(natural.length))
+        if (!naturalIsAWord) {
+          // A label must end at a word end, so that e.g. "ZX81" is not read as the label "Z"
+          continue
+        }
+
+        const rest = suffix.substr(natural.length).trim()
+        const match = locatorRE.exec(rest)
+        if (!containsLocator && match === null) {
+          // Like in Pandoc, a label must be followed by a locator, so that e.g. "p." in
+          // "p. and others" is not read as the "page" label without a locator
+          continue
+        }
+
         retValue.label = label
         if (containsLocator) {
           // The suffix actually is the full locator, we just had to extract
           // the label from it. There is no remaining suffix.
-          retValue.locator = suffix.substr(natural.length).trim()
+          retValue.locator = rest
         } else {
           // The caller indicated that this is a regular suffix, so we must also
           // extract the locator from what is left after label extraction.
-          retValue.suffix = suffix.substr(natural.length).trim()
-          const match = locatorRE.exec(retValue.suffix)
-          if (match !== null) {
-            retValue.locator = match[0] // Extract the full match
-            retValue.suffix = retValue.suffix.substr(match[0].length).trim()
-          }
+          retValue.locator = match[0] // Extract the full match
+          retValue.suffix = rest.substr(match[0].length).trim()
         }
 
         return retValue // Early exit
@@ -232,6 +272,8 @@ function parseSuffix(suffix, containsLocator) {
     if (match !== null) {
       retValue.locator = match[0] // Full match is the locator
       retValue.suffix = suffix.substr(match[0].length).trim() // The rest is the suffix.
+    } else if (suffix !== '') {
+      retValue.suffix = suffix // If there is no locator, the whole text is the suffix
     }
   }
 

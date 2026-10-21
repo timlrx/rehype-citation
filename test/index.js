@@ -202,6 +202,72 @@ rehypeCitationTest('handle prefix, suffix and locator', async () => {
   assert.is(result, expected)
 })
 
+rehypeCitationTest('handle dotted locators and en dash ranges', async () => {
+  const result = await processHtml(
+    dedent`<div>[@Nash1950, sec. 2.6] [@Nash1950, sec. 1–2] @Nash1950 [sec. 12.2.1]</div>`,
+    { suppressBibliography: true }
+  )
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950, sec. 2.6)</span> <span class="" id="citation--nash1950--2">(Nash, 1950, secs. 1–2)</span> <span class="" id="citation--nash1950--3">Nash (1950, sec. 12.2.1)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('end a locator at a word without a digit', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950, p. 3, 5 and more]</div>`, {
+    suppressBibliography: true,
+  })
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950, pp. 3, 5 and more)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('handle locators with letters and digits', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950, sec. A.3] [@Nash1950, p. 123A]</div>`, {
+    suppressBibliography: true,
+  })
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950, sec. A.3)</span> <span class="" id="citation--nash1950--2">(Nash, 1950, p. 123A)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('match the label that is followed by a locator', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950, sections 1-2] [@Nash1950, §§ 3]</div>`, {
+    suppressBibliography: true,
+  })
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950, secs. 1–2)</span> <span class="" id="citation--nash1950--2">(Nash, 1950, sec. 3)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('keep a suffix without a locator', async () => {
+  const result = await processHtml(dedent`<div>[@Nash1950, Theorem 1]</div>`, {
+    suppressBibliography: true,
+  })
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950, Theorem 1)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('keep a suffix without a locator in an in-text citation', async () => {
+  const result = await processHtml(dedent`<div>@Nash1950 [Theorem 1]</div>`, {
+    suppressBibliography: true,
+  })
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">Nash (1950, Theorem 1)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('render the suffix of an in-text citation once', async () => {
+  const result = await processHtml(dedent`<div>@Nash1950 [sec. 2.1, Proposition 2]</div>`, {
+    suppressBibliography: true,
+  })
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">Nash (1950, sec. 2.1, Proposition 2)</span></div>`
+  assert.is(result, expected)
+})
+
+rehypeCitationTest('do not take letters in a word for a locator', async () => {
+  const result = await processHtml(
+    dedent`<div>[@Nash1950, cf. Kakutani] [@Nash1950, mixed strategies]</div>`,
+    { suppressBibliography: true }
+  )
+  const expected = dedent`<div><span class="" id="citation--nash1950--1">(Nash, 1950, cf. Kakutani)</span> <span class="" id="citation--nash1950--2">(Nash, 1950, mixed strategies)</span></div>`
+  assert.is(result, expected)
+})
+
 rehypeCitationTest('suppress author', async () => {
   const result = await processHtml(dedent`<div>[-@Nash1950]</div>`, { suppressBibliography: true })
   const expected = dedent`<div><span class="" id="citation--nash1950--1">(1950)</span></div>`
